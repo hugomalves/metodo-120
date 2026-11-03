@@ -1,0 +1,103 @@
+/* Lista para imprimir, no padrão visual do Método 120 (A4, duas colunas) */
+
+.pagina {
+  --marinho: #06215f;
+  --azul: #1f6bff;
+  --ciano: #3fc6ff;
+  --tinta: #0f1b3d;
+  --cinza: #5b6784;
+  --fio: #c8d2e5;
+  color: var(--tinta);
+  font-family: var(--font-body), Arial, sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  padding: 0 0 40px;
+}
+
+/* ---------- barra da tela ---------- */
+.barra {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px;
+  padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--fio); margin-bottom: 24px;
+}
+.dica { font-size: 14px; color: var(--cinza); flex: 1 1 260px; text-align: center; }
+.botao, .botaoLinha {
+  display: inline-flex; align-items: center; min-height: 42px; padding: 0 18px; border-radius: 999px;
+  font: 700 15px var(--font-body), Arial, sans-serif; text-decoration: none; cursor: pointer;
+}
+.botao { background: var(--azul); color: #fff; border: 0; }
+.botaoLinha { color: var(--tinta); border: 1.5px solid var(--fio); background: #fff; }
+
+/* ---------- folha ---------- */
+.folha {
+  width: 210mm; max-width: calc(100vw - 24px); margin: 0 auto; background: #fff;
+  padding: 12mm; box-shadow: 0 6px 30px rgba(15, 27, 61, .12); border-radius: 4px;
+}
+
+.capa {
+  display: flex; align-items: stretch; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(120deg, #03123a 0%, var(--marinho) 45%, #0b3fae 100%); color: #fff;
+}
+.logo { width: 40%; max-width: 250px; object-fit: cover; aspect-ratio: 16 / 9; display: block; }
+.capaTexto { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 14px 18px; min-width: 0; }
+.kicker { font: 700 9.5pt var(--font-display), Arial, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--ciano); }
+.titulo { margin: 0; font: 800 15pt/1.15 var(--font-display), Arial, sans-serif; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.chips span { font-size: 9pt; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .28); }
+
+.identificacao { display: grid; grid-template-columns: 2.4fr 1fr 1fr 1.2fr; gap: 6px; margin-top: 8px; }
+.identificacao div { display: flex; flex-direction: column; gap: 1px; padding: 4px 10px; border: 1px solid var(--fio); border-radius: 8px; }
+.identificacao span { font-size: 7.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cinza); }
+.identificacao b { font-size: 10.5pt; }
+
+.instrucoes { margin-top: 8px; padding: 6px 12px; border-left: 4px solid var(--azul); background: #eef3fc; border-radius: 0 8px 8px 0; font-size: 9.5pt; }
+.instrucoes b { font-family: var(--font-display), Arial, sans-serif; }
+.instrucoes ol { margin: 4px 0 0; padding-left: 18px; }
+.link { font-weight: 700; color: #1557d6; word-break: break-all; }
+
+/* ---------- questões ---------- */
+.colunas { margin-top: 10px; columns: 2; column-gap: 9mm; column-rule: 1px solid var(--fio); column-fill: auto; }
+.questao { break-inside: avoid; margin: 0 0 7mm; display: flex; flex-direction: column; gap: 4px; }
+.questao[data-larga='sim'] { column-span: all; }
+.qCabeca { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qNumero {
+  font: 800 9.5pt var(--font-display), Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  color: #fff; background: var(--azul); padding: 3px 10px; border-radius: 6px;
+}
+.qMeta { font-size: 8pt; color: var(--cinza); font-weight: 600; }
+.qImagem { display: block; width: 100%; height: auto; }
+.questao[data-larga='sim'] .qImagem { width: auto; max-width: 100%; }
+.qTexto { font-size: 10pt; line-height: 1.45; }
+.qAlts { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.qAlts b { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1.3px solid var(--tinta); border-radius: 50%; font-size: 8pt; margin-right: 4px; }
+
+/* ---------- cartão-resposta ---------- */
+.cartao { break-before: page; padding-top: 2mm; }
+.cartaoTopo { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 3px solid var(--azul); }
+.cartaoTopo h2 { margin: 2px 0 0; font: 800 15pt/1.15 var(--font-display), Arial, sans-serif; }
+.cartaoIcone { width: 44px; height: 44px; border-radius: 10px; }
+.kickerEscuro { font: 700 9pt var(--font-display), Arial, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--azul); }
+.cartaoAluno { display: flex; justify-content: space-between; gap: 12px; margin: 10px 0 12px; font-size: 10.5pt; }
+.grade { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 10mm; grid-auto-flow: row; }
+.linhaCartao { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-bottom: 1px dashed #dfe5f0; break-inside: avoid; }
+.numCartao { width: 26px; font: 800 10pt var(--font-display), Arial, sans-serif; color: var(--marinho); }
+.bolha {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%;
+  border: 1.4px solid var(--marinho); font-size: 8pt; font-weight: 700; color: var(--marinho);
+}
+.cartaoNota { margin-top: 12px; font-size: 9pt; color: var(--cinza); }
+
+@media print {
+  .barra { display: none; }
+  .pagina { padding: 0; }
+  .folha { width: auto; max-width: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
+}
+
+@media (max-width: 700px) {
+  .folha { padding: 5mm; }
+  .capa { flex-direction: column; }
+  .logo { width: 100%; max-width: none; }
+  .colunas { columns: 1; }
+  .identificacao { grid-template-columns: 1fr 1fr; }
+  .grade { grid-template-columns: 1fr 1fr; }
+}
