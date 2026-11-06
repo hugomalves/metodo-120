@@ -63,7 +63,7 @@ export default async function MinhasDuvidas({ searchParams }: { searchParams: Pr
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {d.duvida_mensagens.map((m) => (
                   <div key={m.id} style={{
-                    alignSelf: m.do_professor ? 'flex-start' : 'flex-end', maxWidth: 'min(640px, 100%)', padding: '10px 14px', borderRadius: 14,
+                    alignSelf: m.do_professor ? 'flex-start' : 'flex-end', maxWidth: 'min(640px, 100%)', padding: '10px 14px', borderRadius: 4,
                     background: m.do_professor ? 'var(--cartao-2)' : 'var(--ok-fundo)', border: m.do_professor ? '1px solid var(--destaque-borda)' : 'none',
                   }}>
                     <span className="rotulo" style={{ fontSize: 10, color: m.do_professor ? 'var(--ciano-texto)' : 'var(--ok-texto)' }}>{m.do_professor ? 'Prof. Hugo' : 'Você'} · {quando(m.criada_em)}</span>

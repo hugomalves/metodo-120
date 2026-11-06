@@ -1,12 +1,12 @@
 .carrossel {
-  position: relative; overflow: hidden; border-radius: 28px; min-height: 0 !important;
+  position: relative; overflow: hidden; border-radius: 4px; min-height: 0 !important;
   background:
     linear-gradient(135deg, transparent 0 62%, rgba(11, 92, 255, 0.35) 62% 70%, transparent 70%),
     radial-gradient(120% 90% at 100% 0%, #0D2348 0%, #071A3D 60%);
 }
 .carrossel::before {
   content: ''; position: absolute; left: -120px; bottom: -150px; width: 300px; height: 300px; transform: rotate(45deg);
-  background: linear-gradient(135deg, #0B5CFF, #147DFF); opacity: 0.45; border-radius: 48px;
+  background: linear-gradient(135deg, #0B5CFF, #147DFF); opacity: 0.45; border-radius: 4px;
 }
 .palco { position: relative; display: grid; }
 .slide { grid-area: 1 / 1; display: flex; flex-wrap: wrap; align-items: center; align-content: center; opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0.6s; }
@@ -17,17 +17,17 @@
 .texto h1 em { font-style: normal; color: #4E9BFF; }
 .texto p.linhaForte { font-family: var(--font-display); font-weight: 800; font-size: clamp(19px, 2.2vw, 26px); color: #fff; letter-spacing: -0.01em; }
 .texto > a { align-self: flex-start; }
-.etiqueta { align-self: flex-start; padding: 5px 12px; border-radius: 999px; background: #0B5CFF; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.etiqueta { align-self: flex-start; padding: 5px 12px; border-radius: 3px; background: #0B5CFF; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .foto { position: relative; flex: 1 1 320px; min-width: 0; display: flex; align-items: center; justify-content: center; padding: clamp(20px, 4vw, 48px) clamp(20px, 4vw, 48px) clamp(72px, 7vw, 88px); }
-.foto img { width: min(380px, 100%); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 28px; border: 3px solid #0B5CFF; box-shadow: 0 0 70px rgba(11, 92, 255, 0.5); }
-.foto[data-tipo='noticia'] img { aspect-ratio: 4 / 3; width: min(480px, 100%); border-radius: 20px; }
+.foto img { width: min(380px, 100%); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 3px solid #0B5CFF; box-shadow: 0 0 70px rgba(11, 92, 255, 0.5); }
+.foto[data-tipo='noticia'] img { aspect-ratio: 4 / 3; width: min(480px, 100%); border-radius: 4px; }
 
 .controles { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2; }
 .seta, .pausa { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(7, 26, 61, 0.6); color: #fff; font-size: 20px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
 .pausa { font-size: 11px; letter-spacing: -1px; margin-left: 6px; }
 .seta:hover, .pausa:hover { background: #0B5CFF; border-color: #0B5CFF; }
 .pontos { display: flex; gap: 8px; }
-.ponto { position: relative; width: 28px; height: 6px; padding: 0; border: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.3); cursor: pointer; overflow: hidden; }
+.ponto { position: relative; width: 28px; height: 6px; padding: 0; border: 0; border-radius: 3px; background: rgba(255, 255, 255, 0.3); cursor: pointer; overflow: hidden; }
 .ponto[data-ativo] { width: 44px; background: rgba(255, 255, 255, 0.45); }
 .progresso { position: absolute; inset: 0; background: #fff; transform-origin: left; animation: encher 7s linear forwards; }
 @keyframes encher { from { transform: scaleX(0); } to { transform: scaleX(1); } }

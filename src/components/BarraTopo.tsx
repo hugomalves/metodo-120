@@ -8,7 +8,7 @@ export function BarraTopo({ nome, selo, inicio, conta }: { nome: string; selo?: 
         <div className="linha-flex">
           <Marca href={inicio} tamanho={26} />
           {selo && (
-            <span style={{ fontSize: 14, fontWeight: 600, padding: '4px 10px', borderRadius: 999, background: 'var(--azul)' }}>{selo}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, padding: '4px 10px', borderRadius: 4, background: 'var(--azul)' }}>{selo}</span>
           )}
         </div>
         <div className="linha-flex" style={{ gap: 14 }}>

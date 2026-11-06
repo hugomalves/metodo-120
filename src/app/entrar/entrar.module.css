@@ -3,14 +3,23 @@
 .painel > img { width: 100%; height: auto; }
 .painelTexto { padding: clamp(24px, 4vw, 40px); display: flex; flex-direction: column; gap: 16px; flex: 1; justify-content: flex-end; }
 .mini { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ciano); }
-.form { flex: 1 1 420px; min-width: 0; padding: clamp(24px, 4vw, 48px); border-radius: 28px; display: flex; flex-direction: column; gap: 22px; }
-.abas { display: flex; gap: 6px; padding: 4px; background: var(--faixa); border-radius: 999px; align-self: flex-start; }
-.aba { min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; font: inherit; font-weight: 600; cursor: pointer; background: transparent; color: var(--suave); }
+.form { flex: 1 1 420px; min-width: 0; padding: clamp(24px, 4vw, 48px); border-radius: 4px; display: flex; flex-direction: column; gap: 22px; }
+.abas { display: flex; gap: 6px; padding: 4px; background: var(--faixa); border-radius: 3px; align-self: flex-start; }
+.aba { min-height: 44px; padding: 0 20px; border-radius: 3px; border: 0; font: inherit; font-weight: 600; cursor: pointer; background: transparent; color: var(--suave); }
 .abaAtiva { background: var(--azul); color: #fff; font-weight: 700; }
 .pilha { display: flex; flex-direction: column; gap: 16px; }
 .dupla { display: flex; gap: 14px; flex-wrap: wrap; }
 .dupla > * { flex: 1 1 160px; min-width: 0; }
-.caixa { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; background: var(--cartao-2); border: 1px solid var(--destaque-borda); }
+.caixa { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 4px; background: var(--cartao-2); border: 1px solid var(--destaque-borda); }
 .check { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; cursor: pointer; }
 .check input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--ciano); }
 .link { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--ciano-texto); cursor: pointer; text-decoration: underline; align-self: flex-start; }
+
+/* Entre e Cadastre-se lado a lado */
+.lado { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 5vw, 64px); max-width: 1040px; margin: clamp(28px, 5vw, 56px) auto 64px; align-items: start; }
+.caixa { padding: clamp(22px, 3vw, 36px); display: flex; flex-direction: column; gap: 14px; box-shadow: none; }
+.caixaTitulo { margin: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 28px; color: var(--navy); }
+@media (max-width: 760px) {
+  .lado { grid-template-columns: 1fr; }
+  .lado[data-criar-primeiro] > section:last-child { order: -1; }
+}

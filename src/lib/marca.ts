@@ -6,6 +6,13 @@ export const MARCA = {
   professor: 'Prof. Hugo M. Alves',
 };
 
+// Redes sociais no cabeçalho (deixe vazio para esconder o ícone)
+export const REDES = {
+  instagram: '',
+  youtube: '',
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL ?? '',
+};
+
 // Quem aparece na vitrine. fotoCorpo: coloque o arquivo em public/img/ e escreva o caminho aqui.
 export const EXPERT = {
   nome: 'Will Miranda',

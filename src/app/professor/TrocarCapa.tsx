@@ -27,7 +27,7 @@ export function TrocarCapa({ alvo, id, temCapa, children }: {
 
   return (
     <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
-      <div style={{ width: 168, aspectRatio: '16 / 9', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--linha)', flex: '0 0 auto' }}>
+      <div style={{ width: 168, aspectRatio: '16 / 9', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--linha)', flex: '0 0 auto' }}>
         {children}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>

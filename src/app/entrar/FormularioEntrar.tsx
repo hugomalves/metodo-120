@@ -19,7 +19,7 @@ function traduzirErro(msg: string): string {
   return `Não foi possível concluir agora. Detalhe técnico: ${msg}`;
 }
 
-export function FormularioEntrar({ modoInicial, aviso }: { modoInicial: Modo; aviso?: string }) {
+export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoInicial: Modo; aviso?: string; fixo?: boolean }) {
   const router = useRouter();
   const [modo, setModo] = useState<Modo>(modoInicial);
   const [enviando, setEnviando] = useState(false);
@@ -92,7 +92,7 @@ export function FormularioEntrar({ modoInicial, aviso }: { modoInicial: Modo; av
 
   return (
     <>
-      {modo !== 'esqueci' && (
+      {modo !== 'esqueci' && !fixo && (
         <div role="tablist" aria-label="Entrar ou criar conta" className={styles.abas}>
           <button role="tab" aria-selected={modo === 'entrar'} className={`${styles.aba} ${modo === 'entrar' ? styles.abaAtiva : ''}`} onClick={() => { setModo('entrar'); setErro(''); }}>
             Entrar
@@ -105,7 +105,7 @@ export function FormularioEntrar({ modoInicial, aviso }: { modoInicial: Modo; av
 
       {modo === 'entrar' && (
         <form onSubmit={entrar} className={styles.pilha}>
-          <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Entrar</h1>
+          {!fixo && <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Entrar</h1>}
           <div className="campo"><label htmlFor="email">E-mail</label><input id="email" name="email" type="email" autoComplete="email" required placeholder="seuemail@exemplo.com" /></div>
           <div className="campo"><label htmlFor="senha">Senha</label><input id="senha" name="senha" type="password" autoComplete="current-password" required placeholder="Sua senha" /></div>
           <button type="button" className={styles.link} onClick={() => { setModo('esqueci'); setErro(''); setOk(''); }}>Esqueci minha senha</button>
@@ -115,7 +115,7 @@ export function FormularioEntrar({ modoInicial, aviso }: { modoInicial: Modo; av
 
       {modo === 'criar' && (
         <form onSubmit={criar} className={styles.pilha}>
-          <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Criar conta</h1>
+          {!fixo && <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Criar conta</h1>}
           <div className="campo"><label htmlFor="nome">Nome</label><input id="nome" name="nome" type="text" autoComplete="given-name" required placeholder="Como quer ser chamado" /></div>
           <div className={styles.dupla}>
             <div className="campo" style={{ flexGrow: 2 }}><label htmlFor="email2">E-mail</label><input id="email2" name="email" type="email" autoComplete="email" required placeholder="seuemail@exemplo.com" /></div>
@@ -135,7 +135,7 @@ export function FormularioEntrar({ modoInicial, aviso }: { modoInicial: Modo; av
 
       {modo === 'esqueci' && (
         <form onSubmit={esqueci} className={styles.pilha}>
-          <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Criar uma nova senha</h1>
+          <h2 className="display" style={{ margin: 0, fontSize: 24 }}>Criar uma nova senha</h2>
           <p className="suave" style={{ margin: 0 }}>Informe o e-mail da sua conta. Vamos enviar um link para você escolher uma nova senha.</p>
           <div className="campo"><label htmlFor="email3">E-mail</label><input id="email3" name="email" type="email" autoComplete="email" required placeholder="seuemail@exemplo.com" /></div>
           <button type="submit" className="btn btn-azul btn-grande" disabled={enviando}>{enviando ? 'Enviando…' : 'Enviar link'}</button>

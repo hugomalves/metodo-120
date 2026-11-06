@@ -1,38 +1,30 @@
-import Link from 'next/link';
-import { Marca, Logo120 } from '@/components/Marca';
+import { Cabecalho } from '@/components/Cabecalho';
 import { FormularioEntrar } from './FormularioEntrar';
 import styles from './entrar.module.css';
 
-export const metadata = { title: 'Entrar' };
+export const metadata = { title: 'Entrar ou cadastrar' };
 
+// Entre e Cadastre-se lado a lado (no celular, um embaixo do outro; quem veio para se cadastrar vê o cadastro primeiro)
 export default async function Entrar({ searchParams }: { searchParams: Promise<{ modo?: string; aviso?: string }> }) {
   const { modo, aviso } = await searchParams;
+  const criarPrimeiro = modo === 'criar';
   return (
-    <div className="container">
-      <header className="topo">
-        <Marca />
-        <Link href="/" style={{ fontWeight: 600 }}>Voltar para a vitrine</Link>
-      </header>
-      <div className={styles.duas}>
-        <aside className={`cartao-gradiente ${styles.painel}`}>
-          <div style={{ padding: 'clamp(24px, 4vw, 40px) clamp(24px, 4vw, 40px) 0' }}><Logo120 tamanho={84} slogan /></div>
-          <div className={styles.painelTexto}>
-            <p className="display" style={{ margin: 0, fontSize: 'clamp(24px, 2.6vw, 32px)', lineHeight: 1.12 }}>
-              Plano de estudo do seu edital, questões da sua banca e simulados no formato da prova.
-            </p>
-            <div className="linha-flex">
-              <img src="/img/expert-rosto.jpg" alt="" width={52} height={52} className={styles.mini} />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <strong>Método 120</strong>
-                <span className="suave" style={{ fontSize: 14 }}>Entre para continuar de onde parou.</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-        <main className={`cartao ${styles.form}`}>
-          <FormularioEntrar modoInicial={modo === 'criar' ? 'criar' : 'entrar'} aviso={aviso} />
-        </main>
+    <>
+      <Cabecalho />
+      <div className="container">
+        <div className={styles.lado} data-criar-primeiro={criarPrimeiro ? 'sim' : undefined}>
+          <section className={`cartao ${styles.caixa}`} aria-labelledby="t-entre">
+            <h1 id="t-entre" className={styles.caixaTitulo}>Entre</h1>
+            <p className="suave" style={{ margin: 0, textAlign: 'center' }}>Já tem conta? Continue de onde parou.</p>
+            <FormularioEntrar modoInicial="entrar" aviso={aviso} fixo />
+          </section>
+          <section className={`cartao ${styles.caixa}`} aria-labelledby="t-cad">
+            <h2 id="t-cad" className={styles.caixaTitulo}>Cadastre-se</h2>
+            <p className="suave" style={{ margin: 0, textAlign: 'center' }}>Grátis: questões todos os dias, com gabarito e resolução.</p>
+            <FormularioEntrar modoInicial="criar" fixo />
+          </section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

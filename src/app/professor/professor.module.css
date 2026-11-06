@@ -1,6 +1,6 @@
 .corpo { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding-block: 24px 64px; }
-.menu { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 20px; }
-.item { display: flex; align-items: center; min-height: 46px; padding: 0 14px; border-radius: 12px; color: var(--texto-2); text-decoration: none; font-weight: 600; }
+.menu { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 4px; }
+.item { display: flex; align-items: center; min-height: 46px; padding: 0 14px; border-radius: 4px; color: var(--texto-2); text-decoration: none; font-weight: 600; }
 .item:hover { color: var(--texto); background: var(--cartao-2); }
 .itemAtivo, .itemAtivo:hover { background: var(--azul); color: #fff; }
 .conteudo { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
@@ -16,15 +16,15 @@
 .tabela { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
 .tabela th { text-align: left; font-family: var(--font-display), sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--suave); padding: 10px 8px; border-bottom: 1px solid var(--linha); }
 .tabela td { padding: 12px 8px; border-bottom: 1px solid var(--linha); vertical-align: middle; font-variant-numeric: tabular-nums; }
-.chip { display: inline-block; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.chip { display: inline-block; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 3px; }
 .chipOk { background: var(--agora-fundo); color: var(--agora-texto); }
 .chipNeutro { background: var(--neutro-fundo); color: var(--suave); }
 .chipAlerta { background: var(--erro-fundo); color: var(--erro); }
-.barra { display: block; height: 10px; border-radius: 5px; background: var(--trilho); }
-.barra > span { display: block; height: 10px; border-radius: 5px; }
+.barra { display: block; height: 10px; border-radius: 4px; background: var(--trilho); }
+.barra > span { display: block; height: 10px; border-radius: 4px; }
 .check { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
 .check input { width: 22px; height: 22px; accent-color: var(--ciano); }
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; }
-.filtro { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linha-forte); color: var(--texto); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; }
+.filtro { min-height: 40px; padding: 0 16px; border-radius: 3px; border: 1.5px solid var(--linha-forte); color: var(--texto); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; }
 .filtroAtivo, .filtroAtivo:hover { background: var(--ciano); border-color: var(--ciano); color: var(--tinta); }
 .mini { min-height: 36px; padding: 0 14px; font-size: 14px; }

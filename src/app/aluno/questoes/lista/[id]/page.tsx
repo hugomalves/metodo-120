@@ -59,7 +59,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
         <h1 className={`display ${s.titulo}`} style={{ fontSize: 'clamp(22px, 2.8vw, 30px)' }}>{lista.titulo}</h1>
       </div>
 
-      <section className="cartao-gradiente" style={{ padding: 22, display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center', borderRadius: 22 }}>
+      <section className="cartao-gradiente" style={{ padding: 22, display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center', borderRadius: 4 }}>
         <div><span className="rotulo">Feitas</span><b className="display" style={{ display: 'block', fontSize: 34 }}>{feitas}/{questoes.length}</b></div>
         <div><span className="rotulo">Acertos</span><b className="display" style={{ display: 'block', fontSize: 34 }}>{acertos}</b></div>
         {liquida !== null && (
@@ -88,7 +88,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
             return (
               <Link key={q.id} href={`/aluno/questoes/lista/${lista.id}?p=${Math.floor(i / pp) + 1}&pp=${pp}#caderno`} className="mono"
                 aria-label={`Questão ${i + 1}: ${r === true ? 'acertou' : r === false ? 'errou' : 'a fazer'}`}
-                style={{ ...cor, width: 44, height: 44, borderRadius: 12, display: 'grid', placeItems: 'center', textDecoration: 'none', fontWeight: 700, border: '1px solid var(--linha-forte)' }}>
+                style={{ ...cor, width: 44, height: 44, borderRadius: 4, display: 'grid', placeItems: 'center', textDecoration: 'none', fontWeight: 700, border: '1px solid var(--linha-forte)' }}>
                 {i + 1}
               </Link>
             );

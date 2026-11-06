@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Marca, Logo120 } from '@/components/Marca';
+import { Logo120 } from '@/components/Marca';
+import { Cabecalho } from '@/components/Cabecalho';
 import { EMPRESA, EXPERT, MARCA } from '@/lib/marca';
 import { Calculadora, DiaDe120, Fases, MiniQuiz } from './Interativos';
 import s from './landing.module.css';
@@ -35,15 +36,7 @@ const PORQUE = [
 export default function ComoFunciona() {
   return (
     <div className={s.pagina}>
-      <header className={s.topo}>
-        <div className="container linha-flex" style={{ justifyContent: 'space-between' }}>
-          <Marca tamanho={34} />
-          <nav className="linha-flex" style={{ gap: 10 }} aria-label="Conta">
-            <Link href="/entrar" className="btn btn-linha">Entrar</Link>
-            <Link href={CTA} className="btn btn-azul">Quero começar</Link>
-          </nav>
-        </div>
-      </header>
+      <Cabecalho />
 
       {/* 1. Promessa */}
       <section className={`tema-escuro ${s.hero}`}>

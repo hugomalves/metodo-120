@@ -70,7 +70,7 @@ export default async function PlantaoDuvidas({ searchParams }: { searchParams: P
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {d.duvida_mensagens.map((m) => (
               <div key={m.id} style={{
-                alignSelf: m.do_professor ? 'flex-end' : 'flex-start', maxWidth: 'min(680px, 100%)', padding: '10px 14px', borderRadius: 14,
+                alignSelf: m.do_professor ? 'flex-end' : 'flex-start', maxWidth: 'min(680px, 100%)', padding: '10px 14px', borderRadius: 4,
                 background: m.do_professor ? 'var(--ok-fundo)' : 'var(--cartao-2)', border: m.do_professor ? 'none' : '1px solid var(--destaque-borda)',
               }}>
                 <span className="rotulo" style={{ fontSize: 10, color: m.do_professor ? 'var(--ok-texto)' : 'var(--ciano-texto)' }}>{m.do_professor ? 'Você' : 'Aluno'} · {quando(m.criada_em)}</span>

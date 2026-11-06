@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { diasAte } from '@/lib/datas';
-import { Marca, Logo120 } from '@/components/Marca';
+import { Logo120 } from '@/components/Marca';
+import { Cabecalho } from '@/components/Cabecalho';
 import { CarrosselVitrine, type SlideNoticia } from '@/components/CarrosselVitrine';
 import { createClient } from '@/lib/supabase/server';
 import { CartaoCapa } from '@/components/CartaoCapa';
@@ -41,22 +42,11 @@ export default async function Vitrine() {
 
   return (
     <>
-      <div className={styles.faixaTopo}>
-        <div className="container">
-          <header className="topo">
-            <Marca tamanho={30} />
-            <nav aria-label="Conta" className={`linha-flex ${styles.nav}`} style={{ gap: 10 }}>
-              <Link href="/como-funciona" className={`btn btn-linha ${styles.navExtra}`}>Como funciona</Link>
-              <a href="#banco" className={`btn btn-linha ${styles.navExtra}`}>Questões grátis</a>
-              <Link href="/entrar" className="btn btn-linha">Entrar</Link>
-              <Link href="/entrar?modo=criar" className="btn btn-azul">Criar conta</Link>
-            </nav>
-          </header>
-        </div>
-      </div>
+      <Cabecalho />
 
       <div className="container">
         <main className={styles.pagina}>
+          <div id="noticias" style={{ scrollMarginTop: 20 }} />
           <CarrosselVitrine noticias={noticias} fotoExpert={foto} nomeExpert={EXPERT.nome}
             ctaHref={cursoAberto?.checkout_url ?? '/entrar?modo=criar'} ctaTexto={cursoAberto ? 'Quero começar' : 'Criar conta grátis'} />
 

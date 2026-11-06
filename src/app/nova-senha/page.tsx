@@ -27,7 +27,7 @@ export default function NovaSenha() {
   return (
     <div className="container">
       <header className="topo"><Marca /></header>
-      <main className="cartao" style={{ maxWidth: 520, margin: '0 auto 56px', padding: 'clamp(24px, 4vw, 40px)', borderRadius: 28 }}>
+      <main className="cartao" style={{ maxWidth: 520, margin: '0 auto 56px', padding: 'clamp(24px, 4vw, 40px)', borderRadius: 4 }}>
         <form onSubmit={salvar} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <h1 className="display" style={{ margin: 0, fontSize: 28 }}>Escolha uma nova senha</h1>
           <div className="campo"><label htmlFor="senha">Nova senha</label><input id="senha" name="senha" type="password" minLength={8} required autoComplete="new-password" /></div>

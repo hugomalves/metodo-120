@@ -5,7 +5,7 @@ import { enviarDuvida } from './actions';
 // Caixa para mandar uma dúvida direto ao professor (não aparece para os outros alunos)
 export function CaixaDuvida({ aulaId, contexto, titulo, aberta = false }: { aulaId?: string; contexto?: string; titulo: string; aberta?: boolean }) {
   return (
-    <details className="cartao" open={aberta} style={{ padding: '14px 18px', borderRadius: 18 }}>
+    <details className="cartao" open={aberta} style={{ padding: '14px 18px', borderRadius: 4 }}>
       <summary style={{ cursor: 'pointer', fontWeight: 700, minHeight: 32, display: 'flex', alignItems: 'center', gap: 10 }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f6bff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M4 5h16v11H9l-5 4z M10 9.3a2 2 0 1 1 2.6 1.9c-.4.2-.6.5-.6.9v.4 M12 14.3v.2" />

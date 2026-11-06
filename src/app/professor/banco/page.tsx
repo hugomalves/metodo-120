@@ -15,7 +15,7 @@ type Q = {
   questoes_gabarito: { comentario: string | null } | { comentario: string | null }[] | null;
 };
 
-const select = { minHeight: 40, padding: '0 12px', borderRadius: 12, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' };
+const select = { minHeight: 40, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' };
 
 function nomeProva(p: Prova) {
   if (p.prova === 'AUTORAIS') return 'Questões autorais';

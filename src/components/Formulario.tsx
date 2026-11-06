@@ -44,7 +44,7 @@ export function Formulario({
       {estado.link && (
         <div className="linha-flex" style={{ gap: 8 }}>
           <input readOnly value={estado.link} aria-label="Link" className="mono" onFocus={(e) => e.currentTarget.select()}
-            style={{ flex: '1 1 260px', minWidth: 0, minHeight: 44, padding: '0 12px', borderRadius: 12, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', fontSize: 13 }} />
+            style={{ flex: '1 1 260px', minWidth: 0, minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', fontSize: 13 }} />
           <button type="button" className="btn btn-linha" onClick={() => { navigator.clipboard?.writeText(estado.link!); setCopiado(true); }}>
             {copiado ? 'Copiado' : 'Copiar'}
           </button>

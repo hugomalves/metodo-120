@@ -25,7 +25,7 @@ export function ImagemQuestao({ src, alt, escala = ESCALA, semLink = false }: { 
   const largura_css = largura ? `min(${largura}px, 100%)` : 'min(400px, 100%)';
   const imagem = (
     <img ref={ref} src={src} alt={alt} onLoad={medir}
-      style={{ display: 'block', width: semLink ? largura_css : '100%', maxWidth: '100%', height: 'auto', borderRadius: 8, background: '#fff' }} />
+      style={{ display: 'block', width: semLink ? largura_css : '100%', maxWidth: '100%', height: 'auto', borderRadius: 4, background: '#fff' }} />
   );
   if (semLink) return imagem;
   return (

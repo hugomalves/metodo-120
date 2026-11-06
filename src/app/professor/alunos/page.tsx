@@ -77,7 +77,7 @@ export default async function Alunos({ searchParams }: { searchParams: Promise<{
         <form method="get" className="linha-flex">
           <input type="hidden" name="f" value={f} />
           <label htmlFor="q" className="suave" style={{ fontSize: 14 }}>Buscar</label>
-          <input id="q" name="q" type="search" defaultValue={q} placeholder="Nome ou e-mail" style={{ flex: '1 1 220px', minWidth: 0, minHeight: 40, padding: '0 14px', borderRadius: 12, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' }} />
+          <input id="q" name="q" type="search" defaultValue={q} placeholder="Nome ou e-mail" style={{ flex: '1 1 220px', minWidth: 0, minHeight: 40, padding: '0 14px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' }} />
           <button className={`btn btn-linha ${styles.mini}`}>Buscar</button>
         </form>
         <div className={styles.filtros}>

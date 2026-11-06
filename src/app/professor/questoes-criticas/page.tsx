@@ -9,7 +9,7 @@ export const metadata = { title: 'Questões que mais derrubam · Painel do profe
 
 type PorAssunto = { assunto: string | null; habilidade: string | null; questoes: number; respostas: number; pct_erro: number };
 
-const select = { minHeight: 44, padding: '0 12px', borderRadius: 12, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' };
+const select = { minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit' };
 
 export default async function QuestoesCriticas({ searchParams }: { searchParams: Promise<{ turma?: string; sim?: string }> }) {
   const { turma, sim } = await searchParams;

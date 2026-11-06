@@ -35,7 +35,7 @@ export function GradeClassificacao({
   }
 
   const feitas = ass.filter(Boolean).length;
-  const campo = { minHeight: 40, padding: '0 10px', borderRadius: 10, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit', width: '100%' };
+  const campo = { minHeight: 40, padding: '0 10px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit', width: '100%' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

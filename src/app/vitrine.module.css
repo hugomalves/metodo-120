@@ -4,28 +4,28 @@
 
 /* Destaque principal: navy com o azul da marca em diagonal, como na identidade */
 .hero {
-  position: relative; display: flex; flex-wrap: wrap; overflow: hidden; border-radius: 28px; min-height: 0;
+  position: relative; display: flex; flex-wrap: wrap; overflow: hidden; border-radius: 4px; min-height: 0;
   background:
     linear-gradient(135deg, transparent 0 62%, rgba(11, 92, 255, 0.35) 62% 70%, transparent 70%),
     radial-gradient(120% 90% at 100% 0%, #0D2348 0%, #071A3D 60%);
 }
 .hero::before {
   content: ''; position: absolute; left: -120px; bottom: -150px; width: 300px; height: 300px; transform: rotate(45deg);
-  background: linear-gradient(135deg, #0B5CFF, #147DFF); opacity: 0.45; border-radius: 48px;
+  background: linear-gradient(135deg, #0B5CFF, #147DFF); opacity: 0.45; border-radius: 4px;
 }
 .heroTexto { position: relative; flex: 1 1 480px; min-width: 0; padding: clamp(32px, 5vw, 64px); display: flex; flex-direction: column; gap: 22px; justify-content: center; }
 .heroFoto { position: relative; flex: 1 1 340px; min-width: 0; display: flex; align-items: flex-end; justify-content: center; padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 48px) 0; }
 .heroFoto img { width: min(440px, 100%); height: auto; object-fit: cover; }
 /* enquanto não chega a foto de corpo inteiro: a de rosto num quadro com cantos arredondados */
 .heroFoto[data-foto='rosto'] { align-items: center; padding-bottom: clamp(24px, 4vw, 48px); }
-.heroFoto[data-foto='rosto'] img { aspect-ratio: 1; border-radius: 28px; border: 3px solid #0B5CFF; box-shadow: 0 0 70px rgba(11, 92, 255, 0.5); }
+.heroFoto[data-foto='rosto'] img { aspect-ratio: 1; border-radius: 4px; border: 3px solid #0B5CFF; box-shadow: 0 0 70px rgba(11, 92, 255, 0.5); }
 
 .passos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-.passo { position: relative; padding: 24px; border-radius: 20px; background: var(--faixa); border: 1px solid var(--linha); display: flex; flex-direction: column; gap: 8px; }
+.passo { position: relative; padding: 24px; border-radius: 4px; background: var(--faixa); border: 1px solid var(--linha); display: flex; flex-direction: column; gap: 8px; }
 .passo h2 { margin: 0; font-size: 22px; color: var(--navy); }
 .passo:last-child h2 { color: var(--azul); }
 .passo p { margin: 0; color: var(--texto-2); }
-.passoNum { font-family: var(--font-display); font-weight: 800; font-size: 15px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--navy); color: #fff; }
+.passoNum { font-family: var(--font-display); font-weight: 800; font-size: 15px; width: 34px; height: 34px; border-radius: 4px; display: grid; place-items: center; background: var(--navy); color: #fff; }
 
 .secao { display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 20px; }
 .secaoCabeca { display: flex; flex-direction: column; gap: 10px; max-width: 780px; }
@@ -34,22 +34,22 @@
 .editais { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
 .edital { padding: 22px; display: flex; flex-direction: column; gap: 10px; border-top: 5px solid var(--azul); }
 .edital h3 { margin: 0; font-size: 24px; color: var(--navy); }
-.selo { font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #E3F7EA; color: #15803d; }
+.selo { font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; background: #E3F7EA; color: #15803d; }
 .selo[data-situacao='previsto'] { background: var(--ok-fundo); color: var(--ok-texto); }
 .selo[data-situacao='encerrado'] { background: var(--neutro-fundo); color: var(--suave); }
 .contagem { font-size: 14px; color: var(--suave); }
 .contagem b { font-family: var(--font-display); font-size: 20px; color: var(--azul); }
-.discs { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; }
+.discs { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--linha); border-radius: 4px; overflow: hidden; }
 .discs li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; font-size: 15px; }
 .discs li + li { border-top: 1px solid var(--linha); }
 .discs b { font-variant-numeric: tabular-nums; color: var(--navy); }
 .discs b::after { content: ' questões'; font-weight: 400; color: var(--suave); font-size: 13px; }
 
-.expert { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; padding: clamp(24px, 4vw, 44px); border-radius: 28px; }
+.expert { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; padding: clamp(24px, 4vw, 44px); border-radius: 4px; }
 .avatar { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 4px solid var(--azul); box-shadow: 0 0 40px rgba(11, 92, 255, 0.35); }
 .expertTexto { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .aprovacoes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.aprovacoes li { padding: 6px 14px; border-radius: 999px; background: var(--cartao-2); color: var(--navy); font-weight: 600; font-size: 14px; }
+.aprovacoes li { padding: 6px 14px; border-radius: 3px; background: var(--cartao-2); color: var(--navy); font-weight: 600; font-size: 14px; }
 
 .rodape { padding: 36px 0 44px; min-height: 0 !important; }
 .rodapeDentro { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }

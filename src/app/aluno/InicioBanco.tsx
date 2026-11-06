@@ -44,7 +44,7 @@ export async function InicioBanco({ supabase, perfil, acesso }: { supabase: Supa
         <p className="suave" style={{ margin: 0 }}>{acesso.curso ? 'Curso Método 120' : `Banco de questões · ${acesso.completo ? 'acesso completo' : 'plano grátis'}`}</p>
       </div>
 
-      <section className="cartao-gradiente" style={{ padding: 22, borderRadius: 22, display: 'flex', flexWrap: 'wrap', gap: 18, alignItems: 'center', justifyContent: 'space-between' }} aria-labelledby="edital">
+      <section className="cartao-gradiente" style={{ padding: 22, borderRadius: 4, display: 'flex', flexWrap: 'wrap', gap: 18, alignItems: 'center', justifyContent: 'space-between' }} aria-labelledby="edital">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: '1 1 300px' }}>
           <span className="rotulo" id="edital">Seu edital</span>
           <b className="display" style={{ fontSize: 'clamp(22px, 2.6vw, 30px)', lineHeight: 1.15 }}>{meu ? meu.nome : 'Escolha o concurso que você vai fazer'}</b>
@@ -56,7 +56,7 @@ export async function InicioBanco({ supabase, perfil, acesso }: { supabase: Supa
         </div>
         <form action={seguirEdital} className="linha-flex" style={{ gap: 8 }}>
           <label htmlFor="sed" className="sr-only">Edital</label>
-          <select id="sed" name="edital" defaultValue={meu?.id ?? ''} style={{ minHeight: 44, padding: '0 12px', borderRadius: 12, border: '1.5px solid var(--linha-forte)', background: 'var(--cartao)', color: 'var(--texto)', font: 'inherit', maxWidth: '100%' }}>
+          <select id="sed" name="edital" defaultValue={meu?.id ?? ''} style={{ minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--cartao)', color: 'var(--texto)', font: 'inherit', maxWidth: '100%' }}>
             <option value="">Nenhum (ver todas as questões)</option>
             {editais.map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
           </select>

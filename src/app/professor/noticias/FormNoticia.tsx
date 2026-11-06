@@ -51,7 +51,7 @@ export function FormNoticia({ n }: { n?: Noticia }) {
       </div>
       {n?.imagem && (
         <div className="linha-flex">
-          <img src={n.imagem} alt="" style={{ height: 80, width: 'auto', borderRadius: 8 }} />
+          <img src={n.imagem} alt="" style={{ height: 80, width: 'auto', borderRadius: 4 }} />
           <label className={styles.check}><input type="checkbox" name="remover_imagem" /> Tirar a imagem (volta a foto do expert)</label>
         </div>
       )}

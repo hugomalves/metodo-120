@@ -52,7 +52,7 @@ export function CartaoResposta({
   return (
     <>
       <div className="linha-flex" style={{ justifyContent: 'space-between' }}>
-        <span className="mono" style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--cartao)', border: '1px solid var(--linha)' }}>
+        <span className="mono" style={{ padding: '10px 14px', borderRadius: 4, background: 'var(--cartao)', border: '1px solid var(--linha)' }}>
           Respondidas {respondidas} de {n}
         </span>
         <span role="status" className="suave" style={{ fontSize: 14 }}>{salvo}</span>

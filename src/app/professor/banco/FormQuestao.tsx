@@ -17,7 +17,7 @@ export type QuestaoForm = {
   resposta?: string; comentario?: string | null; video_url?: string | null;
 };
 
-const caixa = { flex: 1, minWidth: 0, minHeight: 44, padding: '10px 12px', borderRadius: 12, background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit', resize: 'vertical' as const };
+const caixa = { flex: 1, minWidth: 0, minHeight: 44, padding: '10px 12px', borderRadius: 4, background: 'var(--faixa)', color: 'var(--texto)', font: 'inherit', resize: 'vertical' as const };
 
 export function FormQuestao({ q = {}, disciplinas, assuntos, proximaId }: {
   q?: QuestaoForm; disciplinas: string[]; assuntos: { disciplina: string; nome: string }[]; proximaId?: string | null;
@@ -126,7 +126,7 @@ export function FormQuestao({ q = {}, disciplinas, assuntos, proximaId }: {
         </div>
         {q.imagem && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <img src={q.imagem} alt="Recorte atual" style={{ maxHeight: 120, width: 'auto', borderRadius: 8, background: '#fff', alignSelf: 'flex-start' }} />
+            <img src={q.imagem} alt="Recorte atual" style={{ maxHeight: 120, width: 'auto', borderRadius: 4, background: '#fff', alignSelf: 'flex-start' }} />
             <label className={styles.check}><input type="checkbox" name="remover_imagem" /> Remover o recorte</label>
           </div>
         )}
@@ -137,7 +137,7 @@ export function FormQuestao({ q = {}, disciplinas, assuntos, proximaId }: {
         {(ce || emImagem) && (
           <div className="linha-flex" role="radiogroup" aria-label="Resposta certa">
             {(ce ? [['C', 'Certo'], ['E', 'Errado']] : ['A', 'B', 'C', 'D', 'E'].map((L) => [L, L])).map(([L, nome]) => (
-              <label key={L} className={styles.check} style={{ padding: '8px 14px', borderRadius: 12, border: `1.5px solid ${resposta === L ? 'var(--ciano)' : 'var(--linha-forte)'}` }}>
+              <label key={L} className={styles.check} style={{ padding: '8px 14px', borderRadius: 4, border: `1.5px solid ${resposta === L ? 'var(--ciano)' : 'var(--linha-forte)'}` }}>
                 <input type="radio" name="resposta" value={L} checked={resposta === L} onChange={() => setResposta(L)} required />
                 <span>{nome}</span>
               </label>
