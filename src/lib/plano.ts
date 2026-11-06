@@ -1,6 +1,6 @@
 // Plano de estudo do Método 120: cerca de 2 horas por dia, montado a partir do edital.
-// • Segunda a sábado: uma disciplina principal (teoria + questões) e uma secundária (questões),
-//   em rodízio proporcional ao número de questões de cada disciplina na prova; no fim, revisão dos erros.
+// • Segunda a sábado, 3 blocos (50 + 50 + 20 min): aula e questões da disciplina principal, questões de uma
+//   segunda disciplina e o caderno de erros; as disciplinas giram em proporção ao peso delas na prova.
 // • Domingo: dia de simulado (minissimulado; nas 3 últimas semanas, simulado completo).
 // O rodízio depende só da data: quem estuda hoje vê o mesmo plano ao voltar mais tarde.
 import { diaDaSemana, somarDias } from '@/lib/datas';
@@ -66,12 +66,15 @@ export function planoDoDia(discs: DisciplinaEdital[], dataProva: string | null, 
   for (let k = salto + 1; secundaria === principal && k < salto + seq.length; k++) secundaria = seq[(i + k) % seq.length];
   const reta = fase === 'reta';
 
+  // o dia sempre tem o mesmo formato: Bloco 1 (50 min) aula + questões da principal;
+  // Bloco 2 (50 min) questões da secundária; Bloco 3 (20 min) caderno de erros
+  const outra = secundaria !== principal ? secundaria : principal;
   const metas: MetaPlano[] = [
-    { id: 'teoria', tipo: 'teoria', titulo: reta ? `Revisão rápida de ${principal}` : `Teoria de ${principal}`, disciplina: principal, minutos: reta ? 20 : 40, alvo: 1 },
-    { id: 'q1', tipo: 'questoes', titulo: `Questões de ${principal}`, disciplina: principal, minutos: reta ? 50 : 40, alvo: reta ? 20 : 15 },
+    { id: 'teoria', tipo: 'teoria', titulo: reta ? `Bloco 1 · Revisão rápida de ${principal}` : `Bloco 1 · Aula de ${principal}`, disciplina: principal, minutos: reta ? 15 : 30, alvo: 1 },
+    { id: 'q1', tipo: 'questoes', titulo: `Bloco 1 · Questões de ${principal}`, disciplina: principal, minutos: reta ? 35 : 20, alvo: reta ? 15 : 10 },
+    { id: 'q2', tipo: 'questoes', titulo: `Bloco 2 · Questões de ${outra}`, disciplina: outra, minutos: 50, alvo: 20 },
+    { id: 'revisao', tipo: 'revisao', titulo: 'Bloco 3 · Caderno de erros', disciplina: null, minutos: 20, alvo: 8 },
   ];
-  if (secundaria !== principal) metas.push({ id: 'q2', tipo: 'questoes', titulo: `Questões de ${secundaria}`, disciplina: secundaria, minutos: reta ? 30 : 20, alvo: reta ? 12 : 8 });
-  metas.push({ id: 'revisao', tipo: 'revisao', titulo: 'Refazer as questões que você errou', disciplina: null, minutos: 20, alvo: 8 });
   return { ...base, metas, principal, secundaria: secundaria !== principal ? secundaria : null };
 }
 

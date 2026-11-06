@@ -46,6 +46,7 @@ export default async function Vitrine() {
           <header className="topo">
             <Marca tamanho={30} />
             <nav aria-label="Conta" className={`linha-flex ${styles.nav}`} style={{ gap: 10 }}>
+              <Link href="/como-funciona" className={`btn btn-linha ${styles.navExtra}`}>Como funciona</Link>
               <a href="#banco" className={`btn btn-linha ${styles.navExtra}`}>Questões grátis</a>
               <Link href="/entrar" className="btn btn-linha">Entrar</Link>
               <Link href="/entrar?modo=criar" className="btn btn-azul">Criar conta</Link>

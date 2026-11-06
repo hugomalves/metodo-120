@@ -33,12 +33,12 @@ export function CarrosselVitrine({ noticias, fotoExpert, nomeExpert, ctaHref, ct
         {/* slide 1: apresentação */}
         <div className={styles.slide} data-ativo={i === 0 ? 'sim' : undefined} aria-hidden={i !== 0} role="group" aria-roledescription="slide" aria-label={`1 de ${total}`}>
           <div className={styles.texto}>
-            <Logo120 tamanho={78} slogan />
-            <h1 className="display">Carreiras policiais com plano de estudo feito para o seu edital</h1>
-            <p>Cerca de 2 horas por dia: teoria, questões da banca e revisão, na ordem certa até o dia da prova.</p>
+            <Logo120 tamanho={56} />
+            <h1 className="display">Eu tenho um plano para você <em>chutar a CLT.</em></h1>
+            <p className={styles.linhaForte}>2 horas. Todos os dias. Por 1 ano.</p>
             <div className="linha-flex">
-              <Link href={ctaHref} className="btn btn-azul btn-grande" tabIndex={i === 0 ? 0 : -1}>{ctaTexto}</Link>
-              <a href="#editais" className="btn btn-linha btn-grande" tabIndex={i === 0 ? 0 : -1}>Ver editais</a>
+              <Link href="/como-funciona" className="btn btn-azul btn-grande" tabIndex={i === 0 ? 0 : -1}>Conhecer o plano</Link>
+              <Link href={ctaHref} className="btn btn-linha btn-grande" tabIndex={i === 0 ? 0 : -1}>{ctaTexto}</Link>
             </div>
           </div>
           <div className={styles.foto}><img src={fotoExpert} alt={nomeExpert} width={900} height={900} /></div>
