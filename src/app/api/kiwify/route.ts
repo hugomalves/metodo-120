@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { SUPABASE_URL } from '@/lib/supabase/env';
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ erro: 'corpo inválido' }, { status: 400 });
   }
 
-  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, chave, {
+  const admin = createClient(SUPABASE_URL, chave, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 

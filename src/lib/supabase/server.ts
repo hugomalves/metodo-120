@@ -1,12 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
+import { SUPABASE_KEY, SUPABASE_URL } from '@/lib/supabase/env';
 import { cookies } from 'next/headers';
 
 // Cliente usado nas páginas e ações que rodam no servidor
 export async function createClient() {
   const cookieStore = await cookies();
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_KEY,
     {
       cookies: {
         getAll() {

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { diasAte } from '@/lib/datas';
 import { Marca, Logo120 } from '@/components/Marca';
+import { CarrosselVitrine, type SlideNoticia } from '@/components/CarrosselVitrine';
 import { createClient } from '@/lib/supabase/server';
 import { CartaoCapa } from '@/components/CartaoCapa';
 import { iconePorDisciplina } from '@/components/Capa';
@@ -12,23 +13,27 @@ export const dynamic = 'force-dynamic';
 type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null };
 type Edital = { id: string; nome: string; banca: string | null; situacao: string; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; ordem: number }[] };
 
-async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[] }> {
+async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; noticias: SlideNoticia[] }> {
   try {
     const supabase = await createClient();
-    const [{ data: p }, { data: e }] = await Promise.all([
+    const [{ data: p }, { data: e }, { data: n }] = await Promise.all([
       supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url'),
       supabase.from('editais').select('id, nome, banca, situacao, data_prova, edital_disciplinas(disciplina, questoes, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
+      supabase.from('noticias').select('id, rotulo, titulo, resumo, link, botao, imagem_path').eq('publicada', true).order('ordem').order('publicada_em', { ascending: false }).limit(8),
     ]);
-    return { produtos: (p ?? []) as Produto[], editais: (e ?? []) as Edital[] };
+    const noticias = ((n ?? []) as (Omit<SlideNoticia, 'imagem'> & { imagem_path: string | null })[]).map(({ imagem_path, ...x }) => ({
+      ...x, imagem: imagem_path ? supabase.storage.from('vitrine').getPublicUrl(imagem_path).data.publicUrl : null,
+    }));
+    return { produtos: (p ?? []) as Produto[], editais: (e ?? []) as Edital[], noticias };
   } catch {
-    return { produtos: [], editais: [] };
+    return { produtos: [], editais: [], noticias: [] };
   }
 }
 
 const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
 export default async function Vitrine() {
-  const { produtos, editais } = await carregar();
+  const { produtos, editais, noticias } = await carregar();
   const banco = produtos.find((p) => p.tipo === 'banco' && p.venda_aberta && p.checkout_url);
   const cursoAberto = produtos.find((p) => p.tipo === 'curso' && p.venda_aberta && p.checkout_url);
   const abertos = editais.filter((e) => e.situacao === 'aberto');
@@ -51,26 +56,8 @@ export default async function Vitrine() {
 
       <div className="container">
         <main className={styles.pagina}>
-          <article className={`tema-escuro ${styles.hero}`} aria-label="Método 120">
-            <div className={styles.heroTexto}>
-              <Logo120 tamanho={86} slogan />
-              <h1 className="display" style={{ margin: 0, fontSize: 'clamp(28px, 3.4vw, 44px)', lineHeight: 1.1, maxWidth: '20ch' }}>
-                Carreiras policiais com plano de estudo feito para o seu edital
-              </h1>
-              <p className={styles.lead}>
-                Cerca de 2 horas por dia: teoria, questões da banca e revisão, na ordem certa até o dia da prova. Você acompanha a sua evolução em cada disciplina.
-              </p>
-              <div className="linha-flex">
-                <Link href={cursoAberto?.checkout_url ?? '/entrar?modo=criar'} className="btn btn-azul btn-grande">
-                  {cursoAberto ? 'Quero começar' : 'Criar conta grátis'}
-                </Link>
-                <a href="#editais" className="btn btn-linha btn-grande">Ver editais abertos</a>
-              </div>
-            </div>
-            <div className={styles.heroFoto} data-foto={EXPERT.fotoCorpo ? 'corpo' : 'rosto'}>
-              <img src={foto} alt={`${EXPERT.nome}, do Método 120`} width={900} height={900} />
-            </div>
-          </article>
+          <CarrosselVitrine noticias={noticias} fotoExpert={foto} nomeExpert={EXPERT.nome}
+            ctaHref={cursoAberto?.checkout_url ?? '/entrar?modo=criar'} ctaTexto={cursoAberto ? 'Quero começar' : 'Criar conta grátis'} />
 
           <section className={styles.passos} aria-label="Como funciona">
             {[

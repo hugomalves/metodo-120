@@ -460,3 +460,38 @@ export async function salvarEdital(_: Resultado, f: FormData): Promise<Resultado
   revalidatePath('/');
   return { ok: `Edital salvo${linha.publicado ? ' e publicado' : ' como rascunho'}: ${discs.length} disciplinas, ${discs.reduce((t, d) => t + d.questoes, 0)} questões.` };
 }
+
+// ---------- Notícias da vitrine ----------
+export async function salvarNoticia(_: Resultado, f: FormData): Promise<Resultado> {
+  const id = txt(f, 'id');
+  const titulo = txt(f, 'titulo');
+  if (titulo.length < 3) return { erro: 'Escreva o título da notícia.' };
+  if (titulo.length > 120) return { erro: 'O título pode ter até 120 caracteres.' };
+  const link = txt(f, 'link');
+  if (link && !/^(https:\/\/|\/)/.test(link)) return { erro: 'O link precisa começar com https:// (ou / para uma página do site).' };
+  const linha: Record<string, unknown> = {
+    titulo, rotulo: ouNulo(txt(f, 'rotulo').slice(0, 30)), resumo: ouNulo(txt(f, 'resumo').slice(0, 280)),
+    link: link || null, botao: ouNulo(txt(f, 'botao').slice(0, 30)),
+    ordem: parseInt(txt(f, 'ordem'), 10) || 0, publicada: f.get('publicada') === 'on',
+  };
+  const imagem = txt(f, 'imagem_path');
+  if (imagem) linha.imagem_path = imagem;
+  if (f.get('remover_imagem') === 'on') linha.imagem_path = null;
+  const supabase = await createClient();
+  const { error } = id ? await supabase.from('noticias').update(linha).eq('id', id) : await supabase.from('noticias').insert(linha);
+  if (error) return { erro: 'Não foi possível salvar: ' + error.message };
+  revalidatePath('/professor/noticias');
+  revalidatePath('/');
+  return { ok: linha.publicada ? 'Notícia salva e publicada na vitrine.' : 'Notícia salva como rascunho.' };
+}
+
+export async function excluirNoticia(f: FormData): Promise<void> {
+  const supabase = await createClient();
+  const id = txt(f, 'id');
+  const { data } = await supabase.from('noticias').select('imagem_path').eq('id', id).maybeSingle();
+  await supabase.from('noticias').delete().eq('id', id);
+  if (data?.imagem_path) await supabase.storage.from('vitrine').remove([data.imagem_path as string]);
+  revalidatePath('/professor/noticias');
+  revalidatePath('/');
+  redirect('/professor/noticias');
+}

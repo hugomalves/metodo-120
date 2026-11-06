@@ -21,6 +21,7 @@ const ICONES: Record<string, string> = {
   alerta: 'M12 3l10 17H2zM12 10v4M12 17h.01',
   banco: 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
   sair: 'M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11',
+  noticias: 'M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-4 0M7 9h7M7 13h7M7 16h4',
 };
 
 export type ItemPainel = {

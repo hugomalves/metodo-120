@@ -34,3 +34,13 @@ export async function enviarArquivoEm(caminho: string, arquivo: File): Promise<s
   if (error) throw new Error(`Não foi possível enviar ${arquivo.name}: ${error.message}`);
   return caminho;
 }
+
+// Imagem da vitrine (bucket público 'vitrine'): PNG, JPG ou WebP, até 2 MB
+export async function enviarImagemVitrine(arquivo: File): Promise<string> {
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(arquivo.type)) throw new Error('A imagem precisa ser PNG, JPG ou WebP.');
+  if (arquivo.size > 2 * 1024 * 1024) throw new Error('A imagem pode ter até 2 MB.');
+  const caminho = `noticias/${Date.now()}-${limparNome(arquivo.name)}`;
+  const { error } = await createClient().storage.from('vitrine').upload(caminho, arquivo, { contentType: arquivo.type, upsert: false });
+  if (error) throw new Error('Não foi possível enviar a imagem: ' + error.message);
+  return caminho;
+}
