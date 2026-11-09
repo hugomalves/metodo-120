@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Caminho, PAINEL_PROFESSOR } from '@/components/Caminho';
 import { NIVEIS, TIPOS } from '@/lib/assuntos';
-import { alternarQuestao, excluirProva, publicarProva } from '../actions';
+import { alternarQuestao, excluirProva, publicarProva, publicarProvas } from '../actions';
+import { LoteProvas } from './LoteProvas';
 import { FormQuestao } from './FormQuestao';
 import styles from '../professor.module.css';
 
@@ -67,12 +68,17 @@ export default async function Banco({ searchParams }: { searchParams: Promise<{ 
         {provas.length === 0 ? (
           <p className="suave" style={{ margin: 0 }}>Nenhuma questão ainda. Importe o pacote de uma prova para começar.</p>
         ) : (
+          <>
+          {/* as caixas de cada linha pertencem a este formulário (atributo form), fora da tabela */}
+          <form id="lote" action={publicarProvas} />
+          <LoteProvas total={provas.length} />
           <div className={styles.tabelaCaixa}>
             <table className={styles.tabela}>
-              <thead><tr><th>Prova</th><th>Tipo</th><th>Questões</th><th>Revisadas</th><th>Com resolução</th><th>Publicadas</th><th></th></tr></thead>
+              <thead><tr><th aria-label="Selecionar"></th><th>Prova</th><th>Tipo</th><th>Questões</th><th>Revisadas</th><th>Com resolução</th><th>Publicadas</th><th></th></tr></thead>
               <tbody>
                 {provas.map((p) => (
                   <tr key={p.prova}>
+                    <td><input type="checkbox" name="provas" value={p.prova} form="lote" aria-label={`Selecionar ${nomeProva(p)}`} style={{ width: 20, height: 20, accentColor: 'var(--azul)' }} /></td>
                     <td style={{ fontWeight: 700 }}>
                       <Link href={`/professor/banco?prova=${encodeURIComponent(p.prova)}`}>{nomeProva(p)}</Link>
                       <div className="mono suave" style={{ fontSize: 12, fontWeight: 400 }}>{p.prova}</div>
@@ -107,6 +113,7 @@ export default async function Banco({ searchParams }: { searchParams: Promise<{ 
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
 

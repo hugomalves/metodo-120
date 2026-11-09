@@ -352,6 +352,22 @@ export async function publicarProva(f: FormData): Promise<void> {
   revalidatePath('/professor/banco');
 }
 
+// Publica ou oculta várias provas de uma vez (caixas marcadas na lista de provas)
+export async function publicarProvas(f: FormData): Promise<void> {
+  const provas = f.getAll('provas').map(String).filter(Boolean);
+  if (!provas.length) return;
+  const publicada = f.get('acao') === 'publicar';
+  const supabase = await createClient();
+  const comuns = provas.filter((p) => p !== 'AUTORAIS' && p !== 'SEM-PROVA');
+  for (let i = 0; i < comuns.length; i += 100) {
+    await supabase.from('questoes').update({ publicada }).in('prova', comuns.slice(i, i + 100));
+  }
+  for (const p of provas.filter((x) => x === 'AUTORAIS' || x === 'SEM-PROVA')) {
+    await daProva(supabase.from('questoes').update({ publicada }), p);
+  }
+  revalidatePath('/professor/banco');
+}
+
 // Exclui uma questão (e o recorte dela)
 export async function excluirQuestao(f: FormData): Promise<void> {
   const supabase = await createClient();
