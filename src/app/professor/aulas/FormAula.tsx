@@ -57,11 +57,11 @@ export function FormAula({ modulos }: { modulos: { id: string; rotulo: string }[
           <input id="atit" name="titulo" type="text" required placeholder="Ex.: Concordância verbal" />
         </div>
         <div className="campo">
-          <label htmlFor="avid">Link do vídeo (YouTube)</label>
+          <label htmlFor="avid">Vídeo do YouTube (opcional)</label>
           <input id="avid" name="video_url" type="url" placeholder="https://youtu.be/..." />
         </div>
         <div className="campo">
-          <label htmlFor="apdf">PDF da aula</label>
+          <label htmlFor="apdf">PDF da aula (teoria + questões)</label>
           <input id="apdf" name="pdf" type="file" accept="application/pdf" style={{ paddingBlock: 10 }} />
         </div>
         <div className="campo">

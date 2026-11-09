@@ -84,3 +84,7 @@
 .tabelaRank th { text-align: left; font-family: var(--font-display), sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--suave); padding: 8px; border-bottom: 1px solid var(--linha); }
 .tabelaRank td { padding: 10px 8px; border-bottom: 1px solid var(--linha); font-variant-numeric: tabular-nums; }
 .linhaEu td { background: var(--cartao-2); font-weight: 700; }
+
+/* Aula em PDF: o arquivo abre dentro da página (no celular, o botão "tela cheia" é o melhor caminho) */
+.pdfAula { width: 100%; height: min(78vh, 900px); border: 1px solid var(--linha); border-radius: 4px; background: #fff; }
+@media (max-width: 640px) { .pdfAula { height: 60vh; } }

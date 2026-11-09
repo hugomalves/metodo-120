@@ -29,17 +29,10 @@ export default async function AulaPagina({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Trilha', href: '/aluno/trilha' }, { rotulo: `Módulo ${modulo.numero}`, href: `/aluno/modulo/${modulo.id}` }, { rotulo: rotuloAula(aula) }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Aulas', href: '/aluno/trilha' }, { rotulo: `Módulo ${modulo.numero}`, href: `/aluno/modulo/${modulo.id}` }, { rotulo: rotuloAula(aula) }]} />
       <div className={s.cabeca}>
-        <span className="rotulo">Módulo {modulo.numero} · {modulo.titulo}</span>
+        <span className="rotulo">{modulo.disciplina ? `${modulo.disciplina} · ` : ''}Módulo {modulo.numero} · {modulo.titulo}</span>
         <h1 className={`display ${s.titulo}`}>{rotuloAula(aula)} · {aula.titulo}</h1>
-        {aula.habilidades.length > 0 && (
-          <div className="linha-flex" style={{ gap: 6 }}>
-            {aula.habilidades.map((h) => (
-              <Link key={h} href={`/aluno/habilidade/${h}`} className={s.selo} style={{ textDecoration: 'none' }}>{h}</Link>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className={s.duas}>
@@ -52,11 +45,17 @@ export default async function AulaPagina({ params }: { params: Promise<{ id: str
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
             />
+          ) : pdf ? (
+            // aula em PDF (teoria + questões): o PDF abre aqui mesmo
+            <iframe className={s.pdfAula} src={`${pdf}#view=FitH`} title={`PDF da aula: ${aula.titulo}`} />
           ) : (
-            <div className={`cartao-gradiente ${s.semVideo}`}><span>O vídeo desta aula será publicado em breve.</span></div>
+            <div className={`cartao-gradiente ${s.semVideo}`}><span>O material desta aula será publicado em breve.</span></div>
           )}
           <div className="linha-flex">
-            {pdf && <a href={pdf} target="_blank" rel="noopener" className="btn btn-linha" style={{ borderColor: 'var(--ciano)', color: 'var(--ciano-texto)' }}>Abrir o PDF da aula</a>}
+            {pdf && <a href={pdf} target="_blank" rel="noopener" className="btn btn-linha">{video ? 'Abrir o PDF da aula' : 'Abrir o PDF em tela cheia'}</a>}
+            {modulo.disciplina && (
+              <Link href={`/aluno/questoes/listas?d=${encodeURIComponent(modulo.disciplina)}`} className="btn btn-linha">Treinar questões de {modulo.disciplina}</Link>
+            )}
             {aula.concluida ? (
               <form action={desmarcarAula}>
                 <input type="hidden" name="aula_id" value={aula.id} />
