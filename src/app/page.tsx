@@ -11,14 +11,14 @@ import styles from './vitrine.module.css';
 
 export const dynamic = 'force-dynamic';
 
-type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null };
+type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null; preco: string | null; descricao: string | null; beneficios: string[] | null; edital_id: string | null; destaque: boolean; selo: string | null };
 type Edital = { id: string; nome: string; banca: string | null; situacao: string; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; ordem: number }[] };
 
 async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; noticias: SlideNoticia[] }> {
   try {
     const supabase = await createClient();
     const [{ data: p }, { data: e }, { data: n }] = await Promise.all([
-      supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url'),
+      supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url, preco, descricao, beneficios, edital_id, destaque, selo'),
       supabase.from('editais').select('id, nome, banca, situacao, data_prova, edital_disciplinas(disciplina, questoes, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
       supabase.from('noticias').select('id, rotulo, titulo, resumo, link, botao, imagem_path').eq('publicada', true).order('ordem').order('publicada_em', { ascending: false }).limit(8),
     ]);
@@ -87,7 +87,19 @@ export default async function Vitrine() {
                       <ul className={styles.discs}>
                         {discs.map((d) => <li key={d.disciplina}><span>{d.disciplina}</span><b>{d.questoes}</b></li>)}
                       </ul>
-                      <Link href="/entrar?modo=criar" className="btn btn-azul" style={{ alignSelf: 'flex-start' }}>Treinar para este edital</Link>
+                      {(() => {
+                        // Reta Final (produto em destaque deste edital) vira o quadrado de venda
+                        const rf = produtos.find((p) => p.destaque && p.venda_aberta && p.checkout_url && p.edital_id === e.id);
+                        return rf ? (
+                          <a href={rf.checkout_url!} target="_blank" rel="noopener" className={styles.retaFinal}>
+                            <span className={styles.retaSelo}>{rf.selo ?? 'Reta final'}</span>
+                            <b>{rf.nome}</b>
+                            {rf.descricao && <span>{rf.descricao}</span>}
+                            <span className={styles.retaPreco}>{rf.preco ?? ''}<em>Garantir minha vaga →</em></span>
+                          </a>
+                        ) : null;
+                      })()}
+                      <Link href="/entrar?modo=criar" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Treinar grátis para este edital</Link>
                     </article>
                   );
                 })}

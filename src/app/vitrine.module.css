@@ -59,3 +59,12 @@
   .navExtra { display: none; }
   .nav :global(.btn) { min-height: 40px; padding: 0 14px; font-size: 15px; }
 }
+
+/* Reta Final: quadrado de venda dentro do edital aberto */
+.retaFinal { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 4px; background: linear-gradient(135deg, #E11D2E, #A30F20); color: #fff; text-decoration: none; box-shadow: 0 12px 30px rgba(225, 29, 46, 0.25); }
+.retaFinal:hover { color: #fff; filter: brightness(1.05); }
+.retaFinal b { font-family: var(--font-display); font-size: 22px; line-height: 1.15; }
+.retaFinal > span { font-size: 14.5px; color: #FFE3E6; }
+.retaSelo { align-self: flex-start; padding: 3px 9px; background: #fff; color: #A30F20 !important; font-size: 12px !important; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 3px; }
+.retaPreco { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 800; font-size: 24px !important; color: #fff !important; margin-top: 4px; }
+.retaPreco em { font-style: normal; font-size: 15px; background: #fff; color: #A30F20; padding: 8px 12px; border-radius: 3px; }

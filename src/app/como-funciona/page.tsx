@@ -43,14 +43,14 @@ export default function ComoFunciona() {
         <div className={`container ${s.heroDentro}`}>
           <div className={s.heroTexto}>
             <span className={s.kicker}>Método 120</span>
-            <h1 className="display">Eu tenho um plano para você <em>chutar a CLT.</em></h1>
-            <p className={s.heroLinha}>2 horas. Todos os dias. Por 1 ano.</p>
+            <h1 className="display">Eu tenho um <u>plano</u> para você <mark>chutar a CLT.</mark></h1>
+            <p className={s.chips} aria-label="2 horas. Todos os dias. Por 1 ano."><span data-cor="vermelho">2 horas.</span><span data-cor="branco">Todos os dias.</span><span data-cor="azul">Por 1 ano.</span></p>
             <p className={s.heroLead}>
               Você não precisa largar o emprego para estudar, nem virar a madrugada. Precisa de um plano que caiba na sua rotina
               e diga exatamente o que fazer em cada um dos 120 minutos, do primeiro dia até a prova.
             </p>
             <div className="linha-flex">
-              <Link href={CTA} className="btn btn-azul btn-grande">Quero o plano</Link>
+              <Link href={CTA} className="btn btn-vermelho btn-grande">Quero o plano →</Link>
               <a href="#dia" className="btn btn-linha btn-grande">Ver como funciona</a>
             </div>
           </div>

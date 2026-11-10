@@ -120,3 +120,12 @@
   .fase + .fase { border-left: 0; border-top: 1px solid var(--linha); }
   .topo nav a:first-child { display: none; }
 }
+
+.heroTexto h1 mark { background: none; color: #fff; padding: 0 0.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  background-image: linear-gradient(transparent 8%, #E11D2E 8%, #E11D2E 92%, transparent 92%); }
+.heroTexto h1 u { text-decoration: none; background-image: linear-gradient(transparent 80%, #0B5CFF 80%); }
+.chips { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; font-size: clamp(16px, 1.8vw, 22px); padding: 6px 12px; border-radius: 3px; }
+.chips span[data-cor='vermelho'] { background: #E11D2E; color: #fff; }
+.chips span[data-cor='branco'] { background: #fff; color: #071A3D; }
+.chips span[data-cor='azul'] { background: #0B5CFF; color: #fff; }

@@ -16,7 +16,6 @@ const dd = (n: number) => String(n).padStart(2, '0');
 export default async function ImprimirLista({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase, perfil, acesso } = await acessoAtual();
-  if (!acesso.completo) redirect('/aluno/planos');
   const { data } = await supabase.from('listas_questoes').select('id, titulo, questoes, criada_em').eq('id', id).eq('aluno_id', perfil.id).maybeSingle();
   const lista = data as { id: string; titulo: string; questoes: string[]; criada_em: string } | null;
   if (!lista) notFound();
@@ -42,7 +41,7 @@ export default async function ImprimirLista({ params }: { params: Promise<{ id: 
         <header className={s.capa}>
           <span className={s.kicker} style={{ fontSize: 15 }}>{MARCA.nome}</span>
           <div className={s.capaTexto}>
-            <span className={s.kicker}>Lista sob medida</span>
+            <span className={s.kicker}>Lista impressa</span>
             <h1 className={s.titulo}>{lista.titulo}</h1>
             <div className={s.chips}>
               <span>{hoje}</span>

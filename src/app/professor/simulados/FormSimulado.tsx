@@ -5,9 +5,10 @@ import { salvarSimulado, type Resultado } from '../actions';
 import { enviarPdf } from '@/lib/upload';
 import styles from '../professor.module.css';
 
-const PADRAO: Record<string, number> = { mini: 30, completo: 45, diagnostico: 30 };
+const PADRAO: Record<string, number> = { mini: 15, completo: 60 };
 
-export function FormSimulado() {
+export function FormSimulado({ editais = [], aulas = [] }: { editais?: { id: string; nome: string }[]; aulas?: { id: string; rotulo: string }[] }) {
+  const [tipo, setTipo] = useState('completo');
   const [estado, setEstado] = useState<Resultado>({});
   const [pendente, iniciar] = useTransition();
   const [etapa, setEtapa] = useState('');
@@ -59,23 +60,34 @@ export function FormSimulado() {
         <div className="campo"><label htmlFor="scod">Código</label><input id="scod" name="codigo" type="text" required placeholder="MS-03-GAB" className="mono" style={{ textTransform: 'uppercase' }} /></div>
         <div className="campo">
           <label htmlFor="stipo">Tipo</label>
-          <select id="stipo" name="tipo" defaultValue="mini" onChange={(e) => setN(PADRAO[e.target.value] ?? 30)}>
-            <option value="mini">Minissimulado</option>
-            <option value="completo">Simulado completo</option>
-            <option value="diagnostico">Diagnóstico</option>
+          <select id="stipo" name="tipo" value={tipo} onChange={(e) => { setTipo(e.target.value); setN(PADRAO[e.target.value] ?? 30); }}>
+            <option value="completo">Simulado geral (Simulado 1, 2, 3…)</option>
+            <option value="mini">Minissimulado de uma aula</option>
           </select>
         </div>
         <div className="campo"><label htmlFor="sn">Nº de questões</label><input id="sn" name="n_questoes" type="number" min={1} max={90} value={n} onChange={(e) => setN(parseInt(e.target.value, 10) || 0)} required /></div>
-        <div className="campo">
-          <label htmlFor="stri">Trilha</label>
-          <select id="stri" name="trilha" defaultValue="ambas">
-            <option value="ambas">Ambas</option>
-            <option value="gabaritar">Gabaritar</option>
-            <option value="ir_bem">Ir bem</option>
-          </select>
-        </div>
-        <div className="campo"><label htmlFor="ssem">Semana</label><input id="ssem" name="semana" type="number" min={0} max={40} placeholder="Ex.: 3" /></div>
-        <div className="campo"><label htmlFor="sprova">PDF da prova</label><input id="sprova" name="prova_pdf" type="file" accept="application/pdf" style={{ paddingBlock: 10 }} /></div>
+        <div className="campo"><label htmlFor="stit">Título que o aluno vê</label><input id="stit" name="titulo" maxLength={120} placeholder={tipo === 'completo' ? 'Simulado 1 · PM PE' : 'Minissimulado · Concordância'} /></div>
+        {tipo === 'completo' ? (
+          <>
+            <div className="campo"><label htmlFor="sord">Ordem (1, 2, 3…)</label><input id="sord" name="ordem" type="number" min={0} max={99} defaultValue={1} /></div>
+            <div className="campo">
+              <label htmlFor="sed">Edital</label>
+              <select id="sed" name="edital_id" defaultValue={editais[0]?.id ?? ''}>
+                <option value="">Todos</option>
+                {editais.map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
+              </select>
+            </div>
+          </>
+        ) : (
+          <div className="campo" style={{ gridColumn: 'span 2' }}>
+            <label htmlFor="saula">Aula deste minissimulado</label>
+            <select id="saula" name="aula_id" required>
+              <option value="">Escolha a aula</option>
+              {aulas.map((a) => <option key={a.id} value={a.id}>{a.rotulo}</option>)}
+            </select>
+          </div>
+        )}
+        <div className="campo"><label htmlFor="sprova">{tipo === 'completo' ? 'PDF da prova' : 'PDF das questões'}</label><input id="sprova" name="prova_pdf" type="file" accept="application/pdf" style={{ paddingBlock: 10 }} /></div>
         <div className="campo"><label htmlFor="sgpdf">PDF do gabarito comentado</label><input id="sgpdf" name="gabarito_pdf" type="file" accept="application/pdf" style={{ paddingBlock: 10 }} /></div>
         <div className="campo"><label htmlFor="svid">Vídeo da correção (opcional)</label><input id="svid" name="correcao_video_url" type="url" placeholder="https://youtu.be/..." /></div>
       </div>
@@ -85,10 +97,11 @@ export function FormSimulado() {
         <span role="status" style={{ fontSize: 14, fontWeight: 600, color: corAviso }}>{aviso}</span>
       </div>
       <div className="campo">
-        <label htmlFor="shab">Habilidade de cada questão (opcional, na mesma ordem)</label>
-        <input id="shab" name="habilidades" type="text" placeholder="Ex.: H3, H1, H2, … (uma por questão)" />
-        <span className="suave" style={{ fontSize: 13 }}>Depois de salvar, use “Classificar” na lista abaixo para pôr assunto, nível e comentário de cada questão.</span>
+        <label htmlFor="shab">Disciplina de cada questão (opcional, separadas por vírgula, na mesma ordem)</label>
+        <input id="shab" name="habilidades" type="text" placeholder="Ex.: Língua Portuguesa, Língua Portuguesa, Informática, …" />
+        <span className="suave" style={{ fontSize: 13 }}>Com isso, o resultado do aluno mostra o desempenho por disciplina.</span>
       </div>
+      {tipo === 'completo' && <label className={styles.check}><input type="checkbox" name="gratuito" /> Gratuito (qualquer conta abre; os outros ficam com cadeado)</label>}
       <label className={styles.check}><input type="checkbox" name="liberado" defaultChecked /> Liberar para os alunos agora</label>
       <div className="linha-flex">
         <button className="btn btn-azul" disabled={pendente}>{pendente ? etapa || 'Salvando…' : 'Salvar simulado'}</button>

@@ -85,22 +85,25 @@ export async function salvarSimulado(_: Resultado, f: FormData): Promise<Resulta
   const codigo = txt(f, 'codigo').toUpperCase();
   const n = parseInt(txt(f, 'n_questoes'), 10);
   const gabarito = txt(f, 'gabarito').toUpperCase().replace(/\s/g, '');
-  const habs = txt(f, 'habilidades').toUpperCase().split(/[\s,;]+/).filter(Boolean);
+  const habs = txt(f, 'habilidades').split(/[,;\n]+/).map((x) => x.trim()).filter(Boolean);
 
   if (!/^[A-Z0-9-]{3,20}$/.test(codigo)) return { erro: 'Use um código como MS-03-GAB ou SC-02.' };
   if (!n || n < 1 || n > 90) return { erro: 'Informe o número de questões (1 a 90).' };
   if (!/^[A-E]+$/.test(gabarito)) return { erro: 'O gabarito só pode ter as letras A, B, C, D e E.' };
   if (gabarito.length !== n) return { erro: `O gabarito tem ${gabarito.length} letras, mas o simulado tem ${n} questões.` };
-  if (habs.length && habs.length !== n) return { erro: `Informe uma habilidade por questão (${n}) ou deixe o campo vazio.` };
+  if (habs.length && habs.length !== n) return { erro: `Informe uma disciplina por questão (${n}) ou deixe o campo vazio.` };
 
   const supabase = await createClient();
   const { data: sim, error } = await supabase
     .from('simulados')
     .insert({
       codigo,
-      tipo: txt(f, 'tipo') || 'mini',
-      trilha: txt(f, 'trilha') || 'ambas',
-      semana: parseInt(txt(f, 'semana'), 10) || null,
+      tipo: txt(f, 'tipo') === 'completo' ? 'completo' : 'mini',
+      titulo: ouNulo(txt(f, 'titulo').slice(0, 120)),
+      gratuito: f.get('gratuito') === 'on',
+      ordem: parseInt(txt(f, 'ordem'), 10) || 0,
+      edital_id: /^[0-9a-f-]{36}$/i.test(txt(f, 'edital_id')) ? txt(f, 'edital_id') : null,
+      aula_id: /^[0-9a-f-]{36}$/i.test(txt(f, 'aula_id')) ? txt(f, 'aula_id') : null,
       n_questoes: n,
       prova_pdf_path: ouNulo(txt(f, 'prova_pdf_path')),
       gabarito_pdf_path: ouNulo(txt(f, 'gabarito_pdf_path')),
@@ -510,4 +513,35 @@ export async function excluirNoticia(f: FormData): Promise<void> {
   revalidatePath('/professor/noticias');
   revalidatePath('/');
   redirect('/professor/noticias');
+}
+
+// ---------- Produtos da loja (cursos em PDF, Reta Final, simulados, mentoria, banco completo) ----------
+export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resultado> {
+  const id = txt(f, 'id');
+  const nome = txt(f, 'nome');
+  if (nome.length < 3) return { erro: 'Dê um nome ao produto.' };
+  const tipo = ['curso', 'banco', 'mentoria', 'simulados'].includes(txt(f, 'tipo')) ? txt(f, 'tipo') : 'curso';
+  const checkout = txt(f, 'checkout_url');
+  if (checkout && !/^https:\/\//.test(checkout)) return { erro: 'O link de compra precisa começar com https://' };
+  const edital = txt(f, 'edital_id');
+  const slug = (txt(f, 'slug') || nome).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+  const linha = {
+    nome, slug, tipo, descricao: ouNulo(txt(f, 'descricao').slice(0, 600)), preco: ouNulo(txt(f, 'preco').slice(0, 60)),
+    beneficios: txt(f, 'beneficios').split('\n').map((x) => x.trim()).filter(Boolean).slice(0, 10),
+    edital_id: /^[0-9a-f-]{36}$/i.test(edital) ? edital : null, destaque: f.get('destaque') === 'on', selo: ouNulo(txt(f, 'selo').slice(0, 30)),
+    ordem: parseInt(txt(f, 'ordem'), 10) || 0, checkout_url: checkout || null, kiwify_product_id: ouNulo(txt(f, 'kiwify_product_id')),
+    venda_aberta: f.get('venda_aberta') === 'on', acesso_ate: ouNulo(txt(f, 'acesso_ate')),
+  };
+  const supabase = await createClient();
+  const r = id ? await supabase.from('produtos').update(linha).eq('id', id) : await supabase.from('produtos').insert(linha);
+  if (r.error) return { erro: r.error.code === '23505' ? 'Já existe um produto com esse nome curto ou esse ID da Kiwify.' : 'Não foi possível salvar: ' + r.error.message };
+  // curso de um edital libera esse edital
+  if (tipo === 'curso' && linha.edital_id) {
+    const { data: p } = await supabase.from('produtos').select('id').eq('slug', slug).maybeSingle();
+    if (p) await supabase.from('produto_editais').upsert({ produto_id: (p as { id: string }).id, edital_id: linha.edital_id }, { onConflict: 'produto_id,edital_id', ignoreDuplicates: true });
+  }
+  revalidatePath('/professor/produtos');
+  revalidatePath('/');
+  revalidatePath('/aluno', 'layout');
+  return { ok: linha.venda_aberta ? 'Produto salvo e à venda.' : 'Produto salvo (vendas fechadas).' };
 }

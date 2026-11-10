@@ -8,6 +8,11 @@ import { CartaoCapa } from '@/components/CartaoCapa';
 import { iconePorDisciplina } from '@/components/Capa';
 import { seguirEdital } from './actions';
 import { PlanoDoDia } from './PlanoDoDia';
+import { carregarLoja, linkCompra, produtoQueLibera, quadrosSimulados } from '@/lib/loja';
+import { CartaoProduto, Cadeado } from '@/components/CartaoProduto';
+import { QuadrosSimulados } from '@/components/QuadrosSimulados';
+
+type AulaCat = { aula_id: string; modulo_titulo: string; disciplina: string | null; numero: number; titulo: string; tem_mini: boolean };
 import s from './aluno.module.css';
 
 type Edital = { id: string; nome: string; banca: string | null; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[] };
@@ -15,11 +20,14 @@ type Edital = { id: string; nome: string; banca: string | null; data_prova: stri
 const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
 
 // Início de quem usa só o banco de questões (plano grátis ou banco completo)
-export async function InicioBanco({ supabase, perfil, acesso }: { supabase: SupabaseClient; perfil: Perfil; acesso: Acesso }) {
-  const [{ data }, { data: eds }] = await Promise.all([
+export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase: SupabaseClient; perfil: Perfil; acesso: Acesso; dia?: string }) {
+  const [{ data }, { data: eds }, loja, { data: cat }] = await Promise.all([
     supabase.rpc('contagem_banco'),
     supabase.from('editais').select('id, nome, banca, data_prova, edital_disciplinas(disciplina, questoes, bloco, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
+    carregarLoja(supabase, perfil.id),
+    supabase.rpc('catalogo_aulas'),
   ]);
+  const simulados = await quadrosSimulados(supabase, perfil.id, loja.produtos, 4);
   const grupos = (data ?? []) as Grupo[];
   const editais = (eds ?? []) as Edital[];
   const meu = editais.find((e) => e.id === perfil.edital_id) ?? null;
@@ -64,7 +72,56 @@ export async function InicioBanco({ supabase, perfil, acesso }: { supabase: Supa
         </form>
       </section>
 
-      {meu && <PlanoDoDia supabase={supabase} alunoId={perfil.id} edital={meu} curso={acesso.curso} />}
+      {meu && <PlanoDoDia supabase={supabase} alunoId={perfil.id} edital={meu} curso={acesso.curso} grupos={grupos} diaEscolhido={dia} />}
+
+      {(() => {
+        // Reta Final (ou outro curso em destaque) do edital, para quem ainda não comprou
+        const destaque = loja.produtos.find((p) => p.destaque && p.tipo === 'curso' && (!meu || !p.edital_id || p.edital_id === meu.id) && !loja.meus.has(p.id));
+        return destaque ? <div className="loja-grade" style={{ gridTemplateColumns: '1fr' }}><CartaoProduto p={destaque} meu={false} /></div> : null;
+      })()}
+
+      {meu && (() => {
+        // PDFs do curso: as aulas das disciplinas do edital (abertas para quem tem o curso; com cadeado para os demais)
+        const discs = new Set(meu.edital_disciplinas.map((d) => d.disciplina));
+        const aulas = ((cat ?? []) as AulaCat[]).filter((a) => a.disciplina && discs.has(a.disciplina)).slice(0, 6);
+        const curso = produtoQueLibera(loja.produtos, 'curso', meu.id);
+        return (
+          <section className={s.grupo} aria-labelledby="pdfs">
+            <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <h2 id="pdfs" className="display">PDFs do curso</h2>
+              <Link href={acesso.curso ? '/aluno/trilha' : '/aluno/cursos'} style={{ fontWeight: 600 }}>{acesso.curso ? 'Ver todas as aulas' : 'Ver os cursos'}</Link>
+            </div>
+            <p className="suave" style={{ margin: 0 }}>Cada aula tem 3 arquivos: o PDF da teoria com questões, o minissimulado com cartão-resposta e o gabarito comentado.</p>
+            {aulas.length === 0 ? <p className="suave" style={{ margin: 0 }}>As aulas em PDF deste edital serão publicadas em breve.</p> : (
+              <div className="trio">
+                {aulas.map((a) => {
+                  const href = acesso.curso ? `/aluno/aula/${a.aula_id}` : linkCompra(curso);
+                  const externo = !acesso.curso && href.startsWith('http');
+                  return (
+                    <div key={a.aula_id} className="trio-linha">
+                      <b>{a.disciplina} · {a.titulo}</b>
+                      <span className="suave">{a.tem_mini ? 'PDF + minissimulado + gabarito' : 'PDF da aula'}</span>
+                      <a href={href} className={`btn ${acesso.curso ? 'btn-linha' : 'btn-vermelho'}`} {...(externo ? { target: '_blank', rel: 'noopener' } : {})}>
+                        {acesso.curso ? 'Abrir' : <><Cadeado /> Liberar</>}
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
+      {simulados.length > 0 && (
+        <section className={s.grupo} aria-labelledby="sims">
+          <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <h2 id="sims" className="display">Simulados</h2>
+            <Link href="/aluno/simulados" style={{ fontWeight: 600 }}>Ver todos</Link>
+          </div>
+          <QuadrosSimulados itens={simulados} />
+        </section>
+      )}
 
       {!acesso.completo && (
         <section className="cartao" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }} aria-labelledby="hoje">
@@ -111,7 +168,7 @@ export async function InicioBanco({ supabase, perfil, acesso }: { supabase: Supa
       <section className={s.grupo} aria-labelledby="mais">
         <h2 id="mais" className="display">Treine do seu jeito</h2>
         <div className="cc-grade">
-          <CartaoCapa href="/aluno/questoes/listas" tipo="lista" rotulo="Lista sob medida" titulo="Monte uma lista"
+          <CartaoCapa href="/aluno/questoes/listas" tipo="lista" rotulo="Lista impressa" titulo="Monte e imprima uma lista"
             texto={`Escolha edital, disciplina, banca e dificuldade${acesso.completo ? '' : `. No plano grátis, listas de até ${acesso.listaMax} questões`}.`}
             rodape={<Link href="/aluno/questoes/listas" className="btn btn-azul">Montar lista</Link>} />
         </div>

@@ -55,7 +55,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
     <>
       <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Listas', href: '/aluno/questoes/listas' }, { rotulo: lista.titulo }]} />
       <div className={s.cabeca}>
-        <span className="rotulo">Lista sob medida</span>
+        <span className="rotulo">Lista impressa</span>
         <h1 className={`display ${s.titulo}`} style={{ fontSize: 'clamp(22px, 2.8vw, 30px)' }}>{lista.titulo}</h1>
       </div>
 
@@ -75,7 +75,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
               Lista concluída: {Math.round((100 * acertos) / Math.max(1, questoes.length))}% de acertos.
             </span>
           )}
-          {acesso.completo && <a href={`/imprimir/lista/${lista.id}`} target="_blank" rel="noopener" className="btn btn-linha">Imprimir a lista (PDF)</a>}
+          <a href={`/imprimir/lista/${lista.id}`} target="_blank" rel="noopener" className="btn btn-azul">Imprimir em PDF</a>
         </div>
       </section>
 

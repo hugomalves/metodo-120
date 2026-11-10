@@ -25,6 +25,12 @@ export default async function AulaPagina({ params }: { params: Promise<{ id: str
   const proxima = i < todas.length - 1 ? todas[i + 1] : null;
 
   const video = embedYoutube(aula.video_url);
+  // minissimulado da aula (questões em PDF + cartão) e se o aluno já enviou (libera o gabarito comentado)
+  const { data: miniRaw } = await supabase.from('simulados').select('id, n_questoes').eq('aula_id', aula.id).eq('liberado', true).maybeSingle();
+  const mini = miniRaw as { id: string; n_questoes: number } | null;
+  const { count: enviou } = mini
+    ? await supabase.from('envios').select('id', { count: 'exact', head: true }).eq('simulado_id', mini.id).eq('aluno_id', perfil.id)
+    : { count: 0 };
   const pdf = await linkPdf(supabase, aula.pdf_path);
 
   return (
@@ -51,8 +57,22 @@ export default async function AulaPagina({ params }: { params: Promise<{ id: str
           ) : (
             <div className={`cartao-gradiente ${s.semVideo}`}><span>O material desta aula será publicado em breve.</span></div>
           )}
+          {/* os 3 arquivos da aula: teoria, minissimulado (questões + cartão) e gabarito comentado */}
+          <div className="trio" aria-label="Arquivos da aula">
+            <div className="trio-linha">
+              <b>1 · PDF da aula (teoria + questões)</b>
+              {pdf ? <a href={pdf} target="_blank" rel="noopener" className="btn btn-linha">Abrir o PDF</a> : <span className="suave">Em breve</span>}
+            </div>
+            <div className="trio-linha">
+              <b>2 · Minissimulado{mini ? ` (${mini.n_questoes} questões)` : ''}</b>
+              {mini ? <Link href={`/aluno/simulado/${mini.id}`} className="btn btn-azul">{enviou ? 'Ver o resultado' : 'Fazer o minissimulado'}</Link> : <span className="suave">Em breve</span>}
+            </div>
+            <div className="trio-linha">
+              <b>3 · Gabarito comentado</b>
+              {mini ? (enviou ? <Link href={`/aluno/simulado/${mini.id}`} className="btn btn-linha">Abrir o gabarito comentado</Link> : <span className="suave">Libera quando você envia o cartão do minissimulado</span>) : <span className="suave">Em breve</span>}
+            </div>
+          </div>
           <div className="linha-flex">
-            {pdf && <a href={pdf} target="_blank" rel="noopener" className="btn btn-linha">{video ? 'Abrir o PDF da aula' : 'Abrir o PDF em tela cheia'}</a>}
             {modulo.disciplina && (
               <Link href={`/aluno/questoes/listas?d=${encodeURIComponent(modulo.disciplina)}`} className="btn btn-linha">Treinar questões de {modulo.disciplina}</Link>
             )}

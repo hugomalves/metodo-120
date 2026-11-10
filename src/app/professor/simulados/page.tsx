@@ -25,6 +25,15 @@ export default async function Simulados() {
   const sims = (data as Sim[] | null) ?? [];
   const classificadas = new Map(((gabs ?? []) as { simulado_id: string; assuntos: string[] | null }[]).map((g) => [g.simulado_id, (g.assuntos ?? []).filter(Boolean).length]));
 
+  const [{ data: edsR }, { data: aulasR }] = await Promise.all([
+    supabase.from('editais').select('id, nome').order('nome'),
+    supabase.from('aulas').select('id, numero, titulo, modulos(numero, titulo, disciplina)').order('numero'),
+  ]);
+  const editaisLista = (edsR ?? []) as { id: string; nome: string }[];
+  const aulasLista = ((aulasR ?? []) as unknown as { id: string; numero: number; titulo: string; modulos: { numero: number; titulo: string; disciplina: string | null } | null }[])
+    .map((a) => ({ id: a.id, rotulo: `${a.modulos?.disciplina ? `${a.modulos.disciplina} · ` : ''}Módulo ${a.modulos?.numero ?? ''} · Aula ${a.numero} · ${a.titulo}` }))
+    .sort((a, b) => a.rotulo.localeCompare(b.rotulo, 'pt-BR'));
+
   return (
     <>
       <Caminho passos={[PAINEL_PROFESSOR, { rotulo: 'Simulados e gabaritos' }]} />
@@ -32,7 +41,7 @@ export default async function Simulados() {
 
       <section aria-labelledby="novo" className={`cartao ${styles.bloco}`} style={{ borderColor: 'var(--ciano)' }}>
         <h2 id="novo" className="display">Novo simulado</h2>
-        <FormSimulado />
+        <FormSimulado editais={editaisLista} aulas={aulasLista} />
       </section>
 
       <section aria-labelledby="lista" className={`cartao ${styles.bloco}`}>

@@ -10,7 +10,7 @@ import { CartaoCapa, BarraProgresso } from '@/components/CartaoCapa';
 import { iconePorTitulo } from '@/components/Capa';
 import s from '../../aluno.module.css';
 
-export const metadata = { title: 'Listas sob medida' };
+export const metadata = { title: 'Listas impressas' };
 
 type Lista = { id: string; titulo: string; questoes: string[]; criada_em: string };
 
@@ -29,9 +29,9 @@ export default async function Listas({ searchParams }: { searchParams: Promise<R
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Listas sob medida' }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Listas impressas' }]} />
       <div className={s.cabeca}>
-        <h1 className={`display ${s.titulo}`}>Listas sob medida</h1>
+        <h1 className={`display ${s.titulo}`}>Listas impressas</h1>
         <p className="suave" style={{ margin: 0, maxWidth: '64ch' }}>
           Escolha o edital, a disciplina, a banca e quantas questões. A lista prioriza as questões que você ainda não fez e fica salva aqui para continuar depois.
         </p>
@@ -53,13 +53,13 @@ export default async function Listas({ searchParams }: { searchParams: Promise<R
             const pronta = feitas === l.questoes.length;
             const href = `/aluno/questoes/lista/${l.id}`;
             return (
-              <CartaoCapa key={l.id} href={href} tipo="lista" compacto rotulo="Lista sob medida" destaque={String(l.questoes.length)}
+              <CartaoCapa key={l.id} href={href} tipo="lista" compacto rotulo="Lista impressa" destaque={String(l.questoes.length)}
                 icone={iconePorTitulo(l.titulo)} titulo={l.titulo}
                 selo={pronta ? `${acertos}/${l.questoes.length} acertos` : feitas ? 'Em andamento' : 'Nova'}
                 texto={`${pronta ? 'Concluída' : `${feitas} de ${l.questoes.length} feitas`} · criada em ${new Date(l.criada_em).toLocaleDateString('pt-BR')}`}
                 rodape={<>
                   <Link href={href} className="btn btn-azul">{pronta ? 'Ver resultado' : feitas ? 'Continuar' : 'Começar'}</Link>
-                  {acesso.completo && <a href={`/imprimir/lista/${l.id}`} target="_blank" rel="noopener" className="btn btn-linha">Imprimir</a>}
+                  <a href={`/imprimir/lista/${l.id}`} target="_blank" rel="noopener" className="btn btn-azul">Imprimir em PDF</a>
                   <form action={apagarLista}>
                     <input type="hidden" name="id" value={l.id} />
                     <button className="btn btn-linha" aria-label={`Apagar a lista ${l.titulo}`}>Apagar</button>

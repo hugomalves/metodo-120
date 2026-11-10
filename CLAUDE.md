@@ -36,7 +36,8 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 ## Banco de dados (`supabase/migrations/`)
 
 - `0001_concursos.sql` + `0002_simulados_edital.sql`: **já rodados** no projeto (como um arquivo só).
-- `0003_noticias.sql`: tabela `noticias` e bucket `vitrine` (confirme com o Hugo se já rodou).
+- `0003_noticias.sql`: tabela `noticias` e bucket `vitrine` (já rodada).
+- `0004_loja.sql`: produtos com tipo/preço/descrição/benefícios/edital/destaque; simulados com `gratuito`, `ordem`, `titulo`, `aula_id` (minissimulado da aula); funções `tem_produto`, `pode_abrir_simulado`, `catalogo_aulas` (confirme com o Hugo se já rodou).
 - Migrações novas: numeradas e **idempotentes** (`if not exists`, `create or replace`, `drop policy if exists`). O Hugo cola no SQL Editor (`https://supabase.com/dashboard/project/kuffwzclcggsmwyrtsrx/sql/new`) e clica em Run → "Run without RLS" (o próprio arquivo liga o RLS). Teste antes num Postgres local com stubs de `auth.uid()`, `auth.users` e `storage.objects`.
 - Peças principais: `editais` + `edital_disciplinas` (disciplinas, questões por disciplina, bloco, regra de corte), `disciplinas`/`assuntos` (catálogo), `questoes` (múltipla A–E ou A–D, e certo/errado) + `questoes_gabarito` + `textos_base`, `tentativas_questoes`, `listas_questoes`, `provas` (simulados do edital, corrigidos com a regra de corte), `produtos`/`matriculas`/`produto_editais`, `noticias`.
 
@@ -48,6 +49,13 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 - **Aluno**: plano de hoje (`src/lib/plano.ts`: 3 blocos, rodízio de disciplinas pelo peso no edital, domingo = simulado, reta final nas 3 últimas semanas), banco de questões com filtros e contagem ao vivo, listas sob medida, simulados do edital com regra de corte, aulas por disciplina.
 - **Professor**: editais, notícias da vitrine, aulas, banco de questões (cadastro, revisão, importação de pacote `questoes.json`), alunos, dúvidas, vendas.
 - Visual: navy `#071A3D`, azul `#0B5CFF`, branco; **bordas quadradas** (raio 3–4 px). Expert: **Will Miranda** (`src/lib/marca.ts`).
+
+## Loja (o aluno vê tudo; abre o que comprou)
+
+- Produtos (painel **Produtos e loja**): `curso` (curso em PDF de um edital: libera aulas, minissimulados e simulados do edital), `simulados` (pacote), `mentoria`, `banco`. `destaque` = quadrado vermelho da Reta Final na vitrine e no início do aluno.
+- Menu do aluno: Início, Cursos em PDF, Simulados (quadrados 1, 2, 3… com cadeado; gratuito abre), Minissimulados (um por aula, só para quem tem o curso), Questões, Listas impressas (imprimir em PDF liberado para todos), Mentoria individual.
+- Aula = 3 arquivos: PDF da teoria com questões, minissimulado (PDF das questões + cartão-resposta) e gabarito comentado (libera depois do envio).
+- Plano do dia: dias da semana clicáveis (`/aluno?dia=AAAA-MM-DD`) e resumo com peso no edital, o que mais cai na banca (contado no banco) e erros do aluno.
 
 ## Decisões do produto
 

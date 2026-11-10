@@ -34,10 +34,12 @@ export function CarrosselVitrine({ noticias, fotoExpert, nomeExpert, ctaHref, ct
         <div className={styles.slide} data-ativo={i === 0 ? 'sim' : undefined} aria-hidden={i !== 0} role="group" aria-roledescription="slide" aria-label={`1 de ${total}`}>
           <div className={styles.texto}>
             <Logo120 tamanho={56} />
-            <h1 className="display">Eu tenho um plano para você <em>chutar a CLT.</em></h1>
-            <p className={styles.linhaForte}>2 horas. Todos os dias. Por 1 ano.</p>
+            <h1 className="display">Eu tenho um <u>plano</u> para você <mark>chutar a CLT.</mark></h1>
+            <p className={styles.chips} aria-label="2 horas. Todos os dias. Por 1 ano.">
+              <span data-cor="vermelho">2 horas.</span><span data-cor="branco">Todos os dias.</span><span data-cor="azul">Por 1 ano.</span>
+            </p>
             <div className="linha-flex">
-              <Link href="/como-funciona" className="btn btn-azul btn-grande" tabIndex={i === 0 ? 0 : -1}>Conhecer o plano</Link>
+              <Link href="/como-funciona" className="btn btn-vermelho btn-grande" tabIndex={i === 0 ? 0 : -1}>Quero conhecer o plano →</Link>
               <Link href={ctaHref} className="btn btn-linha btn-grande" tabIndex={i === 0 ? 0 : -1}>{ctaTexto}</Link>
             </div>
           </div>

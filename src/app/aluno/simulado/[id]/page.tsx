@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { exigirCurso } from '@/lib/acesso';
+import { notFound, redirect } from 'next/navigation';
+import { acessoAtual } from '@/lib/acesso';
 import { Caminho, PAINEL_ALUNO } from '@/components/Caminho';
 import { linkPdf } from '@/lib/arquivos';
 import { NIVEIS } from '@/lib/assuntos';
@@ -16,12 +16,15 @@ type Envio = { respostas: string; acertos: number; em_branco: number; conta_evol
 export default async function SimuladoPagina({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ refazer?: string }> }) {
   const { id } = await params;
   const { refazer } = await searchParams;
-  const { supabase, perfil } = await exigirCurso();
+  const { supabase, perfil } = await acessoAtual();
 
   const { data: simRaw } = await supabase
     .from('simulados').select('id, codigo, tipo, n_questoes, prova_pdf_path, gabarito_pdf_path, correcao_video_url').eq('id', id).maybeSingle();
   const sim = simRaw as Sim | null;
   if (!sim) notFound();
+  // sem acesso (simulado pago ou minissimulado do curso): volta para a lista, com o cadeado e o link de compra
+  const { data: pode } = await supabase.rpc('pode_abrir_simulado', { p_simulado: id });
+  if (pode !== true) redirect(sim.tipo === 'completo' ? '/aluno/simulados' : '/aluno/minissimulados');
 
   const [{ data: enviosRaw }, { data: rascunho }, prova] = await Promise.all([
     supabase.from('envios').select('respostas, acertos, em_branco, conta_evolucao, enviado_em')
@@ -35,7 +38,7 @@ export default async function SimuladoPagina({ params, searchParams }: { params:
 
   const cabecalho = (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: sim.tipo === 'completo' ? 'Simulados completos' : sim.tipo === 'diagnostico' ? 'Simulado diagnóstico' : 'Minissimulados', href: `/aluno/simulados?tipo=${sim.tipo}` }, { rotulo: sim.codigo }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: sim.tipo === 'completo' ? 'Simulados' : 'Minissimulados', href: sim.tipo === 'completo' ? '/aluno/simulados' : '/aluno/minissimulados' }, { rotulo: sim.codigo }]} />
       <div className={s.cabeca}>
         <span className="mono suave" style={{ fontSize: 13 }}>{sim.codigo} · {sim.n_questoes} questões</span>
         <h1 className={`display ${s.titulo}`}>{mostrarCartao ? 'Cartão-resposta' : 'Seu resultado'}</h1>
@@ -50,7 +53,7 @@ export default async function SimuladoPagina({ params, searchParams }: { params:
         <p className="suave" style={{ margin: 0, maxWidth: '62ch' }}>
           {ultimo
             ? 'Você já enviou este simulado. Pode refazer para treinar, mas esta tentativa não conta para a sua evolução nem para o ranking.'
-            : 'Resolva no PDF impresso e marque aqui. Salvamos enquanto você marca. Só o primeiro envio conta para a sua evolução e para o ranking.'}
+            : 'Resolva no PDF (impresso ou na tela) e marque aqui. Salvamos enquanto você marca. Depois de enviar, você vê o resultado e o gabarito comentado.'}
         </p>
         {prova && <a href={prova} target="_blank" rel="noopener" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Baixar a prova (PDF)</a>}
         <CartaoResposta
