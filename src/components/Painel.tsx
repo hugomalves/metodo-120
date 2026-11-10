@@ -63,7 +63,7 @@ function Lista({ itens, aoNavegar, rota, busca }: { itens: ItemPainel[]; aoNaveg
       {itens.map((i) => {
         const ativo = ativoPara(i, rota, busca);
         return (
-          <Link key={i.href} href={i.href} onClick={aoNavegar} className="painel-item" aria-current={ativo ? 'page' : undefined}>
+          <Link key={i.href} href={i.href} onClick={aoNavegar} className="painel-item" title={i.rotulo} aria-current={ativo ? 'page' : undefined}>
             <Icone nome={i.icone} />
             <span style={{ flex: 1 }}>{i.rotulo}</span>
             {!!i.contador && i.contador > 0 && <span className="bolinha" aria-label={`${i.contador} pendentes`}>{i.contador}</span>}
@@ -117,7 +117,7 @@ export function Painel({ itens, rodape, inicio, nome, contaHref, selo, children 
             </Suspense>
           )}
           <form action="/sair" method="post">
-            <button className="painel-item painel-sair"><Icone nome="sair" /><span>Sair</span></button>
+            <button className="painel-item painel-sair" title="Sair"><Icone nome="sair" /><span>Sair</span></button>
           </form>
         </div>
       </aside>

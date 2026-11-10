@@ -199,6 +199,20 @@ a:hover { color: var(--azul); }
 .painel-conteudo { width: 100%; max-width: 1180px; padding: 24px clamp(16px, 3vw, 40px) 64px; display: flex; flex-direction: column; gap: 24px; }
 .painel-fundo { display: none; }
 
+/* Computador: a barra lateral fica recolhida (só ícones) e abre com o mouse em cima (ou ao navegar pelo teclado);
+   o conteúdo central acompanha a abertura e o fechamento */
+@media (min-width: 921px) {
+  .painel { grid-template-columns: 72px minmax(0, 1fr); transition: grid-template-columns 0.22s ease 0.12s; }
+  .painel:has(.painel-lateral:hover), .painel:has(.painel-lateral:focus-within) { grid-template-columns: 252px minmax(0, 1fr); transition-delay: 0s; }
+  .painel-lateral { padding: 18px 12px; overflow-x: hidden; }
+  .painel-item { white-space: nowrap; padding: 0 13px; }
+  .painel-item > span, .painel-selo, .painel-marca .logo120-metodo { transition: opacity 0.15s ease 0.1s; }
+  .painel:not(:has(.painel-lateral:hover)):not(:has(.painel-lateral:focus-within)) .painel-item > span,
+  .painel:not(:has(.painel-lateral:hover)):not(:has(.painel-lateral:focus-within)) .painel-selo,
+  .painel:not(:has(.painel-lateral:hover)):not(:has(.painel-lateral:focus-within)) .painel-marca .logo120-metodo { opacity: 0; transition-delay: 0s; }
+  .painel-marca { padding: 2px 2px 6px; }
+}
+
 @media (max-width: 920px) {
   .painel { grid-template-columns: minmax(0, 1fr); }
   .painel-lateral {

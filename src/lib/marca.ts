@@ -3,7 +3,7 @@ export const MARCA = {
   nome: 'Método 120',
   slogan: 'Estude certo. Evolua. Aprove.',
   descricao: 'Plano de estudo por edital, banco de questões por banca e simulados para carreiras policiais.',
-  professor: 'Prof. Hugo M. Alves',
+  professor: 'Prof. Will Miranda',
 };
 
 // Redes sociais no cabeçalho (deixe vazio para esconder o ícone)

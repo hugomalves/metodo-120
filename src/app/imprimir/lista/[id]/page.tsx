@@ -4,6 +4,7 @@ import { acessoAtual } from '@/lib/acesso';
 import { carregarQuestoes } from '@/lib/questao';
 import { alternativasDe, origemQuestao } from '@/components/CartaoQuestao';
 import { MARCA } from '@/lib/marca';
+import { Logo120 } from '@/components/Marca';
 import { TextoRico, TextoAlternativa } from '@/components/TextoRico';
 import { NIVEIS } from '@/lib/assuntos';
 import { BarraImpressao } from '../../BarraImpressao';
@@ -39,7 +40,7 @@ export default async function ImprimirLista({ params }: { params: Promise<{ id: 
 
       <main className={s.folha}>
         <header className={s.capa}>
-          <span className={s.kicker} style={{ fontSize: 15 }}>{MARCA.nome}</span>
+          <div className={s.logoCaixa}><Logo120 tamanho={52} slogan /></div>
           <div className={s.capaTexto}>
             <span className={s.kicker}>Lista impressa</span>
             <h1 className={s.titulo}>{lista.titulo}</h1>

@@ -1,10 +1,10 @@
 /* Lista para imprimir, no padrão visual do Método 120 (A4, duas colunas) */
 
 .pagina {
-  --marinho: #06215f;
-  --azul: #1f6bff;
-  --ciano: #3fc6ff;
-  --tinta: #0f1b3d;
+  --marinho: #071A3D;
+  --azul: #0B5CFF;
+  --ciano: #8FB8FF;
+  --tinta: #111827;
   --cinza: #5b6784;
   --fio: #c8d2e5;
   color: var(--tinta);
@@ -36,9 +36,13 @@
 
 .capa {
   display: flex; align-items: stretch; border-radius: 4px; overflow: hidden;
-  background: linear-gradient(120deg, #03123a 0%, var(--marinho) 45%, #0b3fae 100%); color: #fff;
+  background: linear-gradient(120deg, #071A3D 0%, #0D2348 55%, #0B5CFF 100%); color: #fff;
 }
 .logo { width: 40%; max-width: 250px; object-fit: cover; aspect-ratio: 16 / 9; display: block; }
+/* logo do Método 120 em branco, à esquerda da capa */
+.logoCaixa { display: flex; align-items: center; justify-content: center; padding: 12px 18px; color: #fff; border-right: 1px solid rgba(255, 255, 255, .18); }
+.logoCaixa :global(.logo120-slogan) { font-size: 0.11em; }
+.logoCaixa :global(.logo120-slogan b) { color: #5E9BFF; }
 .capaTexto { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 14px 18px; min-width: 0; }
 .kicker { font: 700 9.5pt var(--font-display), Arial, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--ciano); }
 .titulo { margin: 0; font: 800 15pt/1.15 var(--font-display), Arial, sans-serif; }
@@ -56,7 +60,7 @@
 .link { font-weight: 700; color: #1557d6; word-break: break-all; }
 
 /* ---------- questões ---------- */
-.colunas { margin-top: 10px; columns: 2; column-gap: 9mm; column-rule: 1px solid var(--fio); column-fill: auto; }
+.colunas { margin-top: 10px; columns: 2; column-gap: 9mm; column-rule: 1px solid var(--fio); column-fill: balance; }
 .questao { break-inside: avoid; margin: 0 0 7mm; display: flex; flex-direction: column; gap: 4px; }
 .questao[data-larga='sim'] { column-span: all; }
 .qCabeca { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -88,6 +92,7 @@
 .cartaoNota { margin-top: 12px; font-size: 9pt; color: var(--cinza); }
 
 @media print {
+  .colunas { column-fill: auto; }
   .barra { display: none; }
   .pagina { padding: 0; }
   .folha { width: auto; max-width: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
@@ -96,6 +101,7 @@
 @media (max-width: 700px) {
   .folha { padding: 5mm; }
   .capa { flex-direction: column; }
+  .logoCaixa { border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, .18); }
   .logo { width: 100%; max-width: none; }
   .colunas { columns: 1; }
   .identificacao { grid-template-columns: 1fr 1fr; }

@@ -38,7 +38,7 @@ export async function PlanoDoDia({ supabase, alunoId, edital, curso, grupos = []
       .order('respondida_em', { ascending: false }).limit(3000),
     supabase.from('provas').select('id, finalizada_em').eq('aluno_id', alunoId).gte('iniciada_em', inicioHoje),
     supabase.from('progresso_aulas').select('aula_id').eq('aluno_id', alunoId).gte('concluida_em', inicioHoje),
-    curso && plano.principal && ehHoje ? aulaSeguinte(supabase, alunoId, plano.principal) : Promise.resolve(null),
+    curso && plano.principal ? aulaSeguinte(supabase, alunoId, plano.principal) : Promise.resolve(null),
   ]);
   const tentativas = (tent ?? []) as unknown as Tentativa[];
   const deHoje = tentativas.filter((t) => t.respondida_em >= inicioHoje);
@@ -60,7 +60,8 @@ export async function PlanoDoDia({ supabase, alunoId, edital, curso, grupos = []
     if (m.tipo === 'simulado') return (provasHoje ?? []).some((p: { finalizada_em: string | null }) => p.finalizada_em) ? 1 : 0;
     return Math.min(m.alvo, refeitasHoje);
   };
-  const metas = plano.metas.map((m) => (m.tipo === 'revisao' ? { ...m, alvo: Math.max(0, Math.min(m.alvo, erradas)) } : m)).filter((m) => m.alvo > 0);
+  // caderno de erros: em outro dia, mostra a meta cheia (os erros mudam até lá)
+  const metas = plano.metas.map((m) => (m.tipo === 'revisao' && ehHoje ? { ...m, alvo: Math.max(0, Math.min(m.alvo, erradas)) } : m)).filter((m) => m.alvo > 0);
   const minutos = metas.reduce((t, m) => t + m.minutos, 0);
   const minutosFeitos = metas.reduce((t, m) => t + Math.round((m.minutos * feito(m)) / m.alvo), 0);
   const pct = minutos ? Math.round((100 * minutosFeitos) / minutos) : 0;
@@ -119,6 +120,8 @@ export async function PlanoDoDia({ supabase, alunoId, edital, curso, grupos = []
       )}
       {plano.domingo && <p className="plano-dica" style={{ margin: 0 }}><b>Como fazer:</b> {COMO.simulado}</p>}
 
+      {!ehHoje && <p className="plano-dica" style={{ margin: 0 }}>Você está vendo o plano de outro dia. Pode adiantar os blocos quando quiser; os ✓ de acompanhamento só marcam o dia de hoje.</p>}
+
       <ol className="plano-metas">
         {metas.map((m) => {
           const f = feito(m);
@@ -133,7 +136,7 @@ export async function PlanoDoDia({ supabase, alunoId, edital, curso, grupos = []
                   {m.minutos} min · {m.tipo === 'questoes' || m.tipo === 'revisao' ? `${f} de ${m.alvo} questões` : ok ? 'feito' : m.tipo === 'teoria' && proximaAula ? proximaAula.titulo : m.tipo === 'teoria' ? (curso ? 'resumo ou lei seca da disciplina' : 'as aulas fazem parte do curso') : 'a fazer'}
                 </span>
               </div>
-              <div className="plano-acao" hidden={!ehHoje}>
+              <div className="plano-acao">
                 {!ok && m.tipo === 'questoes' && (
                   <Formulario acao={criarLista} botao={`Resolver ${m.alvo - f}`} classeBotao="btn btn-azul" pendenteTexto="Montando…">
                     <input type="hidden" name="d" value={m.disciplina ?? ''} />
@@ -141,7 +144,8 @@ export async function PlanoDoDia({ supabase, alunoId, edital, curso, grupos = []
                   </Formulario>
                 )}
                 {!ok && m.tipo === 'revisao' && <Link href={`/aluno/questoes?s=erradas&e=${edital.id}`} className="btn btn-linha">Refazer erros</Link>}
-                {!ok && m.tipo === 'teoria' && proximaAula && <Link href={`/aluno/aula/${proximaAula.id}`} className="btn btn-linha">Assistir</Link>}
+                {!ok && m.tipo === 'teoria' && proximaAula && <Link href={`/aluno/aula/${proximaAula.id}`} className="btn btn-linha">Abrir a aula</Link>}
+                {m.tipo === 'teoria' && !curso && <Link href="/aluno/cursos" className="btn btn-linha">Ver o curso em PDF</Link>}
                 {!ok && m.tipo === 'simulado' && (
                   <Formulario acao={gerarProva} botao="Começar" classeBotao="btn btn-azul" pendenteTexto="Sorteando…">
                     <input type="hidden" name="edital" value={edital.id} />
