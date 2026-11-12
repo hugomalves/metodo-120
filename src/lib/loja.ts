@@ -1,15 +1,20 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_URL } from '@/lib/supabase/env';
 
 // Produtos à venda (cadastrados no painel) e o que o aluno já comprou
 export type Produto = {
   id: string; slug: string; nome: string; tipo: 'curso' | 'banco' | 'mentoria' | 'simulados';
   descricao: string | null; preco: string | null; beneficios: string[]; edital_id: string | null;
-  destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; venda_aberta: boolean;
+  destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; venda_aberta: boolean; imagem_path: string | null;
 };
+
+// endereço público da imagem do produto (bucket 'vitrine'); sem imagem cadastrada, o cartão mostra um quadrado com o nome da carreira
+export const urlImagemProduto = (caminho: string | null | undefined) =>
+  caminho ? `${SUPABASE_URL}/storage/v1/object/public/vitrine/${caminho}` : null;
 
 export async function carregarLoja(supabase: SupabaseClient, alunoId: string) {
   const [{ data: p }, { data: m }] = await Promise.all([
-    supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta').order('ordem').order('nome'),
+    supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, imagem_path').order('ordem').order('nome'),
     supabase.from('matriculas').select('produto_id').eq('aluno_id', alunoId).eq('status', 'ativa'),
   ]);
   const meus = new Set(((m ?? []) as { produto_id: string }[]).map((x) => x.produto_id));

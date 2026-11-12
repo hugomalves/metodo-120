@@ -20,7 +20,7 @@ export default async function Loja() {
   try {
     const supabase = await createClient();
     const { data } = await supabase.from('produtos')
-      .select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta')
+      .select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, imagem_path')
       .eq('venda_aberta', true).order('ordem').order('nome');
     produtos = (data ?? []) as Produto[];
   } catch { /* sem conexão: mostra a loja vazia */ }

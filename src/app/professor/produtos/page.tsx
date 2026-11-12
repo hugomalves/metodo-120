@@ -2,13 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import { Caminho, PAINEL_PROFESSOR } from '@/components/Caminho';
 import { salvarProdutoLoja } from '../actions';
 import { FormAcao } from '../FormAcao';
+import { CampoImagemProduto } from './CampoImagemProduto';
+import { urlImagemProduto } from '@/lib/loja';
 import styles from '../professor.module.css';
 
 export const metadata = { title: 'Produtos e loja · Painel do professor' };
 
 type P = {
   id: string; slug: string; nome: string; tipo: string; descricao: string | null; preco: string | null; beneficios: string[]; edital_id: string | null;
-  destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; kiwify_product_id: string | null; venda_aberta: boolean; acesso_ate: string | null;
+  destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; kiwify_product_id: string | null; venda_aberta: boolean; acesso_ate: string | null; imagem_path: string | null;
 };
 const TIPOS: Record<string, string> = { curso: 'Curso em PDF (libera as aulas, os minissimulados e os simulados do edital)', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões completo' };
 
@@ -32,6 +34,7 @@ function Form({ p, editais }: { p?: P; editais: { id: string; nome: string }[] }
         <div className="campo"><label htmlFor={`po-${id}`}>Ordem</label><input id={`po-${id}`} name="ordem" type="number" min={0} max={99} defaultValue={p?.ordem ?? 1} /></div>
         <div className="campo"><label htmlFor={`pa-${id}`}>Acesso até (vazio = sem prazo)</label><input id={`pa-${id}`} name="acesso_ate" type="date" defaultValue={p?.acesso_ate ?? ''} /></div>
       </div>
+      <CampoImagemProduto id={id} url={urlImagemProduto(p?.imagem_path)} temImagem={Boolean(p?.imagem_path)} />
       <div className="campo"><label htmlFor={`pd-${id}`}>Descrição curta (até 600 caracteres)</label><textarea id={`pd-${id}`} name="descricao" rows={2} maxLength={600} defaultValue={p?.descricao ?? ''} /></div>
       <div className="campo"><label htmlFor={`pb-${id}`}>O que está incluído (um item por linha)</label><textarea id={`pb-${id}`} name="beneficios" rows={4} defaultValue={(p?.beneficios ?? []).join('\n')} placeholder={'Aulas em PDF de todas as disciplinas\nMinissimulado por aula com gabarito comentado\n4 simulados completos no padrão AOCP'} /></div>
       <div className={styles.campos}>

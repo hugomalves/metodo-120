@@ -532,8 +532,14 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
     ordem: parseInt(txt(f, 'ordem'), 10) || 0, checkout_url: checkout || null, kiwify_product_id: ouNulo(txt(f, 'kiwify_product_id')),
     venda_aberta: f.get('venda_aberta') === 'on', acesso_ate: ouNulo(txt(f, 'acesso_ate')),
   };
+  // imagem do curso: já foi enviada pelo navegador (bucket 'vitrine'); aqui só guardamos o caminho
+  const imagem: { imagem_path?: string | null } = {};
+  const caminhoImagem = txt(f, 'imagem_path');
+  if (/^produtos\/[\w.-]+$/.test(caminhoImagem)) imagem.imagem_path = caminhoImagem;
+  if (f.get('remover_imagem') === 'on') imagem.imagem_path = null;
   const supabase = await createClient();
-  const r = id ? await supabase.from('produtos').update(linha).eq('id', id) : await supabase.from('produtos').insert(linha);
+  const dados = { ...linha, ...imagem };
+  const r = id ? await supabase.from('produtos').update(dados).eq('id', id) : await supabase.from('produtos').insert(dados);
   if (r.error) return { erro: r.error.code === '23505' ? 'Já existe um produto com esse nome curto ou esse ID da Kiwify.' : 'Não foi possível salvar: ' + r.error.message };
   // curso de um edital libera esse edital
   if (tipo === 'curso' && linha.edital_id) {

@@ -77,7 +77,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
       {(() => {
         // Reta Final (ou outro curso em destaque) do edital, para quem ainda não comprou
         const destaque = loja.produtos.find((p) => p.destaque && p.tipo === 'curso' && (!meu || !p.edital_id || p.edital_id === meu.id) && !loja.meus.has(p.id));
-        return destaque ? <div className="loja-grade" style={{ gridTemplateColumns: '1fr' }}><CartaoProduto p={destaque} meu={false} /></div> : null;
+        return destaque ? <div className="loja-grade" style={{ gridTemplateColumns: 'minmax(0, 240px)' }}><CartaoProduto p={destaque} meu={false} /></div> : null;
       })()}
 
       {meu && (() => {

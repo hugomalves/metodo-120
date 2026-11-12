@@ -520,15 +520,29 @@ a:hover { color: var(--azul); }
 .btn-vermelho { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
 .btn-vermelho:hover { background: #C8102E; color: #fff; }
 .btn-vermelho[aria-disabled='true'] { background: var(--neutro-fundo); border-color: var(--linha-forte); color: var(--suave); pointer-events: none; }
-.loja-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 16px; }
-.produto { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px; background: var(--cartao); border: 1px solid var(--linha); border-top: 4px solid var(--azul); border-radius: 4px; }
-.produto[data-destaque] { border-top-color: var(--vermelho); box-shadow: 0 10px 30px rgba(230, 30, 60, 0.12); }
-.produto[data-meu] { border-top-color: #16a34a; }
-.produto h3 { margin: 0; font-size: 21px; color: var(--navy); }
-.produto p { margin: 0; color: var(--texto-2); line-height: 1.55; }
-.produto ul { margin: 0; padding-left: 18px; color: var(--texto-2); display: flex; flex-direction: column; gap: 4px; }
-.produto-selo { align-self: flex-start; padding: 4px 10px; background: var(--vermelho); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 3px; }
+.loja-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 22px 18px; }
+.produto { position: relative; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+.produto h3 { margin: 0; font-size: 16px; line-height: 1.3; color: var(--navy); }
+.produto-link { color: inherit; text-decoration: none; }
+.produto-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.produto-capa { position: relative; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 4px; background: var(--navy); transition: outline-color 0.15s; outline: 2px solid transparent; }
+.produto-capa img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.produto-capa-vazia { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 14px; background: var(--azul); color: #fff; }
+.produto[data-destaque] .produto-capa-vazia { background: var(--navy); }
+.produto-capa-vazia b { font-size: clamp(22px, 3.2vw, 30px); line-height: 1.05; }
+.produto-capa-vazia span { font-size: 13px; color: #DCE6FB; }
+.produto:hover .produto-capa, .produto:focus-within .produto-capa { outline-color: var(--azul); }
+.produto-selo { position: absolute; top: 10px; left: 10px; z-index: 2; padding: 4px 9px; background: var(--vermelho); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 3px; }
 .produto[data-meu] .produto-selo { background: #16a34a; }
+/* a descrição desce por cima do que vem abaixo (a página não pula) */
+.produto-desc { position: absolute; left: 0; right: 0; top: 100%; z-index: 5; display: block; max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.28s ease, opacity 0.2s ease; background: var(--cartao); border: 0 solid var(--linha-forte); border-radius: 0 0 4px 4px; color: inherit; text-decoration: none; }
+.produto-desc p { margin: 0; padding: 10px 12px 12px; font-size: 14px; line-height: 1.5; color: var(--texto-2); }
+.produto:hover .produto-desc, .produto:focus-within .produto-desc { max-height: 220px; opacity: 1; border-width: 1px; }
+/* celular e tablet (sem mouse): a descrição fica sempre à vista, embaixo do título */
+@media (hover: none) {
+  .produto-desc { position: static; max-height: none; opacity: 1; border: 0; background: none; }
+  .produto-desc p { padding: 0; font-size: 13.5px; }
+}
 .produto-rodape { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 6px; }
 .produto-preco { font-family: var(--font-display); font-size: 22px; color: var(--navy); }
 .quadros { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 14px; }
@@ -558,13 +572,6 @@ a:hover { color: var(--azul); }
 .plano-semana a[data-hoje] { background: var(--navy); border-color: var(--navy); color: #fff; }
 .plano-semana a span { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.75; }
 .plano-semana a b { font-size: 12.5px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-
-/* o cartão inteiro do produto é clicável (o título estica um link por cima); os botões ficam por cima dele */
-.produto { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
-.produto:hover { box-shadow: 0 12px 30px rgba(7, 26, 61, 0.12); transform: translateY(-2px); }
-.produto-link { color: inherit; text-decoration: none; }
-.produto-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
-.produto-rodape .btn, .produto-rodape a { position: relative; z-index: 2; }
 
 /* menu de cima sempre numa linha; "Loja" em destaque */
 .cab-menu > a, .cab-drop > summary, .cab-conta a { white-space: nowrap; }

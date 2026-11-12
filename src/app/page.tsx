@@ -23,7 +23,7 @@ async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; not
       supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url, preco, descricao, beneficios, edital_id, destaque, selo'),
       supabase.from('editais').select('id, nome, banca, situacao, data_prova, edital_disciplinas(disciplina, questoes, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
       supabase.from('noticias').select('id, rotulo, titulo, resumo, link, botao, imagem_path').eq('publicada', true).order('ordem').order('publicada_em', { ascending: false }).limit(8),
-      supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta').eq('venda_aberta', true).in('tipo', ['curso', 'simulados', 'mentoria']).order('ordem').order('nome'),
+      supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, imagem_path').eq('venda_aberta', true).in('tipo', ['curso', 'simulados', 'mentoria']).order('ordem').order('nome'),
     ]);
     const noticias = ((n ?? []) as (Omit<SlideNoticia, 'imagem'> & { imagem_path: string | null })[]).map(({ imagem_path, ...x }) => ({
       ...x, imagem: imagem_path ? supabase.storage.from('vitrine').getPublicUrl(imagem_path).data.publicUrl : null,
