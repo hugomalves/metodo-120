@@ -37,7 +37,8 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 
 - `0001_concursos.sql` + `0002_simulados_edital.sql`: **já rodados** no projeto (como um arquivo só).
 - `0003_noticias.sql`: tabela `noticias` e bucket `vitrine` (já rodada).
-- `0004_loja.sql`: produtos com tipo/preço/descrição/benefícios/edital/destaque; simulados com `gratuito`, `ordem`, `titulo`, `aula_id` (minissimulado da aula); funções `tem_produto`, `pode_abrir_simulado`, `catalogo_aulas` (confirme com o Hugo se já rodou).
+- `0004_loja.sql`: produtos com tipo/preço/descrição/benefícios/edital/destaque; simulados com `gratuito`, `ordem`, `titulo`, `aula_id` (minissimulado da aula); funções `tem_produto`, `pode_abrir_simulado`, `catalogo_aulas` (rodada pelo Hugo em `banco-de-dados-atualizacao.sql` = 0003 + 0004).
+- `supabase/produtos-loja.sql`: cria os 8 produtos (Reta Final PM PE em destaque, ligada ao edital, e os 7 Extensivos Carreiras Policiais: PRF, PF, Polícia Civil, Polícia Militar, Polícia Penal, PRF Administrativo, Guardas Municipais). Preço e link da Kiwify em branco: o Hugo completa no painel.
 - Migrações novas: numeradas e **idempotentes** (`if not exists`, `create or replace`, `drop policy if exists`). O Hugo cola no SQL Editor (`https://supabase.com/dashboard/project/kuffwzclcggsmwyrtsrx/sql/new`) e clica em Run → "Run without RLS" (o próprio arquivo liga o RLS). Teste antes num Postgres local com stubs de `auth.uid()`, `auth.users` e `storage.objects`.
 - Peças principais: `editais` + `edital_disciplinas` (disciplinas, questões por disciplina, bloco, regra de corte), `disciplinas`/`assuntos` (catálogo), `questoes` (múltipla A–E ou A–D, e certo/errado) + `questoes_gabarito` + `textos_base`, `tentativas_questoes`, `listas_questoes`, `provas` (simulados do edital, corrigidos com a regra de corte), `produtos`/`matriculas`/`produto_editais`, `noticias`.
 
@@ -53,6 +54,7 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 ## Loja (o aluno vê tudo; abre o que comprou)
 
 - Produtos (painel **Produtos e loja**): `curso` (curso em PDF de um edital: libera aulas, minissimulados e simulados do edital), `simulados` (pacote), `mentoria`, `banco`. `destaque` = quadrado vermelho da Reta Final na vitrine e no início do aluno.
+- Loja aberta a todos: `/loja` (item LOJA no menu de cima e na barra de atalhos), seção "Escolha o seu curso" na vitrine e página de cada produto em `/curso/[slug]` (o cartão inteiro é clicável; sem link da Kiwify mostra "Em breve").
 - Menu do aluno: Início, Cursos em PDF, Simulados (quadrados 1, 2, 3… com cadeado; gratuito abre), Minissimulados (um por aula, só para quem tem o curso), Questões, Listas impressas (imprimir em PDF liberado para todos), Mentoria individual.
 - Aula = 3 arquivos: PDF da teoria com questões, minissimulado (PDF das questões + cartão-resposta) e gabarito comentado (libera depois do envio).
 - Plano do dia: dias da semana clicáveis (`/aluno?dia=AAAA-MM-DD`) e resumo com peso no edital, o que mais cai na banca (contado no banco) e erros do aluno.
@@ -62,9 +64,25 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 - Foco atual: **PM PE 2026 · Soldado** (Instituto AOCP, prova 21/02/2027) e Guarda Municipal (cidade a definir). Bancas do momento: **AOCP e IDIB**, múltipla escolha A–E. Certo/errado (Cebraspe) existe, mas não é o destaque.
 - Plano grátis: 10 questões/dia, listas de até 10, 1 minissimulado/dia. Banco completo e curso liberam tudo.
 
+## Banco de questões
+
+- 984 questões de Língua Portuguesa (AOCP, 121 provas) já importadas no site; publicar pelo painel (Selecionar todas → Publicar selecionadas). Sem resolução comentada ainda.
+- Produção de novos pacotes: `banco/INSTRUCOES-ASSISTENTE-QUESTOES.md` e `banco/ferramentas/` (`extrair_caderno.py` → `empacotar.py`). Pacotes vão em `banco/pacotes/AAAA-MM-DD-descricao/`; a importação no site é pelo painel (Banco de questões → Importar pacote).
+
+## Combinados com o Hugo
+
+- **Acumular as alterações** e entregar um pacote só quando ele pedir ("pode mandar").
+- Expert/professor que aparece no site: **Prof. Will Miranda** (`MARCA.professor`).
+- Bordas quadradas, vermelho `#E11D2E` para destaques de venda.
+- Barra lateral do painel fica recolhida (só ícones) e abre com o mouse; o conteúdo acompanha.
+
 ## Pendências
 
 - Dados da empresa (razão social, CNPJ, e-mail) em `src/lib/marca.ts` → rodapé, Termos e Privacidade (textos em `conteudo-legal/`, ainda do projeto antigo: reescrever para o Método 120 e passar por advogado antes de vender).
+- Preço, link e ID da Kiwify de cada produto (Painel → Produtos e loja).
+- Cadastrar simulados (Simulado 1 gratuito), aulas em PDF e minissimulado de cada aula.
+- Resolução comentada das 984 questões de Português, por partes.
+- Extensivo: plano anual por ciclos de incidência e trilhas por carreira (ver decisões do Hugo; hoje o plano diário é por edital).
 - Links de Instagram e YouTube (`REDES` em `src/lib/marca.ts`); foto de corpo do Will (`EXPERT.fotoCorpo`).
 - Kiwify (produtos e webhook `https://metodo-120.vercel.app/api/kiwify`), Resend (e-mails), domínio próprio, planos Pro do Supabase e da Vercel antes de vender.
 - Fases do plano por **assunto** (hoje o rodízio é por disciplina): depende do banco de questões classificado por assunto.

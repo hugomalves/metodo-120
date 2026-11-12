@@ -3,6 +3,8 @@ import { diasAte } from '@/lib/datas';
 import { Logo120 } from '@/components/Marca';
 import { Cabecalho } from '@/components/Cabecalho';
 import { CarrosselVitrine, type SlideNoticia } from '@/components/CarrosselVitrine';
+import { CartaoProduto } from '@/components/CartaoProduto';
+import type { Produto as ProdutoLoja } from '@/lib/loja';
 import { createClient } from '@/lib/supabase/server';
 import { CartaoCapa } from '@/components/CartaoCapa';
 import { iconePorDisciplina } from '@/components/Capa';
@@ -14,27 +16,28 @@ export const dynamic = 'force-dynamic';
 type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null; preco: string | null; descricao: string | null; beneficios: string[] | null; edital_id: string | null; destaque: boolean; selo: string | null };
 type Edital = { id: string; nome: string; banca: string | null; situacao: string; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; ordem: number }[] };
 
-async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; noticias: SlideNoticia[] }> {
+async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; noticias: SlideNoticia[]; loja: ProdutoLoja[] }> {
   try {
     const supabase = await createClient();
-    const [{ data: p }, { data: e }, { data: n }] = await Promise.all([
+    const [{ data: p }, { data: e }, { data: n }, { data: l }] = await Promise.all([
       supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url, preco, descricao, beneficios, edital_id, destaque, selo'),
       supabase.from('editais').select('id, nome, banca, situacao, data_prova, edital_disciplinas(disciplina, questoes, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
       supabase.from('noticias').select('id, rotulo, titulo, resumo, link, botao, imagem_path').eq('publicada', true).order('ordem').order('publicada_em', { ascending: false }).limit(8),
+      supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta').eq('venda_aberta', true).in('tipo', ['curso', 'simulados', 'mentoria']).order('ordem').order('nome'),
     ]);
     const noticias = ((n ?? []) as (Omit<SlideNoticia, 'imagem'> & { imagem_path: string | null })[]).map(({ imagem_path, ...x }) => ({
       ...x, imagem: imagem_path ? supabase.storage.from('vitrine').getPublicUrl(imagem_path).data.publicUrl : null,
     }));
-    return { produtos: (p ?? []) as Produto[], editais: (e ?? []) as Edital[], noticias };
+    return { produtos: (p ?? []) as Produto[], editais: (e ?? []) as Edital[], noticias, loja: (l ?? []) as ProdutoLoja[] };
   } catch {
-    return { produtos: [], editais: [], noticias: [] };
+    return { produtos: [], editais: [], noticias: [], loja: [] };
   }
 }
 
 const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
 export default async function Vitrine() {
-  const { produtos, editais, noticias } = await carregar();
+  const { produtos, editais, noticias, loja } = await carregar();
   const banco = produtos.find((p) => p.tipo === 'banco' && p.venda_aberta && p.checkout_url);
   const cursoAberto = produtos.find((p) => p.tipo === 'curso' && p.venda_aberta && p.checkout_url);
   const abertos = editais.filter((e) => e.situacao === 'aberto');
@@ -106,6 +109,19 @@ export default async function Vitrine() {
               </div>
             )}
           </section>
+
+          {loja.length > 0 && (
+            <section id="cursos" aria-labelledby="cursos-titulo" className={styles.secao}>
+              <div className={styles.secaoCabeca}>
+                <span className="rotulo">Cursos</span>
+                <h2 id="cursos-titulo" className="display">Escolha o seu curso</h2>
+                <p className={styles.lead}>Aulas em PDF com questões, minissimulado em cada aula, revisões e simulados no padrão da banca, dentro do plano de 2 horas por dia.</p>
+              </div>
+              <div className="loja-grade">
+                {[...loja].sort((a, b) => Number(b.destaque) - Number(a.destaque) || a.ordem - b.ordem).map((p) => <CartaoProduto key={p.id} p={p} meu={false} />)}
+              </div>
+            </section>
+          )}
 
           <section id="banco" aria-labelledby="banco-titulo" className={styles.secao}>
             <div className={styles.secaoCabeca}>

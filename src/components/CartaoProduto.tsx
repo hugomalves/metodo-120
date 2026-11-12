@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { Produto } from '@/lib/loja';
 
-// Cartão de um produto da loja: o que tem, preço e botão de compra (ou "Acessar", se já comprou)
+// Cartão de um produto da loja: o cartão inteiro abre a página do curso;
+// o botão leva direto para a compra (ou "Acessar", se o aluno já tem)
 export function CartaoProduto({ p, meu, acessar }: { p: Produto; meu: boolean; acessar?: string }) {
-  const externo = !!p.checkout_url;
+  const detalhe = meu ? acessar ?? '/aluno' : `/curso/${p.slug}`;
   return (
     <article className="produto" data-destaque={p.destaque ? 'sim' : undefined} data-meu={meu ? 'sim' : undefined}>
       {(p.selo || meu) && <span className="produto-selo">{meu ? 'Você já tem' : p.selo}</span>}
-      <h3 className="display">{p.nome}</h3>
+      <h3 className="display"><Link href={detalhe} className="produto-link">{p.nome}</Link></h3>
       {p.descricao && <p>{p.descricao}</p>}
       {p.beneficios.length > 0 && <ul>{p.beneficios.map((b) => <li key={b}>{b}</li>)}</ul>}
       <div className="produto-rodape">
@@ -15,9 +16,10 @@ export function CartaoProduto({ p, meu, acessar }: { p: Produto; meu: boolean; a
           <Link href={acessar ?? '/aluno'} className="btn btn-azul">Acessar</Link>
         ) : (
           <>
-            {p.preco && <b className="produto-preco">{p.preco}</b>}
-            <a href={p.checkout_url ?? '#'} className="btn btn-vermelho" {...(externo ? { target: '_blank', rel: 'noopener' } : {})}
-              aria-disabled={!externo}>{externo ? 'Quero este' : 'Em breve'}</a>
+            {p.preco ? <b className="produto-preco">{p.preco}</b> : <span className="suave">Em breve</span>}
+            {p.checkout_url
+              ? <a href={p.checkout_url} className="btn btn-vermelho" target="_blank" rel="noopener">Quero este</a>
+              : <Link href={detalhe} className="btn btn-linha">Ver detalhes</Link>}
           </>
         )}
       </div>

@@ -40,6 +40,7 @@ export async function Cabecalho() {
           <Link href="/#editais" className="cab-drop-todos">Ver todos os editais</Link>
         </div>
       </details>
+      <Link href="/loja" className="cab-loja">Loja</Link>
       <Link href="/como-funciona">Como funciona</Link>
       <Link href="/#banco">Questões grátis</Link>
       <Link href="/como-funciona#teste">Minissimulado</Link>
@@ -70,6 +71,7 @@ export async function Cabecalho() {
       <div className="cab-sub">
         <div className="container cab-linha">
           <nav className="cab-atalhos" aria-label="Atalhos">
+            <Link href="/loja">Loja</Link>
             <Link href="/#noticias">Notícias</Link>
             <Link href="/#editais">Editais</Link>
             <Link href="/como-funciona#dia">O plano de 2 horas</Link>

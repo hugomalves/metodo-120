@@ -113,6 +113,20 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
         );
       })()}
 
+      {(() => {
+        // loja no início: cursos à venda que o aluno ainda não tem (a Reta Final em destaque já aparece acima)
+        const outros = loja.produtos.filter((p) => p.tipo === 'curso' && p.venda_aberta && !p.destaque && !loja.meus.has(p.id));
+        return outros.length ? (
+          <section className={s.grupo} aria-labelledby="loja">
+            <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <h2 id="loja" className="display">Cursos para você</h2>
+              <Link href="/aluno/cursos" style={{ fontWeight: 600 }}>Ver todos</Link>
+            </div>
+            <div className="loja-grade">{outros.slice(0, 6).map((p) => <CartaoProduto key={p.id} p={p} meu={false} />)}</div>
+          </section>
+        ) : null;
+      })()}
+
       {simulados.length > 0 && (
         <section className={s.grupo} aria-labelledby="sims">
           <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
