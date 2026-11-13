@@ -9,7 +9,7 @@ function textoDaCapa(p: Produto) {
   return { grande: partes[partes.length - 1] ?? p.nome, pequeno: TIPO[p.tipo] ?? '' };
 }
 
-// Cartão de um produto da loja: imagem quadrada e título embaixo; ao passar o mouse, a descrição desce.
+// Cartão de um produto da loja: imagem quadrada e título embaixo; ao passar o mouse, desce a descrição e a lista do que está incluído (o mesmo texto da página do curso).
 // O cartão inteiro abre a página do curso (preço e botão de compra ficam lá); no celular a descrição fica sempre visível.
 export function CartaoProduto({ p, meu, acessar }: { p: Produto; meu: boolean; acessar?: string }) {
   const detalhe = meu ? acessar ?? '/aluno' : `/curso/${p.slug}`;
@@ -27,8 +27,11 @@ export function CartaoProduto({ p, meu, acessar }: { p: Produto; meu: boolean; a
         {(p.selo || meu) && <span className="produto-selo">{meu ? 'Você já tem' : p.selo}</span>}
       </div>
       <h3 className="display"><Link href={detalhe} className="produto-link">{p.nome}</Link></h3>
-      {p.descricao && (
-        <Link href={detalhe} className="produto-desc" tabIndex={-1} aria-hidden="true"><p>{p.descricao}</p></Link>
+      {(p.descricao || p.beneficios.length > 0) && (
+        <Link href={detalhe} className="produto-desc" tabIndex={-1} aria-hidden="true">
+          {p.descricao && <p>{p.descricao}</p>}
+          {p.beneficios.length > 0 && <ul>{p.beneficios.map((b) => <li key={b}>{b}</li>)}</ul>}
+        </Link>
       )}
     </article>
   );
