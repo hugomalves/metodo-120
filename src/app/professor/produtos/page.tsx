@@ -3,6 +3,7 @@ import { Caminho, PAINEL_PROFESSOR } from '@/components/Caminho';
 import { salvarProdutoLoja } from '../actions';
 import { FormAcao } from '../FormAcao';
 import { CampoImagemProduto } from './CampoImagemProduto';
+import { CampoPdfProduto } from './CampoPdfProduto';
 import { urlImagemProduto } from '@/lib/loja';
 import styles from '../professor.module.css';
 
@@ -14,10 +15,10 @@ type P = {
 };
 const TIPOS: Record<string, string> = { curso: 'Curso em PDF (libera as aulas, os minissimulados e os simulados do edital)', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões completo' };
 
-function Form({ p, editais }: { p?: P; editais: { id: string; nome: string }[] }) {
+function Form({ p, editais, pdf }: { p?: P; editais: { id: string; nome: string }[]; pdf?: string | null }) {
   const id = p?.id ?? 'novo';
   return (
-    <FormAcao key={p ? JSON.stringify(p) : 'novo'} acao={salvarProdutoLoja} botao={p ? 'Salvar' : 'Criar produto'}>
+    <FormAcao key={p ? JSON.stringify(p) + (pdf ?? '') : 'novo'} acao={salvarProdutoLoja} botao={p ? 'Salvar' : 'Criar produto'}>
       {p && <input type="hidden" name="id" value={p.id} />}
       <div className={styles.campos}>
         <div className="campo" style={{ gridColumn: 'span 2' }}><label htmlFor={`pn-${id}`}>Nome</label><input id={`pn-${id}`} name="nome" required defaultValue={p?.nome} placeholder="Reta Final PM PE 2026" /></div>
@@ -35,6 +36,7 @@ function Form({ p, editais }: { p?: P; editais: { id: string; nome: string }[] }
         <div className="campo"><label htmlFor={`pa-${id}`}>Acesso até (vazio = sem prazo)</label><input id={`pa-${id}`} name="acesso_ate" type="date" defaultValue={p?.acesso_ate ?? ''} /></div>
       </div>
       <CampoImagemProduto id={id} url={urlImagemProduto(p?.imagem_path)} temImagem={Boolean(p?.imagem_path)} />
+      <CampoPdfProduto id={id} atual={pdf ?? null} />
       <div className="campo"><label htmlFor={`pd-${id}`}>Descrição curta (até 600 caracteres)</label><textarea id={`pd-${id}`} name="descricao" rows={2} maxLength={600} defaultValue={p?.descricao ?? ''} /></div>
       <div className="campo"><label htmlFor={`pb-${id}`}>O que está incluído (um item por linha)</label><textarea id={`pb-${id}`} name="beneficios" rows={4} defaultValue={(p?.beneficios ?? []).join('\n')} placeholder={'Aulas em PDF de todas as disciplinas\nMinissimulado por aula com gabarito comentado\n4 simulados completos no padrão AOCP'} /></div>
       <div className={styles.campos}>
@@ -49,10 +51,12 @@ function Form({ p, editais }: { p?: P; editais: { id: string; nome: string }[] }
 
 export default async function Produtos() {
   const supabase = await createClient();
-  const [{ data }, { data: eds }] = await Promise.all([
+  const [{ data }, { data: eds }, { data: pdfsRaw }] = await Promise.all([
     supabase.from('produtos').select('*').order('ordem').order('nome'),
     supabase.from('editais').select('id, nome').order('nome'),
+    supabase.from('produto_pdfs').select('produto_id, nome_arquivo'),
   ]);
+  const pdfs = new Map(((pdfsRaw ?? []) as { produto_id: string; nome_arquivo: string | null }[]).map((x) => [x.produto_id, x.nome_arquivo ?? 'arquivo enviado']));
   const produtos = (data ?? []) as P[];
   const editais = (eds ?? []) as { id: string; nome: string }[];
   return (
@@ -73,7 +77,7 @@ export default async function Produtos() {
             <span className={`${styles.chip} ${p.venda_aberta ? styles.chipOk : styles.chipNeutro}`}>{p.venda_aberta ? 'À venda' : 'Fechado'}</span>
             <b>{p.nome}</b><span className="suave">· {TIPOS[p.tipo]?.split(' (')[0] ?? p.tipo}{p.preco ? ` · ${p.preco}` : ''}{p.destaque ? ' · destaque' : ''}</span>
           </summary>
-          <div style={{ paddingTop: 12 }}><Form p={p} editais={editais} /></div>
+          <div style={{ paddingTop: 12 }}><Form p={p} editais={editais} pdf={pdfs.get(p.id) ?? null} /></div>
         </details>
       ))}
     </>

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { cpfValido, formatarCpf, formatarTelefone, soDigitos, telefoneValido } from '@/lib/documentos';
 
 async function quem() {
   const supabase = await createClient();
@@ -147,4 +148,23 @@ export async function apagarLista(f: FormData): Promise<void> {
   if (!id) return;
   await supabase.from('listas_questoes').delete().eq('id', String(f.get('id') ?? '')).eq('aluno_id', id);
   revalidatePath('/aluno/questoes', 'layout');
+}
+
+// Se a Kiwify não mandou o CPF e o telefone da compra, o aluno informa uma vez para liberar o PDF com a marca d'água
+export async function salvarDadosComprador(_: { ok?: string; erro?: string }, f: FormData): Promise<{ ok?: string; erro?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.email) return { erro: 'Entre na sua conta para continuar.' };
+  const nome = String(f.get('nome') ?? '').trim().replace(/\s+/g, ' ');
+  const cpf = String(f.get('cpf') ?? '');
+  const telefone = String(f.get('telefone') ?? '');
+  if (nome.length < 8 || !nome.includes(' ')) return { erro: 'Escreva o nome completo, como está no seu documento.' };
+  if (!cpfValido(cpf)) return { erro: 'CPF inválido. Confira os números.' };
+  if (!telefoneValido(telefone)) return { erro: 'Telefone inválido. Use DDD + número.' };
+  const { error } = await supabase.from('dados_comprador').insert({
+    email: user.email.toLowerCase(), nome, cpf: soDigitos(cpf), telefone: soDigitos(telefone), origem: 'aluno',
+  });
+  if (error) return { erro: 'Não foi possível salvar. Se você já informou antes, escreva para o suporte para corrigir.' };
+  revalidatePath('/aluno/material', 'layout');
+  return { ok: `Dados salvos: ${formatarCpf(cpf)} · ${formatarTelefone(telefone)}.` };
 }

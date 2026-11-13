@@ -19,6 +19,15 @@ export async function enviarPdf(pasta: string, arquivo: File): Promise<string> {
   return enviar(pasta, arquivo, 'application/pdf');
 }
 
+// PDF de produto (pasta privada 'produtos-pdf': o aluno nunca baixa este arquivo direto, só a cópia com marca d'água)
+export async function enviarPdfProduto(arquivo: File): Promise<string> {
+  if (arquivo.type && arquivo.type !== 'application/pdf') throw new Error('Envie um arquivo em PDF.');
+  const caminho = `${Date.now()}-${limparNome(arquivo.name)}`;
+  const { error } = await createClient().storage.from('produtos-pdf').upload(caminho, arquivo, { contentType: 'application/pdf', upsert: false });
+  if (error) throw new Error('Não foi possível enviar o PDF: ' + error.message);
+  return caminho;
+}
+
 // Figura de questão (PNG, JPG ou WebP, até 3 MB)
 export async function enviarImagem(pasta: string, arquivo: File): Promise<string> {
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(arquivo.type)) throw new Error('A figura precisa ser PNG, JPG ou WebP.');

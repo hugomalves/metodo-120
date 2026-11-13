@@ -102,3 +102,9 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 
 ## Limite de 1000 linhas do Supabase
 O Supabase entrega no máximo 1000 linhas por chamada (mesmo com `.limit(5000)`). Qualquer lista que possa passar disso (questões, contagem do banco, tentativas) deve usar `todasAsLinhas` de `src/lib/paginar.ts` com ordem fixa. `contagem_banco()` tem ORDER BY (migração 0006).
+
+## PDF do produto com marca d'água
+- O professor envia o PDF em Produtos e loja → campo "PDF do curso" (pasta privada `produtos-pdf`; alunos NÃO têm permissão nela). Tabela `produto_pdfs` liga produto → arquivo.
+- O aluno que comprou abre `/aluno/material/[produtoId]` → botão leva a `/api/material/[produtoId]`, que confere `pode_baixar_pdf`, lê `dados_comprador` (nome, CPF, telefone), baixa o original com a chave de serviço e devolve o PDF com marca d'água (`src/lib/marcaDagua.ts`, biblioteca `pdf-lib`).
+- `dados_comprador` (chave: e-mail) é preenchida pelo webhook da Kiwify (Customer.full_name, CPF, mobile); se faltar, o aluno informa uma vez (não consegue trocar depois). Migração 0007. Política de privacidade atualizada.
+- Limite da Vercel: resposta de função ~4,5 MB pode ser barrada; a entrega é em pedaços (streaming), mas teste com o PDF real.

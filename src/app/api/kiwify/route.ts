@@ -10,7 +10,7 @@ type Payload = {
   order_id?: string;
   order_status?: string;
   webhook_event_type?: string;
-  Customer?: { email?: string };
+  Customer?: { email?: string; full_name?: string; first_name?: string; last_name?: string; mobile?: string; phone?: string; CPF?: string; cpf?: string };
   Product?: { product_id?: string };
 };
 
@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
   const email = String(dados.Customer?.email ?? '');
   const produto = String(dados.Product?.product_id ?? '');
 
-  // guarda só o necessário (minimização de dados): nada de CPF, telefone ou endereço do comprador
+  // o registro de eventos guarda só o necessário (sem CPF, telefone ou endereço); nome, CPF e telefone vão para a tabela
+  // dados_comprador, usada apenas na marca d'água do PDF
   const registrar = (resultado: string) =>
     admin.from('eventos_kiwify').insert({
       order_id: order,
@@ -67,6 +68,16 @@ export async function POST(request: NextRequest) {
   if (status === 'paid' || tipo === 'order_approved' || tipo === 'compra_aprovada') {
     const { data, error } = await admin.rpc('kiwify_compra_aprovada', { p_email: email, p_produto_kiwify: produto, p_order: order });
     resultado = error ? `erro: ${error.message}` : String(data);
+    // dados de quem comprou, para a marca d'água do PDF
+    const c = dados.Customer ?? {};
+    const nome = String(c.full_name ?? `${c.first_name ?? ''} ${c.last_name ?? ''}`).trim();
+    const cpf = String(c.CPF ?? c.cpf ?? '').replace(/\D/g, '');
+    const telefone = String(c.mobile ?? c.phone ?? '').replace(/\D/g, '');
+    if (email && nome && cpf.length === 11 && telefone.length >= 10) {
+      await admin.from('dados_comprador').upsert(
+        { email: email.toLowerCase().trim(), nome, cpf, telefone, origem: 'kiwify', atualizado_em: new Date().toISOString() },
+        { onConflict: 'email' });
+    }
   } else if (status === 'refunded' || tipo === 'order_refunded' || tipo === 'compra_reembolsada') {
     const { data, error } = await admin.rpc('kiwify_compra_cancelada', { p_order: order, p_status: 'reembolsada' });
     resultado = error ? `erro: ${error.message}` : String(data);

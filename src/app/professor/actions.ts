@@ -547,6 +547,22 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
     const { data: p } = id ? { data: { id } } : await supabase.from('produtos').select('id').eq('slug', slug).maybeSingle();
     if (p) await supabase.from('produto_editais').upsert({ produto_id: (p as { id: string }).id, edital_id: linha.edital_id }, { onConflict: 'produto_id,edital_id', ignoreDuplicates: true });
   }
+  // PDF do produto (já enviado pelo navegador para a pasta privada 'produtos-pdf')
+  const novoPdf = txt(f, 'pdf_path');
+  const tirarPdf = f.get('remover_pdf') === 'on';
+  if (/^[\w.-]+\.pdf$/i.test(novoPdf) || tirarPdf) {
+    const { data: prod } = id ? { data: { id } } : await supabase.from('produtos').select('id').eq('slug', slug).maybeSingle();
+    const produtoId = (prod as { id: string } | null)?.id;
+    if (produtoId) {
+      const { data: antigo } = await supabase.from('produto_pdfs').select('pdf_path').eq('produto_id', produtoId).maybeSingle();
+      const caminhoAntigo = (antigo as { pdf_path: string } | null)?.pdf_path;
+      const rp = tirarPdf && !/^[\w.-]+\.pdf$/i.test(novoPdf)
+        ? await supabase.from('produto_pdfs').delete().eq('produto_id', produtoId)
+        : await supabase.from('produto_pdfs').upsert({ produto_id: produtoId, pdf_path: novoPdf, nome_arquivo: ouNulo(txt(f, 'pdf_nome').slice(0, 120)), atualizado_em: new Date().toISOString() }, { onConflict: 'produto_id' });
+      if (rp.error) return { erro: 'Produto salvo, mas o PDF não foi gravado: ' + rp.error.message };
+      if (caminhoAntigo && caminhoAntigo !== novoPdf) await supabase.storage.from('produtos-pdf').remove([caminhoAntigo]);
+    }
+  }
   revalidatePath('/professor/produtos');
   revalidatePath('/');
   revalidatePath('/aluno', 'layout');
