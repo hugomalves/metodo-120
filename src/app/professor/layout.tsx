@@ -19,6 +19,7 @@ export default async function LayoutProfessor({ children }: { children: React.Re
     { href: '/professor/engajamento', rotulo: 'Engajamento', icone: 'estatisticas' },
     { href: '/professor/alunos', rotulo: 'Alunos', icone: 'conta' },
     { href: '/professor/produtos', rotulo: 'Produtos e loja', icone: 'banco' },
+    { href: '/professor/videos-curso', rotulo: 'Vídeos da página do curso', icone: 'aulas' },
     { href: '/professor/turmas', rotulo: 'Turmas e vendas', icone: 'turmas' },
   ];
 

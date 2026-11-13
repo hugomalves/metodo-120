@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Cabecalho } from '@/components/Cabecalho';
 import { EXPERT } from '@/lib/marca';
+import { ColunasCurso } from '@/components/ColunasCurso';
+import { carregarVideosCurso } from '@/lib/videos-curso';
 import type { Produto } from '@/lib/loja';
 import styles from './curso.module.css';
 
@@ -19,6 +21,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
     .eq('slug', slug).maybeSingle();
   const p = data as Produto | null;
   if (!p || !p.venda_aberta) notFound();
+  const videos = await carregarVideosCurso(supabase);
 
   return (
     <>
@@ -44,6 +47,8 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
             )}
           </div>
         </section>
+
+        <ColunasCurso videos={videos} />
 
         {p.beneficios.length > 0 && (
           <section className={styles.secao} aria-labelledby="inclui">

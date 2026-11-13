@@ -551,3 +551,25 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
   revalidatePath('/aluno', 'layout');
   return { ok: linha.venda_aberta ? 'Produto salvo e à venda.' : 'Produto salvo (vendas fechadas).' };
 }
+
+// ---------- Vídeos da página do curso (iguais para todos os cursos) ----------
+export async function salvarVideosCurso(_: Resultado, f: FormData): Promise<Resultado> {
+  const supabase = await createClient();
+  const chaves = ['video_curso_pdf', 'video_curso_banco', 'video_curso_impressao'];
+  const apagar: string[] = [];
+  for (const chave of chaves) {
+    const novo = txt(f, `caminho_${chave}`);
+    const remover = f.get(`remover_${chave}`) === 'on';
+    if (!remover && !/^videos\/[\w.-]+$/.test(novo)) continue;
+    const { data: atual } = await supabase.from('configuracoes').select('valor').eq('chave', chave).maybeSingle();
+    const antigo = typeof atual?.valor === 'string' ? (atual.valor as string) : null;
+    const r = remover
+      ? await supabase.from('configuracoes').delete().eq('chave', chave)
+      : await supabase.from('configuracoes').upsert({ chave, valor: novo, atualizado_em: new Date().toISOString() }, { onConflict: 'chave' });
+    if (r.error) return { erro: 'Não foi possível salvar: ' + r.error.message };
+    if (antigo && antigo !== novo) apagar.push(antigo);
+  }
+  if (apagar.length) await supabase.storage.from('vitrine').remove(apagar);
+  revalidatePath('/professor/videos-curso');
+  return { ok: 'Vídeos salvos. Já aparecem na página de cada curso.' };
+}

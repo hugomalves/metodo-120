@@ -54,3 +54,13 @@ export async function enviarImagemProduto(arquivo: File): Promise<string> {
   if (error) throw new Error('Não foi possível enviar a imagem: ' + error.message);
   return caminho;
 }
+
+// Vídeo curto da página do curso (bucket público 'vitrine'): MP4 ou WebM, até 8 MB
+export async function enviarVideoCurso(arquivo: File): Promise<string> {
+  if (!['video/mp4', 'video/webm'].includes(arquivo.type)) throw new Error('O vídeo precisa ser MP4 ou WebM.');
+  if (arquivo.size > 8 * 1024 * 1024) throw new Error('O vídeo pode ter até 8 MB. Use um vídeo mais curto ou comprima o arquivo.');
+  const caminho = `videos/${Date.now()}-${limparNome(arquivo.name)}`;
+  const { error } = await createClient().storage.from('vitrine').upload(caminho, arquivo, { contentType: arquivo.type, upsert: false });
+  if (error) throw new Error('Não foi possível enviar o vídeo: ' + error.message);
+  return caminho;
+}
