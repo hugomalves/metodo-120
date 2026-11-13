@@ -23,3 +23,44 @@
 .expert img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid var(--azul); }
 .expert div { display: flex; flex-direction: column; gap: 4px; color: var(--texto-2); }
 .expert b { color: var(--navy); font-size: 18px; }
+
+/* página do curso: abertura com números, prova em números, faixa de compra, expert, perguntas e barra fixa no celular */
+.pagina { padding-bottom: 24px; }
+.topo { background-color: #071A3D; }
+.numeros { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.numeros li { display: flex; flex-direction: column; gap: 2px; min-width: 120px; padding: 10px 14px; background: rgba(255, 255, 255, 0.09); border-left: 3px solid #5B9BFF; border-radius: 3px; }
+.numeros b { font-family: var(--font-display); font-size: 22px; line-height: 1.1; color: #fff; }
+.numeros span { font-size: 13px; color: #CFDCF5; }
+.sub { margin: 0; color: var(--texto-2); max-width: 70ch; }
+.provaGrade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+.provaBloco { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--linha); border-top: 4px solid var(--azul); border-radius: 4px; background: var(--cartao); }
+.provaBloco b { color: var(--navy); font-family: var(--font-display); }
+.provaBloco ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.provaBloco li { display: flex; justify-content: space-between; gap: 10px; color: var(--texto-2); }
+.provaBloco li em { font-style: normal; font-weight: 700; color: var(--navy); }
+.regra { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--faixa); border-left: 4px solid var(--azul); border-radius: 3px; color: var(--texto-2); }
+.regra b { color: var(--navy); font-family: var(--font-display); }
+.regra small { color: var(--suave); }
+.faixa { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; margin-top: 40px; padding: clamp(24px, 4vw, 40px); border-radius: 4px; background-color: #071A3D; }
+.faixa > div { flex: 1 1 380px; display: flex; flex-direction: column; gap: 8px; }
+.faixa h2 { margin: 0; font-size: clamp(22px, 2.8vw, 32px); line-height: 1.15; }
+.faixa p { margin: 0; color: #CFDCF5; max-width: 60ch; }
+.expert { align-items: flex-start; }
+.expert img { width: 120px; height: 120px; flex: none; }
+.expertRotulo { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--azul); }
+.aprovacoes { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.aprovacoes li { padding: 4px 10px; background: var(--faixa); border-radius: 3px; font-size: 13.5px; font-weight: 600; color: var(--navy); }
+.faq { display: flex; flex-direction: column; gap: 8px; }
+.faq details { border: 1px solid var(--linha); border-radius: 4px; background: var(--cartao); }
+.faq summary { cursor: pointer; padding: 14px 16px; font-weight: 700; color: var(--navy); }
+.faq p { margin: 0; padding: 0 16px 16px; color: var(--texto-2); line-height: 1.55; }
+.aviso2 { margin: 0 0 32px; font-size: 13px; color: var(--suave); max-width: 80ch; }
+.fixo { display: none; }
+@media (max-width: 720px) {
+  .pagina { padding-bottom: 96px; }
+  .fixo { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: var(--cartao); border-top: 1px solid var(--linha-forte); }
+  .fixo > div { display: flex; flex-direction: column; min-width: 0; }
+  .fixo b { font-family: var(--font-display); font-size: 18px; color: var(--navy); line-height: 1.1; }
+  .fixo span { font-size: 12px; color: var(--suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .expert { flex-direction: column; }
+}
