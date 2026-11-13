@@ -99,3 +99,6 @@ No ar em https://metodo-120.vercel.app (Vercel, projeto `metodo-120`, publica so
 ## Antes de publicar
 
 `npx tsc --noEmit` e `npx next build` sem erro; SQL testado; prints de prévia quando for visual.
+
+## Limite de 1000 linhas do Supabase
+O Supabase entrega no máximo 1000 linhas por chamada (mesmo com `.limit(5000)`). Qualquer lista que possa passar disso (questões, contagem do banco, tentativas) deve usar `todasAsLinhas` de `src/lib/paginar.ts` com ordem fixa. `contagem_banco()` tem ORDER BY (migração 0006).

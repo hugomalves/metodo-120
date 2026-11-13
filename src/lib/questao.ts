@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { todasAsLinhas } from '@/lib/paginar';
 
 export type ResolucaoQuestao = { resposta: string; comentario: string | null; video_url: string | null; minha_letra: string; acertou: boolean };
 export type TextoBase = { id: string; codigo: string; texto: string; figuras: string[] };
@@ -21,11 +22,13 @@ type Tentativa = { questao_id: string; acertou: boolean; lista_id?: string | nul
 
 // Todas as tentativas do aluno (mais recente primeiro)
 export async function minhasTentativas(supabase: SupabaseClient, alunoId: string, ids?: string[]): Promise<Tentativa[]> {
-  let q = supabase.from('tentativas_questoes').select('questao_id, acertou, lista_id, respondida_em').eq('aluno_id', alunoId)
-    .order('respondida_em', { ascending: false }).limit(5000);
-  if (ids) q = q.in('questao_id', ids);
-  const { data } = await q;
-  return (data ?? []) as Tentativa[];
+  const montar = () => {
+    let q = supabase.from('tentativas_questoes').select('questao_id, acertou, lista_id, respondida_em').eq('aluno_id', alunoId)
+      .order('respondida_em', { ascending: false }).order('id', { ascending: false });
+    if (ids) q = q.in('questao_id', ids);
+    return q;
+  };
+  return todasAsLinhas<Tentativa>((de, ate) => montar().range(de, ate));
 }
 
 export function historicoPorQuestao(tentativas: Tentativa[]): Map<string, Historico> {

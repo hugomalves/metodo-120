@@ -14,6 +14,7 @@ import { QuadrosSimulados } from '@/components/QuadrosSimulados';
 
 type AulaCat = { aula_id: string; modulo_titulo: string; disciplina: string | null; numero: number; titulo: string; tem_mini: boolean };
 import s from './aluno.module.css';
+import { contagemBanco } from '@/lib/banco';
 
 type Edital = { id: string; nome: string; banca: string | null; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[] };
 
@@ -21,14 +22,13 @@ const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-B
 
 // Início de quem usa só o banco de questões (plano grátis ou banco completo)
 export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase: SupabaseClient; perfil: Perfil; acesso: Acesso; dia?: string }) {
-  const [{ data }, { data: eds }, loja, { data: cat }] = await Promise.all([
-    supabase.rpc('contagem_banco'),
+  const [grupos, { data: eds }, loja, { data: cat }] = await Promise.all([
+    contagemBanco(supabase),
     supabase.from('editais').select('id, nome, banca, data_prova, edital_disciplinas(disciplina, questoes, bloco, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
     carregarLoja(supabase, perfil.id),
     supabase.rpc('catalogo_aulas'),
   ]);
   const simulados = await quadrosSimulados(supabase, perfil.id, loja.produtos, 4);
-  const grupos = (data ?? []) as Grupo[];
   const editais = (eds ?? []) as Edital[];
   const meu = editais.find((e) => e.id === perfil.edital_id) ?? null;
   const porDisc = new Map<string, { total: number; feitas: number }>();
