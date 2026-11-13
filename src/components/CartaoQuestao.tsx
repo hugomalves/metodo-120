@@ -23,10 +23,13 @@ export function alternativasDe(q: QuestaoCompleta): Alternativa[] {
 export function TextoBaseCaixa({ q }: { q: QuestaoCompleta }) {
   if (!q.textoBase) return null;
   return (
-    <div className="q-texto-base">
-      <span className="q-texto-base-rotulo">Texto para julgar o{q.tipo === 'certo_errado' ? ' item' : 'a questão'}</span>
-      <TextoRico texto={q.textoBase.texto} figuras={q.textoBase.figuras} />
-    </div>
+    <details className="q-texto-base">
+      <summary>
+        <span className="q-texto-base-rotulo">Texto de apoio</span>
+        <span className="q-texto-base-dica">Clique para ler</span>
+      </summary>
+      <div className="q-texto-base-corpo"><TextoRico texto={q.textoBase.texto} figuras={q.textoBase.figuras} /></div>
+    </details>
   );
 }
 
@@ -50,7 +53,7 @@ export function CartaoQuestao({ q, numero, total, id, lista, mostrarTextoBase = 
           {emTexto && q.imagem && (
             <a href={q.imagem} target="_blank" rel="noopener" className="q-acao" title="Ver como aparece no caderno da prova">Ver na prova</a>
           )}
-          <Link href={`/aluno/duvidas?ctx=${encodeURIComponent(`Banco · ${q.codigo}`)}`} className="q-acao">Perguntar ao professor</Link>
+          <Link href={`/aluno/duvidas?ctx=${encodeURIComponent(`Banco · ${q.codigo}`)}`} className="q-acao q-acao-destaque">Perguntar ao professor</Link>
         </div>
       </header>
       <div className="q-corpo">

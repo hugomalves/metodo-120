@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { acessoAtual } from '@/lib/acesso';
 import { Caminho, PAINEL_ALUNO } from '@/components/Caminho';
 import { buscarQuestoes, dadosDosFiltros, filtroDaUrl, urlFiltro } from '@/lib/banco';
-import { CHAVES } from '@/lib/filtros';
+import { CHAVES, CHAVES_VISIVEIS } from '@/lib/filtros';
 import { carregarQuestoes, porPagina as lerPorPagina } from '@/lib/questao';
 import { Caderno } from '@/components/Caderno';
 import { FiltrosBanco } from './FiltrosBanco';
@@ -27,7 +27,7 @@ export default async function BancoQuestoes({ searchParams }: { searchParams: Pr
   const questoes = await carregarQuestoes(supabase, perfil.id, ids);
   const feitas = Array.from(minhas.values());
   const acertos = feitas.filter((r) => r.acertou).length;
-  const filtrosAtivos = [...CHAVES, 's' as const].filter((k) => filtro[k]).length;
+  const filtrosAtivos = [...CHAVES_VISIVEIS, 's' as const].filter((k) => filtro[k]).length;
   const edital = editais.find((e) => e.id === filtro.e);
   const base = `/aluno/questoes${urlFiltro(filtro)}`;
 

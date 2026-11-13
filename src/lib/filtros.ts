@@ -12,6 +12,8 @@ export type EditalFiltro = { id: string; nome: string; disciplinas: string[] };
 // esc = escolaridade · n = dificuldade · or = origem
 export type Chave = 'e' | 'd' | 'a' | 'b' | 't' | 'o' | 'c' | 'y' | 'esc' | 'n' | 'or';
 export const CHAVES: Chave[] = ['e', 'd', 'a', 'b', 't', 'o', 'c', 'y', 'esc', 'n', 'or'];
+// filtros que aparecem na tela (órgão, cargo, escolaridade e origem continuam existindo no banco, só não poluem a tela)
+export const CHAVES_VISIVEIS: Chave[] = ['e', 'd', 'a', 'b', 'y', 't', 'n'];
 export type ValoresFiltro = Record<Chave, string>;
 export const VAZIO: ValoresFiltro = { e: '', d: '', a: '', b: '', t: '', o: '', c: '', y: '', esc: '', n: '', or: '' };
 

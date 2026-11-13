@@ -1,7 +1,7 @@
 'use client';
 
 import { ESCOLARIDADES, NIVEIS, ORIGENS, TIPOS } from '@/lib/assuntos';
-import { opcoesDe, ROTULOS, type Chave, type EditalFiltro, type Grupo, type ValoresFiltro } from '@/lib/filtros';
+import { CHAVES_VISIVEIS, opcoesDe, ROTULOS, type Chave, type EditalFiltro, type Grupo, type ValoresFiltro } from '@/lib/filtros';
 
 const ROTULO_VALOR: Partial<Record<Chave, Record<string, string>>> = { t: TIPOS, esc: ESCOLARIDADES, n: NIVEIS, or: ORIGENS };
 const QUALQUER: Partial<Record<Chave, string>> = { e: 'Todos os editais', d: 'Todas', a: 'Todos', b: 'Todas', t: 'Todos', o: 'Todos', c: 'Todos', y: 'Todos', esc: 'Todas', n: 'Todas', or: 'Todas' };
@@ -40,5 +40,5 @@ export function CamposFiltro({ grupos, editais, mapa, f, muda, novas = false, pr
     );
   };
 
-  return <>{(['e', 'd', 'a', 'b', 't', 'o', 'c', 'y', 'esc', 'n', 'or'] as Chave[]).map(campo)}</>;
+  return <>{CHAVES_VISIVEIS.map(campo)}</>;
 }
