@@ -13,13 +13,14 @@ export const dynamic = 'force-dynamic';
 
 const TIPO: Record<string, string> = { curso: 'Curso em PDF', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões' };
 
-// Fotos de abertura e de faixa por curso (arquivos em public/img/reta-final/). Sem entrada aqui, a página usa só o azul-marinho.
+// Fotos de abertura e de faixa por EDITAL (arquivos em public/img/reta-final/). Valem para o curso ligado àquele edital (a Reta Final);
+// os Extensivos não têm edital e ficam só com o azul-marinho.
 const IMAGENS: Record<string, { hero?: string; faixa?: string }> = {
-  'reta-final-pmpe': { hero: '/img/reta-final/formatura.webp', faixa: '/img/reta-final/tropa.webp' },
+  'pmpe-2026-soldado': { hero: '/img/reta-final/formatura.webp', faixa: '/img/reta-final/tropa.webp' },
 };
 
 type Edital = {
-  nome: string; orgao: string; banca: string | null; data_prova: string | null; observacoes: string | null;
+  slug: string; nome: string; orgao: string; banca: string | null; data_prova: string | null; observacoes: string | null;
   corte_bloco: number | null; corte_total: number | null; sem_zerar: boolean;
   edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[];
 };
@@ -50,12 +51,12 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
     carregarVideosCurso(supabase),
     p.edital_id
       ? supabase.from('editais')
-          .select('nome, orgao, banca, data_prova, observacoes, corte_bloco, corte_total, sem_zerar, edital_disciplinas(disciplina, questoes, bloco, ordem)')
+          .select('slug, nome, orgao, banca, data_prova, observacoes, corte_bloco, corte_total, sem_zerar, edital_disciplinas(disciplina, questoes, bloco, ordem)')
           .eq('id', p.edital_id).eq('publicado', true).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
   const ed = (edRes.data ?? null) as Edital | null;
-  const img = IMAGENS[p.slug] ?? {};
+  const img = (ed && IMAGENS[ed.slug]) || {};
 
   // prova em números (só para curso ligado a edital)
   const disc = [...(ed?.edital_disciplinas ?? [])].sort((a, b) => a.ordem - b.ordem);
@@ -76,7 +77,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
   const perguntas: { q: string; a: string }[] = [
     { q: 'Como recebo o acesso depois de pagar?', a: 'Você paga no checkout da Kiwify e cria a sua conta aqui no site com o mesmo e-mail da compra. O acesso é liberado automaticamente, mesmo que você crie a conta depois de pagar.' },
     { q: 'Posso testar antes de comprar?', a: 'Pode. Crie a conta grátis e use o banco de questões, com limite diário, e um minissimulado por dia.' },
-    { q: 'O curso garante a aprovação?', a: 'Não. O Método 120 entrega o plano: 2 horas por dia, organizadas pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' },
+    { q: 'O curso garante a aprovação?', a: ed ? 'Não. O curso entrega o plano de estudo até a prova, organizado pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' : 'Não. O Método 120 entrega o plano: 2 horas por dia, organizadas pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' },
     { q: 'Posso imprimir o material?', a: 'Sim. As listas de questões podem ser impressas em PDF quantas vezes você quiser.' },
     ...(p.acesso_ate ? [{ q: 'Até quando vale o meu acesso?', a: `O acesso a este curso vale até ${dataBr(p.acesso_ate)}.` }] : []),
     { q: 'E se eu não gostar?', a: 'Os dias de garantia e como pedir o reembolso aparecem no checkout da Kiwify, antes de você pagar.' },
@@ -148,6 +149,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
           </section>
         )}
 
+        {!ed && (
         <section className={styles.secao} aria-labelledby="como">
           <h2 id="como" className="display">Como funciona o dia de estudo</h2>
           <div className={styles.blocos}>
@@ -157,13 +159,14 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
           </div>
           <Link href="/como-funciona" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Ver o plano completo</Link>
         </section>
+        )}
 
         <section
           className={`tema-escuro ${styles.faixa}`}
           style={img.faixa ? { backgroundImage: sombra(img.faixa, 0.92), backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
         >
           <div>
-            <h2 className="display">2 horas por dia. Todos os dias{ed?.data_prova && dias !== null && dias > 0 ? ` até ${dataBr(ed.data_prova)}` : ''}.</h2>
+            <h2 className="display">{ed ? (ed.data_prova && dias !== null && dias > 0 ? `Prova em ${dataBr(ed.data_prova)}. Comece o seu plano hoje.` : 'Comece o seu plano hoje.') : '2 horas por dia. Todos os dias. Por 1 ano.'}</h2>
             <p>{p.preco ? `${p.nome} por ${p.preco}.` : 'As vendas abrem em breve.'} Sem promessa de aprovação: o que você recebe é o plano e as ferramentas para cumpri-lo.</p>
           </div>
           <Cta p={p} />

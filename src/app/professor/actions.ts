@@ -526,7 +526,7 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
   const edital = txt(f, 'edital_id');
   const slug = (txt(f, 'slug') || nome).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
   const linha = {
-    nome, slug, tipo, descricao: ouNulo(txt(f, 'descricao').slice(0, 600)), preco: ouNulo(txt(f, 'preco').slice(0, 60)),
+    nome, tipo, descricao: ouNulo(txt(f, 'descricao').slice(0, 600)), preco: ouNulo(txt(f, 'preco').slice(0, 60)),
     beneficios: txt(f, 'beneficios').split('\n').map((x) => x.trim()).filter(Boolean).slice(0, 10),
     edital_id: /^[0-9a-f-]{36}$/i.test(edital) ? edital : null, destaque: f.get('destaque') === 'on', selo: ouNulo(txt(f, 'selo').slice(0, 30)),
     ordem: parseInt(txt(f, 'ordem'), 10) || 0, checkout_url: checkout || null, kiwify_product_id: ouNulo(txt(f, 'kiwify_product_id')),
@@ -539,11 +539,12 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
   if (f.get('remover_imagem') === 'on') imagem.imagem_path = null;
   const supabase = await createClient();
   const dados = { ...linha, ...imagem };
-  const r = id ? await supabase.from('produtos').update(dados).eq('id', id) : await supabase.from('produtos').insert(dados);
+  // o endereço da página (slug) é criado só na criação: salvar de novo não muda o endereço que você já divulgou
+  const r = id ? await supabase.from('produtos').update(dados).eq('id', id) : await supabase.from('produtos').insert({ ...dados, slug });
   if (r.error) return { erro: r.error.code === '23505' ? 'Já existe um produto com esse nome curto ou esse ID da Kiwify.' : 'Não foi possível salvar: ' + r.error.message };
   // curso de um edital libera esse edital
   if (tipo === 'curso' && linha.edital_id) {
-    const { data: p } = await supabase.from('produtos').select('id').eq('slug', slug).maybeSingle();
+    const { data: p } = id ? { data: { id } } : await supabase.from('produtos').select('id').eq('slug', slug).maybeSingle();
     if (p) await supabase.from('produto_editais').upsert({ produto_id: (p as { id: string }).id, edital_id: linha.edital_id }, { onConflict: 'produto_id,edital_id', ignoreDuplicates: true });
   }
   revalidatePath('/professor/produtos');
