@@ -44,8 +44,12 @@
 @media (max-width: 760px) {
   .texto { padding-bottom: 12px; }
   .foto { padding-top: 0; }
-  .foto img { width: min(260px, 100%); }
-  /* no celular, a foto do expert sai do carrossel (ela aparece em "Quem vai te guiar"); fica só a imagem própria da notícia */
-  .foto:not([data-tipo='noticia']) { display: none; }
+  .foto img { width: min(200px, 100%); }
+  .foto[data-tipo='noticia'] img { width: min(300px, 100%); }
   .slide { align-content: flex-start; }
+}
+@media (max-width: 420px) {
+  /* telas bem estreitas: a foto fica menor, mas continua aparecendo */
+  .foto img { width: min(150px, 100%); }
+  .foto[data-tipo='noticia'] img { width: min(240px, 100%); }
 }

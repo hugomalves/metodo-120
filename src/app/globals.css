@@ -519,7 +519,7 @@ a:hover { color: var(--azul); }
 .cab-hamb-lista > a, .cab-hamb-lista > details > summary { padding: 12px 18px; color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 14px; }
 .cab-hamb-lista .cab-drop-lista { position: static; min-width: 0; box-shadow: none; }
 @media (max-width: 900px) {
-  .cab-menu, .cab-conta { display: none; }
+  .cab-menu { display: none; }
   .cab-hamb { display: block; }
   .cab-redes { display: none; }
   .cab-atalhos { overflow-x: auto; }
@@ -591,6 +591,16 @@ a:hover { color: var(--azul); }
 .cab-menu > a.cab-loja { padding: 6px 12px; border: 1.5px solid #fff; border-radius: 3px; }
 .cab-menu > a.cab-loja:hover { background: #fff; color: var(--navy); }
 @media (max-width: 1120px) {
-  .cab-menu, .cab-conta { display: none; }
-  .cab-hamb { display: block; }
+  .cab-menu { display: none; }
+  .cab-hamb { display: block; margin-left: 0; }
+  /* Entrar e Cadastre-se ficam sempre à vista, ao lado do menu de três risquinhos */
+  .cab-conta { margin-left: auto; gap: 14px; }
+  .cab-linha { gap: 16px; }
+}
+@media (max-width: 480px) {
+  .cab-linha { gap: 8px; }
+  .cab-conta { gap: 10px; }
+  .cab-conta a { font-size: 12.5px; }
+  .cab-cadastre { padding: 8px 11px; }
+  .cab-hamb > summary { width: 40px; padding: 0 8px; }
 }
