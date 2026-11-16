@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Marca } from '@/components/Marca';
+import { Cronometro } from '@/components/Cronometro';
 
 // Ícones de traço simples (24×24)
 const ICONES: Record<string, string> = {
@@ -22,6 +23,8 @@ const ICONES: Record<string, string> = {
   banco: 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
   sair: 'M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11',
   noticias: 'M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-4 0M7 9h7M7 13h7M7 16h4',
+  cronograma: 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6',
+  planos: 'M20 12l-8 8-8-8V4h8zM8 8h.01',
 };
 
 export type ItemPainel = {
@@ -84,8 +87,9 @@ function ItensComBusca(props: { itens: ItemPainel[]; aoNavegar: () => void }) {
   return <Lista {...props} rota={rota} busca={new URLSearchParams(busca.toString())} />;
 }
 
-export function Painel({ itens, rodape, inicio, nome, contaHref, selo, children }: {
-  itens: ItemPainel[]; rodape?: ItemPainel[]; inicio: string; nome: string; contaHref?: string; selo?: string; children: React.ReactNode;
+export function Painel({ itens, rodape, inicio, nome, contaHref, selo, tema, cronometro, children }: {
+  itens: ItemPainel[]; rodape?: ItemPainel[]; inicio: string; nome: string; contaHref?: string; selo?: string;
+  tema?: 'app'; cronometro?: boolean; children: React.ReactNode;
 }) {
   const [aberto, setAberto] = useState(false);
   const rota = usePathname();
@@ -99,7 +103,7 @@ export function Painel({ itens, rodape, inicio, nome, contaHref, selo, children 
   const fechar = () => setAberto(false);
 
   return (
-    <div className="painel" data-aberto={aberto ? 'sim' : 'nao'}>
+    <div className={tema === 'app' ? 'painel tema-app' : 'painel'} data-aberto={aberto ? 'sim' : 'nao'}>
       <aside className="painel-lateral" id="menu-lateral" aria-label="Menu principal">
         <div className="painel-marca">
           <Marca href={inicio} tamanho={26} />
@@ -129,6 +133,7 @@ export function Painel({ itens, rodape, inicio, nome, contaHref, selo, children 
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
           </button>
           <span className="painel-topo-marca"><Marca href={inicio} tamanho={26} /></span>
+          {cronometro && <Cronometro />}
           {contaHref ? (
             <Link href={contaHref} className="painel-usuario" title="Minha conta">
               <span className="painel-avatar" aria-hidden="true">{(nome.trim()[0] || '?').toUpperCase()}</span>

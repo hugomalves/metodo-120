@@ -61,6 +61,68 @@
   color: var(--texto);
 }
 .tema-escuro { background: var(--fundo); color-scheme: dark; min-height: 100vh; }
+/* tema da área do aluno: escuro neutro (quase preto) com o azul, o navy e o vermelho do Método 120 */
+.tema-app {
+  --fundo: #111418;
+  --faixa: #171b21;
+  --cartao: #1c2128;
+  --cartao-2: #242a33;
+  --linha: #2a3039;
+  --linha-forte: #3a424e;
+  --texto: #eef1f6;
+  --texto-2: #c3cad6;
+  --suave: #8b95a5;
+  --azul: #2F6BFF;
+  --ciano: #3d8bff;
+  --ciano-texto: #8FB8FF;
+  --tinta: #071A3D;
+  --erro: #ff8f7a;
+  --erro-fundo: #3a1f1c;
+  --ok-fundo: #182847;
+  --ok-texto: #a9c5ff;
+  --agora-fundo: #10324a;
+  --agora-texto: #8ee3ff;
+  --neutro-fundo: #20252d;
+  --trilho: #2a3039;
+  --destaque-borda: #2f4d8f;
+  --sombra: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background: var(--fundo); color: var(--texto); color-scheme: dark;
+}
+.tema-app .painel-lateral { background: #0c0f13; border-right-color: #1f242c; }
+.tema-app .painel-item[aria-current='page'] { background: #1d2a44; color: #fff; box-shadow: inset 3px 0 0 var(--vermelho); }
+.tema-app .painel-item[aria-current='page'] svg { color: #8FB8FF; }
+.tema-app .painel-topo { background: rgba(17, 20, 24, 0.92); border-bottom-color: #1f242c; }
+.tema-app .q-alt:nth-child(even) { background: var(--faixa); }
+.tema-app .q-alt[data-estado='certa'] .q-alt-botao, .tema-app .q-ce-botao[data-estado='certa'] { background: #12301f; }
+.tema-app .q-resultado[data-acertou='sim'] { background: #102a1b; border-color: #1f6b3d; }
+.tema-app .q-resultado[data-acertou='nao'] { background: #33201a; border-color: #7a3b22; }
+.tema-app .pv-selo[data-ok='sim'] { background: #123021; color: #6ee7a0; }
+.tema-app .plano-metas li[data-ok] { background: #12261a; }
+.tema-app .cc-selo { background: rgba(17, 20, 24, 0.92); color: var(--texto); }
+.tema-app .cartao-gradiente { --fundo: #071A3D; }
+.tema-app input, .tema-app select, .tema-app textarea { color-scheme: dark; }
+/* PDFs e figuras continuam em fundo branco (é o papel) */
+.tema-app .pv-disciplina, .tema-app .plano-cabeca h2, .tema-app .plano-anel b, .tema-app .produto h3, .tema-app .produto-preco,
+.tema-app .trio-linha b, .tema-app .plano-resumo > div > b:first-child { color: var(--texto); }
+.tema-app .plano-semana div[data-hoje], .tema-app .plano-semana a[data-hoje] { background: var(--azul); border-color: var(--azul); }
+.tema-app .quadro { background: #16233f; border: 1px solid #22345c; }
+.tema-app .q-acao-destaque:hover { background: #1d4fd6; border-color: #1d4fd6; }
+
+/* cronômetro de estudo no topo */
+.crono { display: inline-flex; align-items: center; gap: 2px; margin-right: auto; padding: 3px; border: 1px solid var(--linha); border-radius: 4px; background: var(--cartao); }
+.crono-tempo { min-width: 78px; padding: 0 8px; font-family: var(--font-mono); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-align: center; color: var(--texto); }
+.crono[data-rodando='sim'] .crono-tempo { color: #4ade80; }
+.crono button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 3px; background: transparent; color: var(--texto-2); cursor: pointer; }
+.crono button:hover { background: var(--cartao-2); color: var(--texto); }
+.crono button:disabled { opacity: 0.35; cursor: default; background: transparent; }
+.crono-registrar { width: auto !important; padding: 0 10px !important; font-family: var(--font-display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #fff !important; background: var(--azul) !important; }
+.crono-registrar:disabled { background: var(--cartao-2) !important; color: var(--suave) !important; }
+@media (max-width: 920px) {
+  .crono { margin-right: 0; }
+  .crono-tempo { min-width: 64px; font-size: 13.5px; padding: 0 4px; }
+  .crono-registrar span { display: none; }
+}
+
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -95,7 +157,7 @@ a:hover { color: var(--azul); }
 .topo { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-block: 20px; }
 .marca { display: inline-flex; text-decoration: none; color: var(--navy); }
 .marca:hover { color: var(--navy); }
-.tema-escuro .marca, .cartao-gradiente .marca { color: #fff; }
+.tema-escuro .marca, .cartao-gradiente .marca, .tema-app .marca, .tema-app .marca:hover { color: #fff; }
 
 /* Logo Método 120 (MÉTODO pequeno e espaçado, 120 protagonista, seta subindo pelo 0) */
 .logo120 { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1; font-family: var(--font-display); color: inherit; }
@@ -479,52 +541,59 @@ a:hover { color: var(--azul); }
 }
 
 /* Cabeçalho das páginas abertas */
+/* ---------- Cabeçalho das páginas abertas ---------- */
 .cab { position: relative; z-index: 20; font-family: var(--font-display); }
 .cab-aviso { display: block; padding: 8px 16px; background: var(--azul); color: #fff; text-align: center; font-size: 14px; text-decoration: none; }
 .cab-aviso:hover { color: #fff; background: #0A50E0; }
 .cab-aviso span { font-weight: 700; margin-left: 8px; white-space: nowrap; }
-.cab-barra { background: var(--navy); color: #fff; }
+.cab-barra { background: #0B1220; color: #fff; border-bottom: 1px solid #1c2638; }
 .cab-linha { display: flex; align-items: center; gap: 28px; min-height: 64px; }
 .cab-barra .marca { color: #fff; }
-.cab-menu { display: flex; align-items: center; gap: 24px; flex: 1; }
-.cab-menu > a, .cab-drop > summary, .cab-conta a { color: #fff; text-decoration: none; text-transform: uppercase; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; cursor: pointer; }
-.cab-menu > a:hover, .cab-drop > summary:hover, .cab-conta a:hover { color: #8FB8FF; }
-.cab-drop { position: relative; }
-.cab-drop > summary { list-style: none; display: flex; align-items: center; gap: 6px; }
+.cab-abas-largo { flex: 1; display: flex; align-self: stretch; }
+.cab-abas-estreito { display: none; }
+.cab-abas { display: flex; align-items: stretch; gap: 4px; }
+.cab-abas > a, .cab-drop > summary {
+  display: flex; align-items: center; gap: 6px; padding: 0 14px; color: #c9d3e6; text-decoration: none;
+  text-transform: uppercase; font-size: 13.5px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap;
+  border-bottom: 3px solid transparent; border-top: 3px solid transparent;
+}
+.cab-abas > a:hover, .cab-drop > summary:hover, .cab-drop[open] > summary { color: #fff; border-bottom-color: var(--azul); }
+.cab-abas > a.cab-oferta { color: #fff; }
+.cab-abas > a.cab-oferta::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--vermelho); box-shadow: 0 0 0 3px rgba(225, 29, 46, 0.25); }
+.cab-drop { position: relative; display: flex; }
+.cab-drop > summary { list-style: none; }
 .cab-drop > summary::-webkit-details-marker { display: none; }
 .cab-drop > summary::after { content: ''; border: 4px solid transparent; border-top-color: currentColor; margin-top: 4px; }
-.cab-drop-lista { position: absolute; top: calc(100% + 18px); left: -16px; min-width: 280px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--linha); border-top: 3px solid var(--azul); box-shadow: 0 14px 40px rgba(7, 26, 61, 0.18); }
-.cab-drop-lista a { display: flex; flex-direction: column; padding: 12px 16px; color: var(--navy); font-weight: 700; font-size: 15px; text-decoration: none; border-bottom: 1px solid var(--linha); }
+.cab-drop-lista { position: absolute; top: 100%; left: 0; min-width: 280px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--linha); border-top: 3px solid var(--azul); box-shadow: 0 14px 40px rgba(7, 26, 61, 0.25); z-index: 30; }
+.cab-drop-lista a { display: flex; flex-direction: column; padding: 12px 16px; color: var(--navy); font-weight: 700; font-size: 15px; text-decoration: none; border-bottom: 1px solid var(--linha); text-transform: none; letter-spacing: 0; }
 .cab-drop-lista a small { font-family: var(--font-body); font-weight: 500; color: var(--suave); font-size: 13px; }
 .cab-drop-lista a:hover { background: var(--faixa); color: var(--azul); }
 .cab-drop-todos { font-size: 14px !important; color: var(--azul) !important; border-bottom: 0 !important; }
-.cab-conta { display: flex; align-items: center; gap: 22px; }
-.cab-cadastre { padding: 9px 16px; background: var(--azul); border-radius: 3px; }
-.cab-conta a.cab-cadastre:hover { background: #0A50E0; color: #fff; }
-.cab-sub { background: #F1F3F7; border-bottom: 1px solid var(--linha); box-shadow: 0 4px 10px rgba(7, 26, 61, 0.05); }
-.cab-sub .cab-linha { min-height: 40px; justify-content: space-between; }
-.cab-atalhos { display: flex; align-items: stretch; gap: 4px; align-self: stretch; }
-.cab-atalhos a { display: flex; align-items: center; padding: 0 12px; color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 600; }
-.cab-atalhos a:hover { color: var(--azul); }
-.cab-atalhos a.cab-destaque { background: var(--azul); color: #fff; font-weight: 800; }
-.cab-atalhos a.cab-destaque:hover { background: #0A50E0; color: #fff; }
-.cab-redes { display: flex; gap: 14px; }
-.cab-redes a { color: var(--navy); display: flex; }
-.cab-redes a:hover { color: var(--azul); }
-.cab-hamb { display: none; margin-left: auto; position: relative; }
-.cab-hamb > summary { list-style: none; width: 44px; height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 5px; padding: 0 10px; cursor: pointer; }
-.cab-hamb > summary::-webkit-details-marker { display: none; }
-.cab-hamb > summary span { height: 2px; background: #fff; }
-.cab-hamb-lista { position: absolute; right: 0; top: calc(100% + 10px); min-width: 260px; background: var(--navy); border-top: 3px solid var(--azul); display: flex; flex-direction: column; padding: 8px 0; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); }
-.cab-hamb-lista > a, .cab-hamb-lista > details > summary { padding: 12px 18px; color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 14px; }
-.cab-hamb-lista .cab-drop-lista { position: static; min-width: 0; box-shadow: none; }
-@media (max-width: 900px) {
-  .cab-menu { display: none; }
-  .cab-hamb { display: block; }
-  .cab-redes { display: none; }
-  .cab-atalhos { overflow-x: auto; }
-  .cab-atalhos a { white-space: nowrap; }
+.cab-redes { display: flex; gap: 12px; }
+.cab-redes a { color: #8d9ab3; display: flex; }
+.cab-redes a:hover { color: #fff; }
+.cab-conta { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.cab-conta a { text-decoration: none; text-transform: uppercase; font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; border-radius: 3px; }
+.cab-entrar { color: #fff; padding: 9px 14px; border: 1.5px solid #34425e; }
+.cab-entrar:hover { border-color: #fff; color: #fff; }
+.cab-garantir { color: #fff; padding: 10px 18px; background: var(--vermelho); box-shadow: 0 6px 18px rgba(225, 29, 46, 0.3); }
+.cab-garantir:hover { background: #C21625; color: #fff; }
+@media (max-width: 960px) {
+  .cab-abas-largo, .cab-redes { display: none; }
+  .cab-linha { gap: 12px; min-height: 58px; }
+  .cab-abas-estreito { display: block; border-top: 1px solid #1c2638; overflow-x: auto; scrollbar-width: none; }
+  .cab-abas-estreito::-webkit-scrollbar { display: none; }
+  .cab-abas-estreito .cab-abas { min-height: 44px; padding: 0 8px; width: max-content; min-width: 100%; justify-content: space-around; }
+  .cab-abas-estreito .cab-drop-lista { position: fixed; top: auto; left: 12px; right: 12px; min-width: 0; }
 }
+@media (max-width: 420px) {
+  .cab-conta { gap: 8px; }
+  .cab-conta a { font-size: 12px; }
+  .cab-entrar { padding: 8px 10px; }
+  .cab-garantir { padding: 9px 12px; }
+  .cab-abas > a, .cab-drop > summary { padding: 0 10px; font-size: 12.5px; }
+}
+
 
 /* Loja: produtos e quadrados com cadeado */
 .btn-vermelho { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
@@ -586,21 +655,4 @@ a:hover { color: var(--azul); }
 .plano-semana a b { font-size: 12.5px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
 /* menu de cima sempre numa linha; "Loja" em destaque */
-.cab-menu > a, .cab-drop > summary, .cab-conta a { white-space: nowrap; }
-.cab-menu { gap: 22px; }
-.cab-menu > a.cab-loja { padding: 6px 12px; border: 1.5px solid #fff; border-radius: 3px; }
-.cab-menu > a.cab-loja:hover { background: #fff; color: var(--navy); }
-@media (max-width: 1120px) {
-  .cab-menu { display: none; }
-  .cab-hamb { display: block; margin-left: 0; }
-  /* Entrar e Cadastre-se ficam sempre à vista, ao lado do menu de três risquinhos */
-  .cab-conta { margin-left: auto; gap: 14px; }
-  .cab-linha { gap: 16px; }
-}
-@media (max-width: 480px) {
-  .cab-linha { gap: 8px; }
-  .cab-conta { gap: 10px; }
-  .cab-conta a { font-size: 12.5px; }
-  .cab-cadastre { padding: 8px 11px; }
-  .cab-hamb > summary { width: 40px; padding: 0 8px; }
-}
+

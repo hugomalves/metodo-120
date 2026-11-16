@@ -15,8 +15,13 @@ const TIPO: Record<string, string> = { curso: 'Curso em PDF', simulados: 'Pacote
 
 // Fotos de abertura e de faixa por EDITAL (arquivos em public/img/reta-final/). Valem para o curso ligado àquele edital (a Reta Final);
 // os Extensivos não têm edital e ficam só com o azul-marinho.
-const IMAGENS: Record<string, { hero?: string; faixa?: string }> = {
-  'pmpe-2026-soldado': { hero: '/img/reta-final/formatura.webp', faixa: '/img/reta-final/tropa.webp' },
+// chamada = título da faixa de baixo; texto = frase abaixo dele (a Reta Final é estudo intenso até a prova, diferente do Extensivo)
+const IMAGENS: Record<string, { hero?: string; faixa?: string; chamada?: string; texto?: string }> = {
+  'pmpe-2026-soldado': {
+    hero: '/img/reta-final/formatura.webp', faixa: '/img/reta-final/tropa.webp',
+    chamada: 'Gabarite a prova da PMPE aqui.',
+    texto: 'Estudo intenso até a prova, com foco no que a banca mais cobra, simulados no padrão AOCP e a regra de corte do edital.',
+  },
 };
 
 type Edital = {
@@ -56,7 +61,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
       : Promise.resolve({ data: null }),
   ]);
   const ed = (edRes.data ?? null) as Edital | null;
-  const img = (ed && IMAGENS[ed.slug]) || {};
+  const img: { hero?: string; faixa?: string; chamada?: string; texto?: string } = (ed && IMAGENS[ed.slug]) || {};
 
   // prova em números (só para curso ligado a edital)
   const disc = [...(ed?.edital_disciplinas ?? [])].sort((a, b) => a.ordem - b.ordem);
@@ -166,8 +171,8 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
           style={img.faixa ? { backgroundImage: sombra(img.faixa, 0.92), backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
         >
           <div>
-            <h2 className="display">{ed ? (ed.data_prova && dias !== null && dias > 0 ? `Prova em ${dataBr(ed.data_prova)}. Comece o seu plano hoje.` : 'Comece o seu plano hoje.') : '2 horas por dia. Todos os dias. Por 1 ano.'}</h2>
-            <p>{p.preco ? `${p.nome} por ${p.preco}.` : 'As vendas abrem em breve.'} Sem promessa de aprovação: o que você recebe é o plano e as ferramentas para cumpri-lo.</p>
+            <h2 className="display">{img.chamada ?? (ed ? (ed.data_prova && dias !== null && dias > 0 ? `Prova em ${dataBr(ed.data_prova)}. Comece hoje.` : 'Comece hoje.') : '2 horas por dia. Todos os dias. Por 1 ano.')}</h2>
+            <p>{img.texto ?? (ed ? 'Estudo organizado pelo que o edital cobra.' : 'Plano de estudo diário, do primeiro ao último dia.')} {p.preco ? `${p.preco}.` : 'As vendas abrem em breve.'} O curso não garante aprovação: entrega o plano e as ferramentas para você cumprir.</p>
           </div>
           <Cta p={p} />
         </section>

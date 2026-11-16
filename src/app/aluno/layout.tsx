@@ -5,6 +5,7 @@ import { Painel, type ItemPainel } from '@/components/Painel';
 
 const ITENS: ItemPainel[] = [
   { href: '/aluno', rotulo: 'Início', icone: 'inicio', exato: true },
+  { href: '/aluno/cronograma', rotulo: 'Cronograma', icone: 'cronograma' },
   { href: '/aluno/cursos', rotulo: 'Cursos em PDF', icone: 'aulas', tambem: ['/aluno/trilha', '/aluno/modulo', '/aluno/aula'] },
   { href: '/aluno/simulados', rotulo: 'Simulados', icone: 'simulados', tambem: ['/aluno/provas'] },
   { href: '/aluno/minissimulados', rotulo: 'Minissimulados', icone: 'mini', tambem: ['/aluno/simulado/'] },
@@ -17,14 +18,17 @@ const ITENS: ItemPainel[] = [
 
 const ITENS_BANCO: ItemPainel[] = ITENS.filter((i) => !['/aluno/estatisticas', '/aluno/duvidas'].includes(i.href));
 
-const RODAPE: ItemPainel[] = [{ href: '/aluno/conta', rotulo: 'Minha conta', icone: 'conta' }];
+const RODAPE: ItemPainel[] = [
+  { href: '/planos', rotulo: 'Planos', icone: 'planos' },
+  { href: '/aluno/conta', rotulo: 'Minha conta', icone: 'conta' },
+];
 
 export default async function LayoutAluno({ children }: { children: React.ReactNode }) {
   const { perfil, acesso } = await acessoAtual();
   if (perfil.papel !== 'aluno') redirect(areaDe(perfil));
 
   return (
-    <Painel itens={acesso.curso ? ITENS : ITENS_BANCO} rodape={RODAPE} selo={acesso.curso ? undefined : acesso.completo ? 'Banco completo' : 'Plano grátis'} inicio="/aluno" nome={perfil.nome || 'Aluno'} contaHref="/aluno/conta">
+    <Painel itens={acesso.curso ? ITENS : ITENS_BANCO} rodape={RODAPE} selo={acesso.curso ? undefined : acesso.completo ? 'Banco completo' : 'Plano grátis'} inicio="/aluno" nome={perfil.nome || 'Aluno'} contaHref="/aluno/conta" tema="app" cronometro>
       {children}
     </Painel>
   );

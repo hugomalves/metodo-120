@@ -12,10 +12,11 @@ export const metadata = { title: 'Produtos e loja · Painel do professor' };
 type P = {
   id: string; slug: string; nome: string; tipo: string; descricao: string | null; preco: string | null; beneficios: string[]; edital_id: string | null;
   destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; kiwify_product_id: string | null; venda_aberta: boolean; acesso_ate: string | null; imagem_path: string | null;
+  dias_acesso?: number | null; libera_produto_id?: string | null;
 };
 const TIPOS: Record<string, string> = { curso: 'Curso em PDF (libera as aulas, os minissimulados e os simulados do edital)', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões completo' };
 
-function Form({ p, editais, pdf }: { p?: P; editais: { id: string; nome: string }[]; pdf?: string | null }) {
+function Form({ p, editais, pdf, cursos = [] }: { p?: P; editais: { id: string; nome: string }[]; pdf?: string | null; cursos?: { id: string; nome: string }[] }) {
   const id = p?.id ?? 'novo';
   return (
     <FormAcao key={p ? JSON.stringify(p) + (pdf ?? '') : 'novo'} acao={salvarProdutoLoja} botao={p ? 'Salvar' : 'Criar produto'}>
@@ -34,6 +35,14 @@ function Form({ p, editais, pdf }: { p?: P; editais: { id: string; nome: string 
         <div className="campo"><label htmlFor={`ps-${id}`}>Selo (opcional)</label><input id={`ps-${id}`} name="selo" maxLength={30} defaultValue={p?.selo ?? ''} placeholder="Reta final" /></div>
         <div className="campo"><label htmlFor={`po-${id}`}>Ordem</label><input id={`po-${id}`} name="ordem" type="number" min={0} max={99} defaultValue={p?.ordem ?? 1} /></div>
         <div className="campo"><label htmlFor={`pa-${id}`}>Acesso até (vazio = sem prazo)</label><input id={`pa-${id}`} name="acesso_ate" type="date" defaultValue={p?.acesso_ate ?? ''} /></div>
+        <div className="campo"><label htmlFor={`pda-${id}`}>Dias de acesso por compra (planos: 365)</label><input id={`pda-${id}`} name="dias_acesso" type="number" min={1} max={3650} defaultValue={p?.dias_acesso ?? ''} placeholder="vazio = sem prazo" /></div>
+        <div className="campo" style={{ gridColumn: 'span 2' }}>
+          <label htmlFor={`plp-${id}`}>Plano Básico: libera o PDF de qual extensivo?</label>
+          <select id={`plp-${id}`} name="libera_produto_id" defaultValue={p?.libera_produto_id ?? ''}>
+            <option value="">Nenhum (não é plano Básico)</option>
+            {cursos.filter((c) => c.id !== p?.id).map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+          </select>
+        </div>
       </div>
       <CampoImagemProduto id={id} url={urlImagemProduto(p?.imagem_path)} temImagem={Boolean(p?.imagem_path)} />
       <CampoPdfProduto id={id} atual={pdf ?? null} />
@@ -59,6 +68,7 @@ export default async function Produtos() {
   const pdfs = new Map(((pdfsRaw ?? []) as { produto_id: string; nome_arquivo: string | null }[]).map((x) => [x.produto_id, x.nome_arquivo ?? 'arquivo enviado']));
   const produtos = (data ?? []) as P[];
   const editais = (eds ?? []) as { id: string; nome: string }[];
+  const cursos = produtos.filter((x) => x.tipo === 'curso' && !x.slug.startsWith('plano-')).map((x) => ({ id: x.id, nome: x.nome }));
   return (
     <>
       <Caminho passos={[PAINEL_PROFESSOR, { rotulo: 'Produtos e loja' }]} />
@@ -69,7 +79,7 @@ export default async function Produtos() {
       </p>
       <section className={`cartao ${styles.bloco}`} style={{ borderColor: 'var(--azul)' }} aria-labelledby="novo">
         <h2 id="novo" className="display">Novo produto</h2>
-        <Form editais={editais} />
+        <Form editais={editais} cursos={cursos} />
       </section>
       {produtos.map((p) => (
         <details key={p.id} className={`cartao ${styles.bloco}`}>
@@ -77,7 +87,7 @@ export default async function Produtos() {
             <span className={`${styles.chip} ${p.venda_aberta ? styles.chipOk : styles.chipNeutro}`}>{p.venda_aberta ? 'À venda' : 'Fechado'}</span>
             <b>{p.nome}</b><span className="suave">· {TIPOS[p.tipo]?.split(' (')[0] ?? p.tipo}{p.preco ? ` · ${p.preco}` : ''}{p.destaque ? ' · destaque' : ''}</span>
           </summary>
-          <div style={{ paddingTop: 12 }}><Form p={p} editais={editais} pdf={pdfs.get(p.id) ?? null} /></div>
+          <div style={{ paddingTop: 12 }}><Form p={p} editais={editais} pdf={pdfs.get(p.id) ?? null} cursos={cursos} /></div>
         </details>
       ))}
     </>

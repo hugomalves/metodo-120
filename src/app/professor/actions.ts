@@ -531,6 +531,8 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
     edital_id: /^[0-9a-f-]{36}$/i.test(edital) ? edital : null, destaque: f.get('destaque') === 'on', selo: ouNulo(txt(f, 'selo').slice(0, 30)),
     ordem: parseInt(txt(f, 'ordem'), 10) || 0, checkout_url: checkout || null, kiwify_product_id: ouNulo(txt(f, 'kiwify_product_id')),
     venda_aberta: f.get('venda_aberta') === 'on', acesso_ate: ouNulo(txt(f, 'acesso_ate')),
+    dias_acesso: (() => { const n = parseInt(txt(f, 'dias_acesso'), 10); return n >= 1 && n <= 3650 ? n : null; })(),
+    libera_produto_id: /^[0-9a-f-]{36}$/i.test(txt(f, 'libera_produto_id')) ? txt(f, 'libera_produto_id') : null,
   };
   // imagem do curso: já foi enviada pelo navegador (bucket 'vitrine'); aqui só guardamos o caminho
   const imagem: { imagem_path?: string | null } = {};

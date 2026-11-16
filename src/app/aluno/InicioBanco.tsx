@@ -15,6 +15,7 @@ import { QuadrosSimulados } from '@/components/QuadrosSimulados';
 type AulaCat = { aula_id: string; modulo_titulo: string; disciplina: string | null; numero: number; titulo: string; tem_mini: boolean };
 import s from './aluno.module.css';
 import { contagemBanco } from '@/lib/banco';
+import { hojeBr } from '@/lib/cronograma';
 
 type Edital = { id: string; nome: string; banca: string | null; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[] };
 
@@ -29,6 +30,13 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
     supabase.rpc('catalogo_aulas'),
   ]);
   const simulados = await quadrosSimulados(supabase, perfil.id, loja.produtos, 4);
+  // resumo do cronograma de hoje (blocos e revisões)
+  const hoje = hojeBr();
+  const [{ count: blocosHoje }, { count: revisoesHoje }, { count: temCronograma }] = await Promise.all([
+    supabase.from('cronograma_itens').select('dia', { count: 'exact', head: true }).eq('aluno_id', perfil.id).eq('dia', hoje),
+    supabase.from('revisoes').select('id', { count: 'exact', head: true }).eq('aluno_id', perfil.id).is('feita_em', null).lte('dia', hoje),
+    supabase.from('cronogramas').select('edital_id', { count: 'exact', head: true }).eq('aluno_id', perfil.id),
+  ]);
   const editais = (eds ?? []) as Edital[];
   const meu = editais.find((e) => e.id === perfil.edital_id) ?? null;
   const porDisc = new Map<string, { total: number; feitas: number }>();
@@ -51,6 +59,17 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
         <h1 className="display" style={{ margin: 0, fontSize: 'clamp(28px, 3.2vw, 38px)' }}>Olá, {perfil.nome || 'concurseiro'}</h1>
         <p className="suave" style={{ margin: 0 }}>{acesso.curso ? 'Curso Método 120' : `Banco de questões · ${acesso.completo ? 'acesso completo' : 'plano grátis'}`}</p>
       </div>
+
+      <Link href="/aluno/cronograma" className={s.cronoResumo}>
+        <span className={s.cronoIcone} aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6" /></svg>
+        </span>
+        <span className={s.cronoTexto}>
+          <b>Cronograma</b>
+          <span>{temCronograma ? `${blocosHoje ?? 0} ${blocosHoje === 1 ? 'bloco' : 'blocos'} de estudo e ${revisoesHoje ?? 0} ${revisoesHoje === 1 ? 'revisão' : 'revisões'} para hoje` : 'Monte o seu cronograma: o site distribui o edital pelos seus dias e agenda as revisões.'}</span>
+        </span>
+        <span className={s.cronoAcao}>{temCronograma ? 'Abrir' : 'Montar'} →</span>
+      </Link>
 
       <section className="cartao-gradiente" style={{ padding: 22, borderRadius: 4, display: 'flex', flexWrap: 'wrap', gap: 18, alignItems: 'center', justifyContent: 'space-between' }} aria-labelledby="edital">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: '1 1 300px' }}>

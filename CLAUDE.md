@@ -108,3 +108,16 @@ O Supabase entrega no máximo 1000 linhas por chamada (mesmo com `.limit(5000)`)
 - O aluno que comprou abre `/aluno/material/[produtoId]` → botão leva a `/api/material/[produtoId]`, que confere `pode_baixar_pdf`, lê `dados_comprador` (nome, CPF, telefone), baixa o original com a chave de serviço e devolve o PDF com marca d'água (`src/lib/marcaDagua.ts`, biblioteca `pdf-lib`).
 - `dados_comprador` (chave: e-mail) é preenchida pelo webhook da Kiwify (Customer.full_name, CPF, mobile); se faltar, o aluno informa uma vez (não consegue trocar depois). Migração 0007. Política de privacidade atualizada.
 - Limite da Vercel: resposta de função ~4,5 MB pode ser barrada; a entrega é em pedaços (streaming), mas teste com o PDF real.
+
+## Topo do site, planos e tema escuro do aluno (nov/2026)
+- Topo das páginas abertas (`src/components/Cabecalho.tsx`): abas Loja · Editais · Planos · Oferta + Login e Garantir vaga. "Oferta" e "Garantir vaga" levam ao curso em destaque à venda (`/curso/[slug]`), ou à loja.
+- `/planos`: planos de assinatura definidos em `src/lib/planos.ts` (Básico, Até a prova, Todos os cursos). O botão usa o produto com endereço `plano-basico`, `plano-ate-a-prova-<concurso>` (um por concurso) e `plano-todos-os-cursos`; sem produto, aparece "Em breve". Produtos `plano-*` não aparecem como cursos soltos na loja. Plano é produto do tipo curso: sem edital libera todos os cursos; com edital, só aquele (e "acesso até" = data da prova). `_plano_cobre()` também libera os PDFs com marca d'água (migração 0008).
+- Área do aluno com tema escuro: `Painel tema="app"` (classe `.tema-app` em globals.css troca as variáveis). Cronômetro de estudo no topo (`src/components/Cronometro.tsx`, guardado no localStorage); "Registrar" abre `/aluno/cronograma?registrar=<min>`.
+
+## Cronograma (`/aluno/cronograma`, migração 0008)
+- Abas: Cronograma (blocos de hoje, revisões, agenda da semana), Revisões, Histórico, Calendário, Edital (verticalizado, com teoria e 1ª–6ª revisões marcáveis e aproveitamento meu/outros por assunto).
+- Conteúdo = (disciplina, chave): chave = id do assunto (folha da árvore `assuntos`) ou 'geral' se a disciplina não tem assuntos. Lógica em `src/lib/cronograma.ts` (estrutura, ciclo ponderado pelas questões da prova, distribuição por dia).
+- Tabelas: cronogramas, cronograma_itens, conteudos_progresso, estudos, revisoes (RLS: dono; professor lê). RPCs: ajustar_minutos_dia, aproveitamento_edital.
+- Ao registrar estudo com "Gerar revisões", as revisões pendentes do mesmo conteúdo são substituídas pelas novas. Concluir revisão marca a caixa da revisão no edital.
+- Testes visuais: crie uma rota temporária com dados de mentira (os componentes de `Vistas.tsx` recebem tudo por props) e tire prints com Playwright; apague a rota antes de entregar.
+- Planos (migração 0009): todos valem 1 ano por compra (`produtos.dias_acesso` = 365 → `matriculas.valida_ate` preenchido na compra; todas as funções de acesso respeitam). Básico = produto tipo Banco com `libera_produto_id` = o extensivo escolhido (um produto por extensivo, `plano-basico-…`); Até a prova = tipo Curso com o edital (`plano-ate-a-prova-…`); Todos = tipo Curso sem edital. Desconto de 60% do Básico para o Até a prova é feito com cupom na Kiwify.
