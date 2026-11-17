@@ -2,7 +2,10 @@ import type { Metadata, Viewport } from 'next';
 // fontes guardadas no próprio site (sem chamar o Google a cada visita)
 import '@fontsource-variable/sora';
 import '@fontsource-variable/figtree';
+import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/chakra-petch/600.css';
+import '@fontsource/chakra-petch/700.css';
 import './globals.css';
 import { MARCA } from '@/lib/marca';
 

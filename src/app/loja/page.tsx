@@ -28,7 +28,7 @@ export default async function Loja() {
   return (
     <div className="tema-site">
       <Cabecalho />
-      <main className="container" style={{ display: 'flex', flexDirection: 'column', gap: 40, padding: '28px 0 64px' }}>
+      <main className="container" style={{ display: 'flex', flexDirection: 'column', gap: 40, paddingTop: 36, paddingBottom: 72 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 760 }}>
           <span className="rotulo">Loja Método 120</span>
           <h1 className="display" style={{ margin: 0, fontSize: 'clamp(30px, 4vw, 46px)', color: 'var(--navy)' }}>Escolha o seu caminho até a aprovação</h1>
