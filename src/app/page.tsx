@@ -12,17 +12,17 @@ import styles from './home.module.css';
 
 export const dynamic = 'force-dynamic';
 
-type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null; preco: string | null; descricao: string | null; beneficios: string[] | null; edital_id: string | null; destaque: boolean; selo: string | null };
+type Produto = { slug: string; nome: string; tipo: string; venda_aberta: boolean; checkout_url: string | null; preco: string | null; descricao: string | null; beneficios: string[] | null; edital_id: string | null; destaque: boolean; selo: string | null; gratuito?: boolean };
 type Edital = { id: string; nome: string; banca: string | null; situacao: string; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; ordem: number }[] };
 
 async function carregar(): Promise<{ produtos: Produto[]; editais: Edital[]; noticias: SlideNoticia[]; loja: ProdutoLoja[] }> {
   try {
     const supabase = await createClient();
     const [{ data: p }, { data: e }, { data: n }, { data: l }] = await Promise.all([
-      supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url, preco, descricao, beneficios, edital_id, destaque, selo').not('slug', 'like', 'plano-%'),
+      supabase.from('produtos').select('slug, nome, tipo, venda_aberta, checkout_url, preco, descricao, beneficios, edital_id, destaque, selo, gratuito').not('slug', 'like', 'plano-%'),
       supabase.from('editais').select('id, nome, banca, situacao, data_prova, edital_disciplinas(disciplina, questoes, ordem)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
       supabase.from('noticias').select('id, rotulo, titulo, resumo, link, botao, imagem_path').eq('publicada', true).order('ordem').order('publicada_em', { ascending: false }).limit(8),
-      supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, imagem_path').eq('venda_aberta', true).not('slug', 'like', 'plano-%').in('tipo', ['curso', 'simulados', 'mentoria']).order('ordem').order('nome'),
+      supabase.from('produtos').select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, imagem_path, gratuito').eq('venda_aberta', true).not('slug', 'like', 'plano-%').in('tipo', ['curso', 'simulados', 'mentoria']).order('ordem').order('nome'),
     ]);
     const noticias = ((n ?? []) as (Omit<SlideNoticia, 'imagem'> & { imagem_path: string | null })[]).map(({ imagem_path, ...x }) => ({
       ...x, imagem: imagem_path ? supabase.storage.from('vitrine').getPublicUrl(imagem_path).data.publicUrl : null,
@@ -229,7 +229,7 @@ export default async function Vitrine() {
                 {editais.map((e) => {
                   const dias = e.data_prova ? diasAte(e.data_prova) : null;
                   const discs = [...e.edital_disciplinas].sort((a, b) => a.ordem - b.ordem);
-                  const rf = produtos.find((p) => p.destaque && p.venda_aberta && p.checkout_url && p.edital_id === e.id);
+                  const rf = produtos.find((p) => p.destaque && p.venda_aberta && (p.checkout_url || p.gratuito) && p.edital_id === e.id);
                   return (
                     <article key={e.id} className={`cartao ${styles.edital}`}>
                       <div className="linha-flex" style={{ justifyContent: 'space-between', gap: 8 }}>
@@ -242,11 +242,11 @@ export default async function Vitrine() {
                         {discs.map((d) => <li key={d.disciplina}><span>{d.disciplina}</span><b>{d.questoes}</b></li>)}
                       </ul>
                       {rf && (
-                        <a href={rf.checkout_url!} target="_blank" rel="noopener" className={styles.retaFinal}>
+                        <a href={rf.gratuito ? `/curso/${rf.slug}` : rf.checkout_url!} {...(rf.gratuito ? {} : { target: '_blank', rel: 'noopener' })} className={styles.retaFinal}>
                           <span className={styles.retaSelo}>{rf.selo ?? 'Reta final'}</span>
                           <b>{rf.nome}</b>
                           {rf.descricao && <span>{rf.descricao}</span>}
-                          <span className={styles.retaPreco}>{rf.preco ?? ''}<em>Garantir minha vaga →</em></span>
+                          <span className={styles.retaPreco}>{rf.gratuito ? 'Grátis por enquanto' : rf.preco ?? ''}<em>{rf.gratuito ? 'Começar grátis →' : 'Garantir minha vaga →'}</em></span>
                         </a>
                       )}
                       <Link href="/entrar?modo=criar" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Treinar grátis neste edital</Link>

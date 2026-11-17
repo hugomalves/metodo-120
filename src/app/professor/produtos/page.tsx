@@ -12,7 +12,7 @@ export const metadata = { title: 'Produtos e loja · Painel do professor' };
 type P = {
   id: string; slug: string; nome: string; tipo: string; descricao: string | null; preco: string | null; beneficios: string[]; edital_id: string | null;
   destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; kiwify_product_id: string | null; venda_aberta: boolean; acesso_ate: string | null; imagem_path: string | null;
-  dias_acesso?: number | null; libera_produto_id?: string | null;
+  dias_acesso?: number | null; gratuito?: boolean; libera_produto_id?: string | null;
 };
 const TIPOS: Record<string, string> = { curso: 'Curso em PDF (libera as aulas, os minissimulados e os simulados do edital)', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões completo' };
 
@@ -53,6 +53,7 @@ function Form({ p, editais, pdf, cursos = [] }: { p?: P; editais: { id: string; 
         <div className="campo"><label htmlFor={`pk-${id}`}>ID do produto na Kiwify</label><input id={`pk-${id}`} name="kiwify_product_id" defaultValue={p?.kiwify_product_id ?? ''} className="mono" /></div>
       </div>
       <label className={styles.check}><input type="checkbox" name="venda_aberta" defaultChecked={p?.venda_aberta ?? true} /> À venda (aparece para os alunos e na vitrine)</label>
+      <label className={styles.check}><input type="checkbox" name="gratuito" defaultChecked={p?.gratuito ?? false} /> Gratuito por enquanto: libera para todos os alunos (os atuais e os novos). Desmarque para encerrar; quem comprou continua com acesso.</label>
       <label className={styles.check}><input type="checkbox" name="destaque" defaultChecked={p?.destaque ?? false} /> Destaque: quadrado vermelho no edital da vitrine e no início do aluno (use para a Reta Final)</label>
     </FormAcao>
   );

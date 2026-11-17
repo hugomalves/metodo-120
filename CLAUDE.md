@@ -125,3 +125,8 @@ O Supabase entrega no máximo 1000 linhas por chamada (mesmo com `.limit(5000)`)
 
 ## Linguagem visual do site (referência: Projeto Caveira)
 Títulos em Chakra Petch maiúsculos, rótulos "//" em IBM Plex Mono, cantos cortados (clip-path), fundo preto com pontinhos, botão claro `.btn-claro` com seta, vermelho `--vermelho-vivo` como cor de ação. Tokens no fim de `globals.css`; a home usa `src/app/home.module.css` (seções em tela cheia). Planos e Como funciona seguem o mesmo estilo.
+
+## Produto gratuito por enquanto (migração 0010)
+- `produtos.gratuito`: caixa "Gratuito por enquanto" em Painel → Produtos e loja. Ligada, todos os alunos (atuais e novos, via trigger em `perfis`) ganham matrícula do produto (`origem 'manual'`, `checkout_ref = 'gratuito:<id>'`), o que libera aulas, PDF com marca d'água, minissimulados, simulados do edital e o banco completo (`tem_banco_completo()` vale para qualquer matrícula ativa). Desligada, só as matrículas gratuitas são canceladas; quem comprou continua.
+- Páginas mostram "Grátis" (cartão, página do curso, bloco do edital na home). Reta Final PM PE começa gratuita pela própria migração.
+- Simulados e minissimulados da PMPE: Painel → Simulados (edital = PM PE; minissimulado = ligado a uma aula). O aluno precisa informar nome, CPF e telefone uma vez para baixar PDF com marca d'água.

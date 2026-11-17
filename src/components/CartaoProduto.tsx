@@ -24,7 +24,7 @@ export function CartaoProduto({ p, meu, acessar }: { p: Produto; meu: boolean; a
         ) : (
           <div className="produto-capa-vazia"><b className="display">{capa.grande}</b><span>{capa.pequeno}</span></div>
         )}
-        {(p.selo || meu) && <span className="produto-selo">{meu ? 'Você já tem' : p.selo}</span>}
+        {(p.selo || meu || p.gratuito) && <span className="produto-selo">{meu ? 'Você já tem' : p.gratuito ? 'Grátis' : p.selo}</span>}
       </div>
       <h3 className="display"><Link href={detalhe} className="produto-link">{p.nome}</Link></h3>
       {(p.descricao || p.beneficios.length > 0) && (

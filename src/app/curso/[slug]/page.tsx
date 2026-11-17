@@ -36,6 +36,7 @@ const sombra = (url: string, forte = 0.95) => `linear-gradient(90deg, rgba(7,26,
 // Botão de compra (ou de conta grátis, enquanto o link da Kiwify não foi cadastrado)
 function Cta({ p, grande = true }: { p: Produto; grande?: boolean }) {
   const g = grande ? ' btn-grande' : '';
+  if (p.gratuito) return <Link href="/entrar?modo=criar" className={`btn btn-azul${g}`}>Começar grátis →</Link>;
   return p.checkout_url
     ? <a href={p.checkout_url} target="_blank" rel="noopener" className={`btn btn-vermelho${g}`}>Quero este →</a>
     : <Link href="/entrar?modo=criar" className={`btn btn-azul${g}`}>Criar conta grátis</Link>;
@@ -47,7 +48,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase.from('produtos')
-    .select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, acesso_ate')
+    .select('id, slug, nome, tipo, descricao, preco, beneficios, edital_id, destaque, selo, ordem, checkout_url, venda_aberta, acesso_ate, gratuito')
     .eq('slug', slug).maybeSingle();
   const p = data as (Produto & { acesso_ate: string | null }) | null;
   if (!p || !p.venda_aberta) notFound();
@@ -113,8 +114,13 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
           </div>
           <div className={styles.compra}>
             <span className={styles.compraRotulo}>{TIPO[p.tipo] ?? 'Curso'}</span>
-            {p.preco ? <b className={styles.preco}>{p.preco}</b> : <b className={styles.preco}>Em breve</b>}
-            {p.checkout_url ? (
+            {p.gratuito ? <b className={styles.preco}>Grátis</b> : p.preco ? <b className={styles.preco}>{p.preco}</b> : <b className={styles.preco}>Em breve</b>}
+            {p.gratuito ? (
+              <>
+                <span className={styles.aviso}>Acesso gratuito por tempo limitado: crie a sua conta e tudo deste curso é liberado, com aulas, minissimulados, simulados e o banco de questões.</span>
+                <Cta p={p} />
+              </>
+            ) : p.checkout_url ? (
               <Cta p={p} />
             ) : (
               <>
@@ -172,7 +178,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
         >
           <div>
             <h2 className="display">{img.chamada ?? (ed ? (ed.data_prova && dias !== null && dias > 0 ? `Prova em ${dataBr(ed.data_prova)}. Comece hoje.` : 'Comece hoje.') : '2 horas por dia. Todos os dias. Por 1 ano.')}</h2>
-            <p>{img.texto ?? (ed ? 'Estudo organizado pelo que o edital cobra.' : 'Plano de estudo diário, do primeiro ao último dia.')} {p.preco ? `${p.preco}.` : 'As vendas abrem em breve.'} O curso não garante aprovação: entrega o plano e as ferramentas para você cumprir.</p>
+            <p>{img.texto ?? (ed ? 'Estudo organizado pelo que o edital cobra.' : 'Plano de estudo diário, do primeiro ao último dia.')} {p.gratuito ? 'Acesso gratuito por tempo limitado.' : p.preco ? `${p.preco}.` : 'As vendas abrem em breve.'} O curso não garante aprovação: entrega o plano e as ferramentas para você cumprir.</p>
           </div>
           <Cta p={p} />
         </section>
@@ -204,7 +210,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
       </main>
 
       <div className={styles.fixo}>
-        <div><b>{p.preco ?? 'Em breve'}</b><span>{p.nome}</span></div>
+        <div><b>{p.gratuito ? 'Grátis' : p.preco ?? 'Em breve'}</b><span>{p.nome}</span></div>
         <Cta p={p} grande={false} />
       </div>
     </div>
