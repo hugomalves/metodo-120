@@ -129,3 +129,11 @@
 .chips span[data-cor='vermelho'] { background: #E11D2E; color: #fff; }
 .chips span[data-cor='branco'] { background: #fff; color: #071A3D; }
 .chips span[data-cor='azul'] { background: #0B5CFF; color: #fff; }
+
+/* tema escuro do site */
+.pagina:global(.tema-site), :global(.tema-site) .pagina { background: var(--fundo); }
+:global(.tema-site) .numeros > div { background: #16233f; border: 1px solid #22345c; }
+:global(.tema-site) .aba, :global(.tema-site) .faseBlocos li, :global(.tema-site) .faseExtras div, :global(.tema-site) .quizAlt { background: var(--cartao); }
+:global(.tema-site) .aba[data-ativo] { background: var(--azul); border-color: var(--azul); }
+:global(.tema-site) .quizAlt[data-estado='certa'] { background: #12301f; }
+:global(.tema-site) .dor { background: var(--cartao); }

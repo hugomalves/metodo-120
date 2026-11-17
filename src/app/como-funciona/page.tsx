@@ -35,7 +35,7 @@ const PORQUE = [
 
 export default function ComoFunciona() {
   return (
-    <div className={s.pagina}>
+    <div className={`tema-site ${s.pagina}`}>
       <Cabecalho />
 
       {/* 1. Promessa */}

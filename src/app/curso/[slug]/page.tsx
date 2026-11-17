@@ -89,7 +89,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
   ];
 
   return (
-    <>
+    <div className="tema-site">
       <Cabecalho />
       <main className={`container ${styles.pagina}`}>
         <nav className={styles.caminho} aria-label="Caminho"><Link href="/">Início</Link> › <Link href="/#cursos">Cursos</Link> › <span>{p.nome}</span></nav>
@@ -207,6 +207,6 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
         <div><b>{p.preco ?? 'Em breve'}</b><span>{p.nome}</span></div>
         <Cta p={p} grande={false} />
       </div>
-    </>
+    </div>
   );
 }

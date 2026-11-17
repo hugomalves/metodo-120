@@ -44,7 +44,7 @@ export default async function Vitrine() {
   const foto = EXPERT.fotoCorpo ?? EXPERT.fotoRosto;
 
   return (
-    <>
+    <div className="tema-site">
       <Cabecalho />
 
       <div className="container">
@@ -165,6 +165,6 @@ export default async function Vitrine() {
           <small style={{ opacity: 0.6, fontSize: 12 }}>{MARCA.nome} não tem vínculo com bancas organizadoras nem com os órgãos citados. Questões de provas oficiais são usadas para fins educacionais.</small>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

@@ -26,7 +26,7 @@ export default async function Loja() {
   } catch { /* sem conexão: mostra a loja vazia */ }
 
   return (
-    <>
+    <div className="tema-site">
       <Cabecalho />
       <main className="container" style={{ display: 'flex', flexDirection: 'column', gap: 40, padding: '28px 0 64px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 760 }}>
@@ -49,6 +49,6 @@ export default async function Loja() {
           );
         })}
       </main>
-    </>
+    </div>
   );
 }

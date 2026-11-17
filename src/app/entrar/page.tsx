@@ -9,7 +9,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
   const { modo, aviso } = await searchParams;
   const criarPrimeiro = modo === 'criar';
   return (
-    <>
+    <div className="tema-site">
       <Cabecalho />
       <div className="container">
         <div className={styles.lado} data-criar-primeiro={criarPrimeiro ? 'sim' : undefined}>
@@ -25,6 +25,6 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
           </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }

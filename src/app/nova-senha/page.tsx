@@ -25,7 +25,7 @@ export default function NovaSenha() {
   }
 
   return (
-    <div className="container">
+    <div className="tema-site"><div className="container">
       <header className="topo"><Marca /></header>
       <main className="cartao" style={{ maxWidth: 520, margin: '0 auto 56px', padding: 'clamp(24px, 4vw, 40px)', borderRadius: 4 }}>
         <form onSubmit={salvar} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -36,6 +36,6 @@ export default function NovaSenha() {
           {erro && <p role="alert" className="erro" style={{ margin: 0 }}>{erro}</p>}
         </form>
       </main>
-    </div>
+    </div></div>
   );
 }

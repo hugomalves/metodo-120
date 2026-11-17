@@ -68,3 +68,9 @@
 .retaSelo { align-self: flex-start; padding: 3px 9px; background: #fff; color: #A30F20 !important; font-size: 12px !important; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 3px; }
 .retaPreco { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 800; font-size: 24px !important; color: #fff !important; margin-top: 4px; }
 .retaPreco em { font-style: normal; font-size: 15px; background: #fff; color: #A30F20; padding: 8px 12px; border-radius: 3px; }
+
+/* tema escuro do site */
+:global(.tema-site) .faixaTopo { background: var(--cartao); }
+:global(.tema-site) .passoNum { background: var(--azul); }
+:global(.tema-site) .passo { background: var(--cartao); }
+:global(.tema-site) .selo { background: #12301f; color: #6ee7a0; }
