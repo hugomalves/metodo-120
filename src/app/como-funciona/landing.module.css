@@ -3,10 +3,10 @@
 
 /* Promessa */
 .hero { position: relative; overflow: hidden; min-height: 0 !important;
-  background: radial-gradient(40% 60% at 10% 40%, rgba(190, 38, 28, 0.8), transparent 70%), radial-gradient(45% 45% at 85% 85%, rgba(150, 30, 24, 0.5), transparent 70%), repeating-linear-gradient(112deg, transparent 0 46px, rgba(0,0,0,0.18) 46px 92px), #0b0b0c; }
+  background: radial-gradient(40% 60% at 10% 40%, rgba(30, 80, 220, 0.8), transparent 70%), radial-gradient(45% 45% at 85% 85%, rgba(20, 60, 170, 0.5), transparent 70%), repeating-linear-gradient(112deg, transparent 0 46px, rgba(0,0,0,0.18) 46px 92px), #0b0b0c; }
 .heroDentro { display: flex; flex-wrap: wrap; align-items: center; gap: 32px; padding-block: clamp(40px, 7vw, 96px); }
 .heroTexto { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-.kicker { font-family: var(--font-mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; color: #ff6a58; }
+.kicker { font-family: var(--font-mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; color: #7FA6FF; }
 .kicker::before { content: '//'; }
 .heroTexto h1 { margin: 0; font-size: clamp(36px, 5.4vw, 68px); line-height: 1.02; max-width: 14ch; }
 .heroTexto h1 em { font-style: normal; color: var(--vermelho-vivo); }
@@ -110,7 +110,7 @@
 .expert ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .expert li { padding: 6px 14px; border-radius: 3px; background: var(--cartao-2); color: var(--navy); font-weight: 600; font-size: 14px; }
 
-.final { padding: clamp(56px, 8vw, 104px) 0; min-height: 0 !important; background: radial-gradient(60% 90% at 50% 0%, rgba(190, 38, 28, 0.45), transparent 70%), #0b0b0c; }
+.final { padding: clamp(56px, 8vw, 104px) 0; min-height: 0 !important; background: radial-gradient(60% 90% at 50% 0%, rgba(30, 80, 220, 0.45), transparent 70%), #0b0b0c; }
 .final h2 { margin: 0; font-size: clamp(28px, 3.8vw, 46px); line-height: 1.1; max-width: 24ch; }
 .final p { margin: 0; font-size: 18px; color: #CFDCF5; max-width: 56ch; }
 .rodape { padding: 28px 0 36px; min-height: 0 !important; border-top: 1px solid rgba(255, 255, 255, 0.08); }
@@ -123,11 +123,11 @@
 }
 
 .heroTexto h1 mark { background: none; color: #fff; padding: 0 0.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone;
-  background-image: linear-gradient(transparent 8%, #E11D2E 8%, #E11D2E 92%, transparent 92%); }
+  background-image: linear-gradient(transparent 8%, #2F6BFF 8%, #2F6BFF 92%, transparent 92%); }
 .heroTexto h1 u { text-decoration: none; background-image: linear-gradient(transparent 80%, var(--vermelho-vivo) 80%); }
 .chips { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .chips span { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; font-size: clamp(16px, 1.8vw, 22px); padding: 6px 12px; border-radius: 3px; }
-.chips span[data-cor='vermelho'] { background: #E11D2E; color: #fff; }
+.chips span[data-cor='vermelho'] { background: #2F6BFF; color: #fff; }
 .chips span[data-cor='branco'] { background: #fff; color: #071A3D; }
 .chips span[data-cor='azul'] { background: #2b2f38; color: #fff; }
 

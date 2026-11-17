@@ -582,7 +582,7 @@ a:hover { color: var(--azul); }
 .cab-conta a { text-decoration: none; text-transform: uppercase; font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; border-radius: 3px; }
 .cab-entrar { color: #fff; padding: 9px 14px; border: 1.5px solid #34425e; }
 .cab-entrar:hover { border-color: #fff; color: #fff; }
-.cab-garantir { color: #fff; padding: 10px 18px; background: var(--vermelho); box-shadow: 0 6px 18px rgba(225, 29, 46, 0.3); }
+.cab-garantir { color: #fff; padding: 10px 18px; background: var(--vermelho); box-shadow: 0 6px 18px rgba(47, 107, 255, 0.3); }
 .cab-garantir:hover { background: #C21625; color: #fff; }
 @media (max-width: 960px) {
   .cab-abas-largo, .cab-redes { display: none; }
@@ -603,7 +603,7 @@ a:hover { color: var(--azul); }
 
 /* Loja: produtos e quadrados com cadeado */
 .btn-vermelho { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
-.btn-vermelho:hover { background: #C8102E; color: #fff; }
+.btn-vermelho:hover { background: #2459E0; color: #fff; }
 .btn-vermelho[aria-disabled='true'] { background: var(--neutro-fundo); border-color: var(--linha-forte); color: var(--suave); pointer-events: none; }
 .loja-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 22px 18px; }
 .produto { position: relative; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
@@ -668,25 +668,26 @@ a:hover { color: var(--azul); }
    fundo preto com pontinhos · botão claro com seta · vermelho como cor de ação, azul e navy de apoio */
 .tema-site, .tema-app {
   --font-titulo: 'Chakra Petch', 'Sora Variable', system-ui, sans-serif;
-  --vermelho-vivo: #E8402F;
+  --vermelho-vivo: #2F6BFF;
   --chanfro: 14px;
 }
 .tema-site {
+  --vermelho: #2F6BFF;
   --fundo: #0b0c0f; --faixa: #0f1115; --cartao: #101216; --cartao-2: #171a20; --linha: #23272f; --linha-forte: #343a45;
   background-color: var(--fundo);
 }
 .tema-site .display { font-family: var(--font-titulo); font-weight: 700; letter-spacing: -0.005em; text-transform: uppercase; line-height: 1.04; }
 .tema-app .display { font-family: var(--font-titulo); font-weight: 700; letter-spacing: 0; }
 .tema-site .logo120, .tema-site .marca { font-family: 'Sora Variable', 'Sora', sans-serif; text-transform: none; }
-.tema-site .rotulo, .tema-app .rotulo { font-family: var(--font-mono); font-weight: 400; font-size: 12px; letter-spacing: 0.08em; color: var(--vermelho-vivo); text-transform: uppercase; }
+.tema-site .rotulo, .tema-app .rotulo { font-family: var(--font-mono); font-weight: 400; font-size: 12px; letter-spacing: 0.08em; color: #6D9BFF; text-transform: uppercase; }
 .tema-site .rotulo::before, .tema-app .rotulo::before { content: '//'; }
 .corte { clip-path: polygon(0 0, calc(100% - var(--chanfro)) 0, 100% var(--chanfro), 100% 100%, var(--chanfro) 100%, 0 calc(100% - var(--chanfro))); }
 .tema-site .cartao { border-radius: 0; box-shadow: none; clip-path: polygon(0 0, calc(100% - var(--chanfro)) 0, 100% var(--chanfro), 100% 100%, var(--chanfro) 100%, 0 calc(100% - var(--chanfro))); }
 .tema-site .btn { border-radius: 0; font-family: var(--font-titulo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 14px;
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
 .tema-site .btn-grande { font-size: 15px; }
-.tema-site .btn-azul { background: var(--vermelho); }
-.tema-site .btn-azul:hover { background: #C8102E; filter: none; }
+.tema-site .btn-azul { background: var(--azul); }
+.tema-site .btn-azul:hover { background: #2459E0; filter: none; }
 .tema-site .btn-linha { border: 0; box-shadow: inset 0 0 0 1.5px var(--linha-forte); }
 /* botão claro com a seta num quadrado escuro, como no Caveira */
 .btn-claro { display: inline-flex; align-items: stretch; gap: 0; background: #F4F1EC; color: #0b0c0f; text-decoration: none; font-family: var(--font-titulo); font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase;
@@ -699,13 +700,14 @@ a:hover { color: var(--azul); }
 
 /* cabeçalho no mesmo estilo: barra preta, abas em fonte de código, Login com contorno e Garantir vaga vermelho com canto cortado */
 .tema-site .cab-barra { background: rgba(8, 9, 11, 0.96); border-bottom: 1px solid #1b1e24; }
-.tema-site .cab-aviso { background: #b8372a; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; }
-.tema-site .cab-aviso:hover { background: #9d2d22; }
+.tema-site .cab-aviso { background: #2459E0; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; }
+.tema-site .cab-aviso:hover { background: #1D49BD; }
 .tema-site .cab-abas > a, .tema-site .cab-drop > summary { font-family: var(--font-mono); font-weight: 400; font-size: 12px; letter-spacing: 0.12em; color: #9aa2b1; }
 .tema-site .cab-abas > a:hover, .tema-site .cab-drop > summary:hover, .tema-site .cab-drop[open] > summary { color: #fff; border-bottom-color: var(--vermelho-vivo); }
 .tema-site .cab-conta a { font-family: var(--font-titulo); border-radius: 0; font-size: 13px; letter-spacing: 0.06em; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
 .tema-site .cab-entrar { border: 0; box-shadow: inset 0 0 0 1.5px #3a404c; }
-.tema-site .cab-garantir { box-shadow: none; }
+.tema-site .cab-garantir { box-shadow: none; background: var(--azul); }
+.tema-site .cab-garantir:hover { background: #2459E0; }
 .tema-site .cab-drop-lista { background: #0f1115; border: 1px solid #23272f; border-top: 2px solid var(--vermelho-vivo); border-radius: 0; box-shadow: 0 18px 40px rgba(0,0,0,0.6); }
 .tema-site .cab-drop-lista a { color: #fff; border-bottom-color: #23272f; font-family: var(--font-titulo); text-transform: uppercase; }
 .tema-site .cab-drop-lista a small { color: #8b93a3; font-family: var(--font-mono); text-transform: uppercase; font-size: 11px; }

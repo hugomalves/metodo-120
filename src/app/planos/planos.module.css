@@ -7,8 +7,8 @@
 .sub a { color: #fff; font-weight: 700; }
 .grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
 .plano { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 28px 24px 24px; background: #0a0b0d; box-shadow: inset 0 0 0 1px #262a32; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)); }
-.destaque { background: linear-gradient(180deg, #1c0d0c 0%, #0a0b0d 55%); box-shadow: inset 0 0 0 1.5px var(--vermelho-vivo); }
-.selo { position: absolute; top: 0; left: 0; right: 0; padding: 8px 24px; background: #b8372a; color: #fff; font-family: var(--font-titulo); font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.destaque { background: linear-gradient(180deg, #0c1630 0%, #0a0b0d 55%); box-shadow: inset 0 0 0 1.5px var(--vermelho-vivo); }
+.selo { position: absolute; top: 0; left: 0; right: 0; padding: 8px 24px; background: #2459E0; color: #fff; font-family: var(--font-titulo); font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .destaque { padding-top: 56px; }
 .nome { margin: 0; font-family: var(--font-titulo); font-weight: 700; text-transform: uppercase; font-size: 28px; }
 .resumo { margin: 0; color: #b9c4d8; min-height: 3em; }
