@@ -49,6 +49,7 @@ export async function Cabecalho() {
           <Link href="/#editais" className="cab-drop-todos">Ver todos os editais</Link>
         </div>
       </details>
+      <Link href="/materiais">Materiais grátis</Link>
       <Link href="/noticias">Notícias</Link>
       <Link href="/planos">Planos</Link>
       <Link href={oferta} className="cab-oferta">Oferta</Link>

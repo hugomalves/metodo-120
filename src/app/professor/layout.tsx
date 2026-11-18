@@ -12,6 +12,7 @@ export default async function LayoutProfessor({ children }: { children: React.Re
     { href: '/professor/duvidas', rotulo: 'Plantão de dúvidas', icone: 'duvidas', contador: count ?? 0 },
     { href: '/professor/editais', rotulo: 'Editais', icone: 'habilidades' },
     { href: '/professor/noticias', rotulo: 'Notícias da vitrine', icone: 'noticias' },
+    { href: '/professor/materiais-gratuitos', rotulo: 'Materiais grátis e leads', icone: 'banco' },
     { href: '/professor/noticias-concurso', rotulo: 'Notícias de concurso', icone: 'noticias' },
     { href: '/professor/aulas', rotulo: 'Aulas', icone: 'aulas' },
     { href: '/professor/simulados', rotulo: 'Simulados e gabaritos', icone: 'simulados' },

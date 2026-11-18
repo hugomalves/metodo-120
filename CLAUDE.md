@@ -144,3 +144,9 @@ Títulos em Chakra Petch maiúsculos, rótulos "//" em IBM Plex Mono, cantos cor
 - `src/lib/noticiasConcursos.ts`: `CARREIRAS` e `atualizarNoticias()` (Google Notícias RSS; cada manchete vai para a carreira que o título cita; guarda 25 por carreira; apaga as da busca com mais de 45 dias).
 - Busca automática: `vercel.json` (cron a cada 2 dias) → `/api/cron/noticias`, exige `CRON_SECRET` na Vercel. Manual: painel "Notícias de concurso" → "Buscar notícias agora".
 - Páginas: `/noticias` (4 quadrados com manchetes girando) e `/noticias/[carreira]` (notícias + cursos da carreira: do edital aberto e extensivos). Para um curso aparecer ali, escolha a "Carreira" no cadastro do produto (e do edital).
+
+## Cadastro com dados (leads) e materiais grátis
+- Cadastro pede nome completo, CPF e telefone; vão em `user_metadata` e o gatilho `criar_perfil()` (migração 0013) grava em `dados_comprador` (origem 'aluno'; nunca derruba o cadastro). Quem já tinha conta informa em `/aluno/seus-dados`.
+- `/materiais` (aba "Materiais grátis"): lista `materiais_gratuitos`; `/api/gratis/[id]` exige login, aplica a marca d'água (nome, CPF, telefone) e registra em `materiais_gratuitos_baixas`. PDFs ficam no bucket privado `produtos-pdf`.
+- Painel: `/professor/materiais-gratuitos` (publicar PDFs, ver downloads, lista de leads e CSV).
+- `/entrar?voltar=/caminho` leva a pessoa de volta depois de entrar/cadastrar.

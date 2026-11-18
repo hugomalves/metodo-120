@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { cpfValido, telefoneValido } from '@/lib/documentos';
 import styles from './entrar.module.css';
 
 type Modo = 'entrar' | 'criar' | 'esqueci';
@@ -19,7 +20,8 @@ function traduzirErro(msg: string): string {
   return `Não foi possível concluir agora. Detalhe técnico: ${msg}`;
 }
 
-export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoInicial: Modo; aviso?: string; fixo?: boolean }) {
+export function FormularioEntrar({ modoInicial, aviso, fixo = false, voltar }: { modoInicial: Modo; aviso?: string; fixo?: boolean; voltar?: string }) {
+  const destino = voltar && /^\/(?!\/)/.test(voltar) ? voltar : '/aluno';
   const router = useRouter();
   const [modo, setModo] = useState<Modo>(modoInicial);
   const [enviando, setEnviando] = useState(false);
@@ -43,7 +45,7 @@ export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoIni
     });
     setEnviando(false);
     if (error) return setErro(traduzirErro(error.message));
-    router.push('/aluno');
+    router.push(destino);
     router.refresh();
   }
 
@@ -59,19 +61,23 @@ export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoIni
     if (anoAtual - +ano < 18 || f.get('maior') !== 'on') {
       return setErro('A plataforma é só para maiores de 18 anos. Confirme que você tem 18 anos ou mais.');
     }
+    const completo = String(f.get('nome_completo') ?? '').trim().replace(/\s+/g, ' ');
+    if (completo.length < 8 || !completo.includes(' ')) return setErro('Escreva o nome completo, como está no seu documento.');
+    if (!cpfValido(String(f.get('cpf') ?? ''))) return setErro('CPF inválido. Confira os números.');
+    if (!telefoneValido(String(f.get('telefone') ?? ''))) return setErro('Telefone inválido. Use DDD + número.');
     setEnviando(true); setErro(''); setOk('');
     const { data, error } = await supabase.auth.signUp({
       email: String(f.get('email')).trim(),
       password: String(f.get('senha')),
       options: {
-        emailRedirectTo: voltarPara('/boas-vindas'),
-        data: { nome: String(f.get('nome')).trim(), ano_nascimento: ano, maior_idade: 'sim' },
+        emailRedirectTo: voltarPara(voltar && destino !== '/aluno' ? destino : '/boas-vindas'),
+        data: { nome: String(f.get('nome')).trim(), nome_completo: completo, cpf: String(f.get('cpf')), telefone: String(f.get('telefone')), ano_nascimento: ano, maior_idade: 'sim' },
       },
     });
     setEnviando(false);
     if (error) return setErro(traduzirErro(error.message));
     if (data.session) {
-      router.push('/boas-vindas');
+      router.push(voltar && destino !== '/aluno' ? destino : '/boas-vindas');
       router.refresh();
     } else {
       setOk('Conta criada. Enviamos um link de confirmação para o seu e-mail: abra-o para entrar.');
@@ -116,7 +122,12 @@ export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoIni
       {modo === 'criar' && (
         <form onSubmit={criar} className={styles.pilha}>
           {!fixo && <h1 className="display" style={{ margin: 0, fontSize: 30 }}>Criar conta</h1>}
-          <div className="campo"><label htmlFor="nome">Nome</label><input id="nome" name="nome" type="text" autoComplete="given-name" required placeholder="Como quer ser chamado" /></div>
+          <div className="campo"><label htmlFor="nomec">Nome completo</label><input id="nomec" name="nome_completo" type="text" autoComplete="name" required placeholder="Como está no seu documento" /></div>
+          <div className="campo"><label htmlFor="nome">Como quer ser chamado</label><input id="nome" name="nome" type="text" autoComplete="given-name" required placeholder="Seu primeiro nome" /></div>
+          <div className={styles.dupla}>
+            <div className="campo"><label htmlFor="cpf">CPF</label><input id="cpf" name="cpf" type="text" inputMode="numeric" autoComplete="off" required placeholder="000.000.000-00" /></div>
+            <div className="campo"><label htmlFor="tel">Telefone (WhatsApp)</label><input id="tel" name="telefone" type="tel" inputMode="tel" autoComplete="tel" required placeholder="(81) 99999-9999" /></div>
+          </div>
           <div className={styles.dupla}>
             <div className="campo" style={{ flexGrow: 2 }}><label htmlFor="email2">E-mail</label><input id="email2" name="email" type="email" autoComplete="email" required placeholder="seuemail@exemplo.com" /></div>
             <div className="campo"><label htmlFor="ano">Ano de nascimento</label><input id="ano" name="ano" type="text" inputMode="numeric" maxLength={4} required placeholder="1998" /></div>
@@ -128,7 +139,7 @@ export function FormularioEntrar({ modoInicial, aviso, fixo = false }: { modoIni
           </label>
           <button type="submit" className="btn btn-azul btn-grande" disabled={enviando}>{enviando ? 'Criando…' : 'Criar minha conta'}</button>
           <p className="suave" style={{ margin: 0, fontSize: 14 }}>
-            Ao criar a conta, você concorda com os <a href="/termos">Termos de uso</a> e a <a href="/privacidade">Política de privacidade</a>.
+            Seu nome, CPF e telefone aparecem como marca d&apos;água nos PDFs que você baixar (para proteger o material contra cópia) e podem ser usados para falarmos com você sobre o seu estudo. Ao criar a conta, você concorda com os <a href="/termos">Termos de uso</a> e a <a href="/privacidade">Política de privacidade</a>.
           </p>
         </form>
       )}
