@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Caminho, PAINEL_PROFESSOR } from '@/components/Caminho';
-import { alternarSimulado } from '../actions';
+import { alternarSimulado, completarGabarito } from '../actions';
+import { FormAcao } from '../FormAcao';
 import { FormSimulado } from './FormSimulado';
 import { TrocarCapa } from '../TrocarCapa';
 import { Capa } from '@/components/Capa';
@@ -20,15 +21,18 @@ export default async function Simulados() {
     supabase.from('gabaritos').select('simulado_id, assuntos'),
     supabase.from('simulados').select('*'),
   ]);
-  const infos = new Map(((extras ?? []) as { id: string; semana: number | null; capa_path?: string | null }[]).map((x) => [x.id, x]));
+  const infos = new Map(((extras ?? []) as { id: string; semana: number | null; capa_path?: string | null; titulo?: string | null }[]).map((x) => [x.id, x]));
   const capas = await linksCapas(supabase, Array.from(infos.values()).map((x) => x.capa_path));
   const sims = (data as Sim[] | null) ?? [];
   const classificadas = new Map(((gabs ?? []) as { simulado_id: string; assuntos: string[] | null }[]).map((g) => [g.simulado_id, (g.assuntos ?? []).filter(Boolean).length]));
 
-  const [{ data: edsR }, { data: aulasR }] = await Promise.all([
+  const [{ data: edsR }, { data: aulasR }, { data: discsR }] = await Promise.all([
     supabase.from('editais').select('id, nome').order('nome'),
     supabase.from('aulas').select('id, numero, titulo, modulos(numero, titulo, disciplina)').order('numero'),
+    supabase.from('edital_disciplinas').select('edital_id, questoes'),
   ]);
+  const totais: Record<string, number> = {};
+  for (const d of (discsR ?? []) as { edital_id: string; questoes: number }[]) totais[d.edital_id] = (totais[d.edital_id] ?? 0) + d.questoes;
   const editaisLista = (edsR ?? []) as { id: string; nome: string }[];
   const aulasLista = ((aulasR ?? []) as unknown as { id: string; numero: number; titulo: string; modulos: { numero: number; titulo: string; disciplina: string | null } | null }[])
     .map((a) => ({ id: a.id, rotulo: `${a.modulos?.disciplina ? `${a.modulos.disciplina} · ` : ''}Módulo ${a.modulos?.numero ?? ''} · Aula ${a.numero} · ${a.titulo}` }))
@@ -41,7 +45,7 @@ export default async function Simulados() {
 
       <section aria-labelledby="novo" className={`cartao ${styles.bloco}`} style={{ borderColor: 'var(--ciano)' }}>
         <h2 id="novo" className="display">Novo simulado</h2>
-        <FormSimulado editais={editaisLista} aulas={aulasLista} />
+        <FormSimulado editais={editaisLista} aulas={aulasLista} totais={totais} />
       </section>
 
       <section aria-labelledby="lista" className={`cartao ${styles.bloco}`}>
@@ -55,10 +59,17 @@ export default async function Simulados() {
               <tbody>
                 {sims.map((s) => (
                   <tr key={s.id}>
-                    <td className="mono">{s.codigo}</td>
+                    <td><b>{infos.get(s.id)?.titulo ?? s.codigo}</b><br /><span className="mono suave" style={{ fontSize: 12 }}>{s.codigo}</span></td>
                     <td>{TIPO[s.tipo] ?? s.tipo}</td>
                     <td>{s.n_questoes}</td>
-                    <td><span className={`${styles.chip} ${s.tem_gabarito ? styles.chipOk : styles.chipAlerta}`}>{s.tem_gabarito ? 'Cadastrado' : 'Falta'}</span></td>
+                    <td>
+                      {s.tem_gabarito ? <span className={`${styles.chip} ${styles.chipOk}`}>Cadastrado</span> : (
+                        <FormAcao acao={completarGabarito} botao="Salvar gabarito">
+                          <input type="hidden" name="id" value={s.id} />
+                          <input name="gabarito" className="mono" placeholder={`${s.n_questoes} letras`} aria-label={`Gabarito de ${s.codigo}`} style={{ minWidth: 200 }} />
+                        </FormAcao>
+                      )}
+                    </td>
                     <td>
                       {s.tem_gabarito ? (
                         <Link href={`/professor/simulados/${s.id}`} className={`btn btn-linha ${styles.mini}`}>

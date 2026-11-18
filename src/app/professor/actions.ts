@@ -81,51 +81,110 @@ export async function alternarAula(f: FormData): Promise<void> {
 }
 
 // ---------- Simulados e gabaritos ----------
-export async function salvarSimulado(_: Resultado, f: FormData): Promise<Resultado> {
-  const codigo = txt(f, 'codigo').toUpperCase();
-  const n = parseInt(txt(f, 'n_questoes'), 10);
+type Cliente = Awaited<ReturnType<typeof createClient>>;
+const UUID = /^[0-9a-f-]{36}$/i;
+
+// Disciplina de cada questão, sem digitar: no simulado geral vem do edital (na ordem e quantidade de cada disciplina); no minissimulado é a disciplina da aula.
+async function habilidadesDo(supabase: Cliente, tipo: string, editalId: string | null, aulaId: string | null, n: number): Promise<string[]> {
+  if (tipo === 'completo' && editalId) {
+    const { data } = await supabase.from('edital_disciplinas').select('disciplina, questoes, ordem').eq('edital_id', editalId).order('ordem');
+    const lista = ((data ?? []) as { disciplina: string; questoes: number }[]).flatMap((d) => Array(d.questoes).fill(d.disciplina) as string[]);
+    return lista.length === n ? lista : [];
+  }
+  if (tipo !== 'completo' && aulaId) {
+    const { data } = await supabase.from('aulas').select('modulos(disciplina)').eq('id', aulaId).maybeSingle();
+    const m = (data as unknown as { modulos: { disciplina: string | null } | { disciplina: string | null }[] | null } | null)?.modulos;
+    const disc = (Array.isArray(m) ? m[0] : m)?.disciplina;
+    return disc ? Array(n).fill(disc) : [];
+  }
+  return [];
+}
+
+function lerGabarito(f: FormData, n: number): { gabarito: string; erro?: string } {
   const gabarito = txt(f, 'gabarito').toUpperCase().replace(/\s/g, '');
-  const habs = txt(f, 'habilidades').split(/[,;\n]+/).map((x) => x.trim()).filter(Boolean);
+  if (!gabarito) return { gabarito };
+  if (!/^[A-E]+$/.test(gabarito)) return { gabarito, erro: 'O gabarito só pode ter as letras A, B, C, D e E.' };
+  if (gabarito.length !== n) return { gabarito, erro: `O gabarito tem ${gabarito.length} letras, mas o simulado tem ${n} questões.` };
+  return { gabarito };
+}
 
-  if (!/^[A-Z0-9-]{3,20}$/.test(codigo)) return { erro: 'Use um código como MS-03-GAB ou SC-02.' };
-  if (!n || n < 1 || n > 90) return { erro: 'Informe o número de questões (1 a 90).' };
-  if (!/^[A-E]+$/.test(gabarito)) return { erro: 'O gabarito só pode ter as letras A, B, C, D e E.' };
-  if (gabarito.length !== n) return { erro: `O gabarito tem ${gabarito.length} letras, mas o simulado tem ${n} questões.` };
-  if (habs.length && habs.length !== n) return { erro: `Informe uma disciplina por questão (${n}) ou deixe o campo vazio.` };
-
+export async function salvarSimulado(_: Resultado, f: FormData): Promise<Resultado> {
   const supabase = await createClient();
-  const { data: sim, error } = await supabase
-    .from('simulados')
-    .insert({
-      codigo,
-      tipo: txt(f, 'tipo') === 'completo' ? 'completo' : 'mini',
-      titulo: ouNulo(txt(f, 'titulo').slice(0, 120)),
-      gratuito: f.get('gratuito') === 'on',
-      ordem: parseInt(txt(f, 'ordem'), 10) || 0,
-      edital_id: /^[0-9a-f-]{36}$/i.test(txt(f, 'edital_id')) ? txt(f, 'edital_id') : null,
-      aula_id: /^[0-9a-f-]{36}$/i.test(txt(f, 'aula_id')) ? txt(f, 'aula_id') : null,
-      n_questoes: n,
-      prova_pdf_path: ouNulo(txt(f, 'prova_pdf_path')),
-      gabarito_pdf_path: ouNulo(txt(f, 'gabarito_pdf_path')),
-      correcao_video_url: ouNulo(txt(f, 'correcao_video_url')),
-      liberado: f.get('liberado') === 'on',
-    })
-    .select('id')
-    .single();
-  if (error || !sim) {
-    if (error?.code === '23505') return { erro: `Já existe um simulado com o código ${codigo}.` };
-    return { erro: 'Não foi possível salvar: ' + (error?.message ?? 'erro desconhecido') };
+  const tipo = txt(f, 'tipo') === 'completo' ? 'completo' : 'mini';
+  const editalId = UUID.test(txt(f, 'edital_id')) ? txt(f, 'edital_id') : null;
+  const aulaId = UUID.test(txt(f, 'aula_id')) ? txt(f, 'aula_id') : null;
+  let n = parseInt(txt(f, 'n_questoes'), 10);
+  let titulo = txt(f, 'titulo').slice(0, 120);
+  let ordem = 0;
+
+  if (tipo === 'completo') {
+    if (!editalId) return { erro: 'Escolha o edital.' };
+    const [{ data: ds }, { data: ed }, { count }] = await Promise.all([
+      supabase.from('edital_disciplinas').select('questoes').eq('edital_id', editalId),
+      supabase.from('editais').select('nome').eq('id', editalId).maybeSingle(),
+      supabase.from('simulados').select('id', { count: 'exact', head: true }).eq('edital_id', editalId).eq('tipo', 'completo'),
+    ]);
+    n = ((ds ?? []) as { questoes: number }[]).reduce((t, d) => t + d.questoes, 0);
+    if (!n) return { erro: 'Esse edital ainda não tem disciplinas com número de questões. Preencha em Editais.' };
+    ordem = (count ?? 0) + 1;
+    if (!titulo) titulo = `Simulado ${ordem} · ${(ed as { nome: string } | null)?.nome ?? ''}`.trim();
+  } else {
+    if (!aulaId) return { erro: 'Escolha a matéria (aula) do minissimulado.' };
+    if (!n || n < 1 || n > 90) return { erro: 'Informe o número de questões (1 a 90).' };
+    if (!titulo) {
+      const { data } = await supabase.from('aulas').select('titulo, modulos(disciplina)').eq('id', aulaId).maybeSingle();
+      const a = data as unknown as { titulo: string; modulos: { disciplina: string | null } | { disciplina: string | null }[] | null } | null;
+      const disc = (Array.isArray(a?.modulos) ? a?.modulos[0] : a?.modulos)?.disciplina;
+      titulo = `Minissimulado · ${disc ?? a?.titulo ?? ''}`.trim();
+    }
   }
 
-  const { error: eg } = await supabase
-    .from('gabaritos')
-    .insert({ simulado_id: sim.id, respostas: gabarito, habilidades: habs });
-  if (eg) {
-    await supabase.from('simulados').delete().eq('id', sim.id);
-    return { erro: 'Não foi possível salvar o gabarito: ' + eg.message };
+  const g = lerGabarito(f, n);
+  if (g.erro) return { erro: g.erro };
+  const habs = await habilidadesDo(supabase, tipo, editalId, aulaId, n);
+  // sem gabarito não dá para corrigir: o simulado fica oculto até o gabarito ser completado na lista
+  const liberar = f.get('liberado') === 'on' && !!g.gabarito;
+
+  let sim: { id: string } | null = null; let codigo = ''; let erro: { code?: string; message: string } | null = null;
+  for (let t = 0; t < 4 && !sim; t++) {
+    codigo = (tipo === 'completo' ? 'SIM-' : 'MINI-') + Math.random().toString(36).slice(2, 7).toUpperCase().padEnd(5, '0');
+    const r = await supabase.from('simulados').insert({
+      codigo, tipo, titulo: ouNulo(titulo), gratuito: tipo === 'completo' && f.get('gratuito') === 'on', ordem,
+      edital_id: editalId, aula_id: tipo === 'completo' ? null : aulaId, n_questoes: n,
+      prova_pdf_path: ouNulo(txt(f, 'prova_pdf_path')), gabarito_pdf_path: ouNulo(txt(f, 'gabarito_pdf_path')),
+      correcao_video_url: ouNulo(txt(f, 'correcao_video_url')), liberado: liberar,
+    }).select('id').single();
+    if (r.data) sim = r.data as { id: string }; else erro = r.error;
+    if (erro && erro.code !== '23505') break;
+  }
+  if (!sim) return { erro: 'Não foi possível salvar: ' + (erro?.message ?? 'erro desconhecido') };
+
+  if (g.gabarito) {
+    const { error: eg } = await supabase.from('gabaritos').insert({ simulado_id: sim.id, respostas: g.gabarito, habilidades: habs });
+    if (eg) {
+      await supabase.from('simulados').delete().eq('id', sim.id);
+      return { erro: 'Não foi possível salvar o gabarito: ' + eg.message };
+    }
   }
   revalidatePath('/professor/simulados');
-  return { ok: `Simulado ${codigo} salvo${f.get('liberado') === 'on' ? ' e liberado para os alunos' : ''}.` };
+  return { ok: g.gabarito
+    ? `"${titulo}" salvo${liberar ? ' e liberado para os alunos' : ''}.`
+    : `"${titulo}" salvo SEM gabarito e oculto. Complete o gabarito na lista abaixo para liberar.` };
+}
+
+// completa o gabarito de um simulado salvo sem ele
+export async function completarGabarito(_: Resultado, f: FormData): Promise<Resultado> {
+  const supabase = await createClient();
+  const { data } = await supabase.from('simulados').select('id, tipo, n_questoes, edital_id, aula_id').eq('id', txt(f, 'id')).maybeSingle();
+  const s = data as { id: string; tipo: string; n_questoes: number; edital_id: string | null; aula_id: string | null } | null;
+  if (!s) return { erro: 'Simulado não encontrado.' };
+  const g = lerGabarito(f, s.n_questoes);
+  if (g.erro || !g.gabarito) return { erro: g.erro ?? `Digite as ${s.n_questoes} letras.` };
+  const habs = await habilidadesDo(supabase, s.tipo, s.edital_id, s.aula_id, s.n_questoes);
+  const { error } = await supabase.from('gabaritos').insert({ simulado_id: s.id, respostas: g.gabarito, habilidades: habs });
+  if (error) return { erro: 'Não foi possível salvar: ' + error.message };
+  revalidatePath('/professor/simulados');
+  return { ok: 'Gabarito salvo. Agora é só liberar.' };
 }
 
 export async function alternarSimulado(f: FormData): Promise<void> {
