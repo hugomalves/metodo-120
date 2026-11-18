@@ -42,7 +42,7 @@ export default async function ImprimirLista({ params }: { params: Promise<{ id: 
         <header className={s.capa}>
           <div className={s.logoCaixa}><Logo120 tamanho={52} slogan /></div>
           <div className={s.capaTexto}>
-            <span className={s.kicker}>Lista impressa</span>
+            <span className={s.kicker}>Lista de questões</span>
             <h1 className={s.titulo}>{lista.titulo}</h1>
             <div className={s.chips}>
               <span>{hoje}</span>

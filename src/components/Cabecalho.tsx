@@ -5,9 +5,10 @@ import { REDES } from '@/lib/marca';
 
 type Edital = { id: string; nome: string; situacao: string; data_prova: string | null };
 
-async function dadosDoTopo(): Promise<{ editais: Edital[]; oferta: string }> {
+async function dadosDoTopo(): Promise<{ editais: Edital[]; oferta: string; logado: boolean }> {
   try {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     const [{ data }, { data: prods }] = await Promise.all([
       supabase.from('editais').select('id, nome, situacao, data_prova').eq('publicado', true).order('data_prova', { nullsFirst: false }),
       supabase.from('produtos').select('slug, destaque, ordem').eq('venda_aberta', true).eq('tipo', 'curso').not('slug', 'like', 'plano-%').order('ordem'),
@@ -15,9 +16,9 @@ async function dadosDoTopo(): Promise<{ editais: Edital[]; oferta: string }> {
     const lista = (prods ?? []) as { slug: string; destaque: boolean }[];
     // a oferta é o curso em destaque à venda (ex.: Reta Final); sem destaque, a loja
     const destaque = lista.find((p) => p.destaque) ?? null;
-    return { editais: (data ?? []) as Edital[], oferta: destaque ? `/curso/${destaque.slug}` : '/loja' };
+    return { editais: (data ?? []) as Edital[], oferta: destaque ? `/curso/${destaque.slug}` : '/loja', logado: !!user };
   } catch {
-    return { editais: [], oferta: '/loja' };
+    return { editais: [], oferta: '/loja', logado: false };
   }
 }
 
@@ -28,10 +29,10 @@ const ICONE: Record<string, string> = {
 };
 
 // Cabeçalho das páginas abertas: faixa de aviso + uma barra só, com
-// logo · abas (Loja, Editais, Planos, Oferta) · Entrar e Garantir vaga.
+// logo · abas (Loja, Editais, Notícias, Planos, Oferta) · Entrar e Garantir vaga.
 // No celular, as abas descem para uma segunda linha que rola para o lado; Entrar e Garantir vaga ficam sempre à vista.
 export async function Cabecalho() {
-  const { editais, oferta } = await dadosDoTopo();
+  const { editais, oferta, logado } = await dadosDoTopo();
   const aberto = editais.find((e) => e.situacao === 'aberto');
   const redes = Object.entries(REDES).filter(([, url]) => url);
   const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
@@ -48,6 +49,7 @@ export async function Cabecalho() {
           <Link href="/#editais" className="cab-drop-todos">Ver todos os editais</Link>
         </div>
       </details>
+      <Link href="/noticias">Notícias</Link>
       <Link href="/planos">Planos</Link>
       <Link href={oferta} className="cab-oferta">Oferta</Link>
     </nav>
@@ -74,7 +76,7 @@ export async function Cabecalho() {
             </span>
           )}
           <div className="cab-conta">
-            <Link href="/entrar" className="cab-entrar">Login</Link>
+            <Link href={logado ? '/aluno' : '/entrar'} className="cab-entrar">{logado ? 'Minha área' : 'Login'}</Link>
             <Link href={oferta} className="cab-garantir">Garantir vaga</Link>
           </div>
         </div>

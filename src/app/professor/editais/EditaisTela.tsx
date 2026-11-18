@@ -8,7 +8,7 @@ import styles from '../professor.module.css';
 type Disc = { disciplina: string; questoes: number; bloco: string | null; peso: number; ordem: number };
 export type Edital = {
   id: string; slug: string; nome: string; orgao: string; cargo: string; banca: string | null; esfera: string; escolaridade: string | null;
-  situacao: string; data_prova: string | null; tipo_prova: string; n_alternativas: number; corte_bloco: number | null; corte_total: number | null;
+  carreira?: string | null; situacao: string; data_prova: string | null; tipo_prova: string; n_alternativas: number; corte_bloco: number | null; corte_total: number | null;
   sem_zerar: boolean; duracao_min: number | null; observacoes: string | null; publicado: boolean; edital_disciplinas: Disc[];
 };
 
@@ -71,6 +71,10 @@ export function EditaisTela({ editais, id, novo }: { editais: Edital[]; id?: str
               <div className="campo"><label htmlFor="ecar">Cargo</label><input id="ecar" name="cargo" required defaultValue={e?.cargo} placeholder="Agente" /></div>
               <div className="campo"><label htmlFor="eban">Banca</label><input id="eban" name="banca" list="bancas-ed" defaultValue={e?.banca ?? ''} /></div>
               <div className="campo"><label htmlFor="edata">Data da prova</label><input id="edata" name="data_prova" type="date" defaultValue={e?.data_prova ?? ''} /></div>
+              <div className="campo">
+                <label htmlFor="ecarr">Carreira (aba Notícias)</label>
+                <select id="ecarr" name="carreira" defaultValue={e?.carreira ?? ''}><option value="">Nenhuma</option><option value="federais">Polícias Federais</option><option value="civis">Polícias Civis e Penais</option><option value="militares">Polícia Militar</option><option value="guardas">Guardas Municipais</option></select>
+              </div>
               <div className="campo">
                 <label htmlFor="esit">Situação</label>
                 <select id="esit" name="situacao" defaultValue={e?.situacao ?? 'previsto'}><option value="previsto">Previsto</option><option value="aberto">Aberto</option><option value="encerrado">Encerrado</option></select>

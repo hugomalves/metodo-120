@@ -4,6 +4,7 @@ import {
   type Conteudo, type DisciplinaEdital, type Estudo, type Item, type Progresso, type Revisao,
 } from '@/lib/cronograma';
 import { BotaoRegistrar, Marcador } from './Interativos';
+import { SeletorEdital } from '../SeletorEdital';
 import { apagarEstudo, apagarRevisao, concluirRevisao, replanejar } from './actions';
 import s from './cronograma.module.css';
 
@@ -50,13 +51,10 @@ export function Topo({ b, editais, trocar }: { b: Base; editais: { id: string; n
   return (
     <div className={s.topo}>
       <div className={s.topoLinha}>
-        <form action={trocar} className={s.seletor}>
+        <div className={s.seletor}>
           <Icone d="M4 5h16v15H4zM4 9h16M8 3v4M16 3v4" />
-          <select name="edital" defaultValue={b.edital.id} aria-label="Edital do cronograma">
-            {editais.map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
-          </select>
-          <button className={s.btnMini}>Trocar</button>
-        </form>
+          <SeletorEdital editais={editais} atual={b.edital.id} acao={trocar} comNenhum={false} />
+        </div>
         <BotaoRegistrar rotulo="Registrar estudo" className={s.btnPrimario} />
       </div>
       <nav className={s.atalhos} aria-label="Atalhos do edital">

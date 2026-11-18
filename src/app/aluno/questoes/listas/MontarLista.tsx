@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { Formulario } from '@/components/Formulario';
-import { contar, mapaEditais, mudar, VAZIO, type EditalFiltro, type Grupo, type ValoresFiltro } from '@/lib/filtros';
-import { CamposFiltro } from '../CamposFiltro';
+import { contar, mapaEditais, mudar, VAZIO, type Chave, type EditalFiltro, type Grupo, type ValoresFiltro } from '@/lib/filtros';
+import { CamposFiltro, EtiquetasFiltro } from '../CamposFiltro';
 import { criarLista } from '../../actions';
 import s from '../../aluno.module.css';
 
@@ -15,6 +15,7 @@ export function MontarLista({ grupos, editais, inicial, maxQtd = 60 }: {
   const mapa = useMemo(() => mapaEditais(editais), [editais]);
   const [f, setF] = useState<ValoresFiltro>({ ...VAZIO, ...Object.fromEntries(Object.entries(inicial).filter(([, v]) => v)) });
   const [novas, setNovas] = useState(false);
+  const muda = (k: Chave, v: string) => setF((x) => mudar(x, k, v, mapa, { editais, grupos }));
   const opcoesQtd = [5, 10, 15, 20, 30, 40, 60].filter((n) => n <= maxQtd);
   const [qtd, setQtd] = useState(Math.min(10, maxQtd));
 
@@ -44,7 +45,7 @@ export function MontarLista({ grupos, editais, inicial, maxQtd = 60 }: {
       </div>
 
       <div className={s.filtrosAluno}>
-        <CamposFiltro grupos={grupos} editais={editais} mapa={mapa} f={f} novas={novas} muda={(k, v) => setF((x) => mudar(x, k, v, mapa))} prefixo="ml" />
+        <CamposFiltro grupos={grupos} editais={editais} mapa={mapa} f={f} novas={novas} muda={muda} prefixo="ml" />
         <div className="campo">
           <label htmlFor="mlq">Quantidade</label>
           <select id="mlq" name="qtd" value={qtd} onChange={(e) => setQtd(parseInt(e.target.value, 10))}>
@@ -52,6 +53,7 @@ export function MontarLista({ grupos, editais, inicial, maxQtd = 60 }: {
           </select>
         </div>
       </div>
+      <EtiquetasFiltro f={f} muda={muda} editais={editais} />
       {maxQtd < 60 && (
         <span className="suave" style={{ fontSize: 13.5 }}>No plano grátis, as listas têm até {maxQtd} questões. <a href="/aluno/planos">Listas maiores no banco completo</a>.</span>
       )}

@@ -12,7 +12,7 @@ export const metadata = { title: 'Produtos e loja · Painel do professor' };
 type P = {
   id: string; slug: string; nome: string; tipo: string; descricao: string | null; preco: string | null; beneficios: string[]; edital_id: string | null;
   destaque: boolean; selo: string | null; ordem: number; checkout_url: string | null; kiwify_product_id: string | null; venda_aberta: boolean; acesso_ate: string | null; imagem_path: string | null;
-  dias_acesso?: number | null; gratuito?: boolean; libera_produto_id?: string | null;
+  carreira?: string | null; dias_acesso?: number | null; gratuito?: boolean; libera_produto_id?: string | null;
 };
 const TIPOS: Record<string, string> = { curso: 'Curso em PDF (libera as aulas, os minissimulados e os simulados do edital)', simulados: 'Pacote de simulados', mentoria: 'Mentoria individual', banco: 'Banco de questões completo' };
 
@@ -30,6 +30,10 @@ function Form({ p, editais, pdf, cursos = [] }: { p?: P; editais: { id: string; 
         <div className="campo">
           <label htmlFor={`pe-${id}`}>Edital</label>
           <select id={`pe-${id}`} name="edital_id" defaultValue={p?.edital_id ?? ''}><option value="">Nenhum (vale para todos)</option>{editais.map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}</select>
+        </div>
+        <div className="campo">
+          <label htmlFor={`pc-${id}`}>Carreira (aba Notícias)</label>
+          <select id={`pc-${id}`} name="carreira" defaultValue={p?.carreira ?? ''}><option value="">Nenhuma</option><option value="federais">Polícias Federais</option><option value="civis">Polícias Civis e Penais</option><option value="militares">Polícia Militar</option><option value="guardas">Guardas Municipais</option></select>
         </div>
         <div className="campo"><label htmlFor={`pp-${id}`}>Preço (como aparece)</label><input id={`pp-${id}`} name="preco" defaultValue={p?.preco ?? ''} placeholder="R$ 197 ou 12x de R$ 19,70" /></div>
         <div className="campo"><label htmlFor={`ps-${id}`}>Selo (opcional)</label><input id={`ps-${id}`} name="selo" maxLength={30} defaultValue={p?.selo ?? ''} placeholder="Reta final" /></div>

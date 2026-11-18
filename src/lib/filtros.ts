@@ -6,7 +6,14 @@ export type Grupo = {
   disciplina: string | null; assunto: string | null; tipo: string | null; nivel: string | null; origem: string | null;
   feita: boolean; n: number;
 };
-export type EditalFiltro = { id: string; nome: string; disciplinas: string[] };
+export type EditalFiltro = { id: string; nome: string; disciplinas: string[]; banca?: string | null };
+
+// Alguns filtros aceitam vários valores ao mesmo tempo (separados por |): banca, ano, disciplina, assunto, tipo e dificuldade
+export const SEP = '|';
+export const MULTI: Chave[] = ['b', 'y', 'd', 'a', 't', 'n'];
+export const lista = (v: string): string[] => (v ? v.split(SEP).filter(Boolean) : []);
+export const juntar = (vs: string[]) => vs.join(SEP);
+export const legivel = (v: string) => lista(v).join(', ');
 
 // e = edital · d = disciplina · a = assunto · b = banca · t = tipo · o = órgão · c = cargo · y = ano
 // esc = escolaridade · n = dificuldade · or = origem
@@ -37,7 +44,7 @@ export function valor(g: Grupo, k: Chave): string {
 export function passa(g: Grupo, k: Chave, v: string, editais: Map<string, Set<string>>): boolean {
   if (!v) return true;
   if (k === 'e') return editais.get(v)?.has(g.disciplina ?? '') ?? false;
-  return valor(g, k) === v;
+  return lista(v).includes(valor(g, k));
 }
 
 export function mapaEditais(editais: EditalFiltro[]) {
@@ -71,11 +78,35 @@ export function opcoesDe(k: Chave, grupos: Grupo[], f: ValoresFiltro, editais: M
   return conta;
 }
 
-// trocar um filtro limpa os que dependem dele
-export function mudar(f: ValoresFiltro, k: Chave, v: string, editais: Map<string, Set<string>>): ValoresFiltro {
+const norm = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+// a banca do edital (ex.: "Instituto AOCP") entre as bancas que existem no banco (ex.: "AOCP")
+export function bancaDoEdital(edital: EditalFiltro | undefined, grupos: Grupo[]): string {
+  if (!edital?.banca) return '';
+  const alvo = norm(edital.banca);
+  const existentes = Array.from(new Set(grupos.map((g) => g.banca).filter((b): b is string => !!b)));
+  const achada = existentes.find((b) => norm(b) === alvo) ?? existentes.find((b) => alvo.includes(norm(b)) || norm(b).includes(alvo));
+  return achada ?? '';
+}
+
+// bancas em ordem: as que têm mais questões no banco primeiro
+export function bancasPorQuantidade(grupos: Grupo[]): string[] {
+  const conta = new Map<string, number>();
+  grupos.forEach((g) => { if (g.banca) conta.set(g.banca, (conta.get(g.banca) ?? 0) + g.n); });
+  return Array.from(conta.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'pt-BR')).map(([b]) => b);
+}
+
+// Trocar um filtro limpa os que dependem dele. Escolher um edital já escolhe a banca dele;
+// depois o aluno pode trocar a banca à vontade, sem que o edital a desfaça.
+export function mudar(f: ValoresFiltro, k: Chave, v: string, editais: Map<string, Set<string>>, ctx?: { editais: EditalFiltro[]; grupos: Grupo[] }): ValoresFiltro {
   const novo = { ...f, [k]: v };
   if (k === 'd') novo.a = '';
-  if (k === 'e' && v && novo.d && !editais.get(v)?.has(novo.d)) { novo.d = ''; novo.a = ''; }
+  if (k === 'e' && v) {
+    const discs = editais.get(v);
+    const mantidas = lista(novo.d).filter((d) => discs?.has(d));
+    if (mantidas.length !== lista(novo.d).length) { novo.d = juntar(mantidas); novo.a = ''; }
+    if (ctx) { const b = bancaDoEdital(ctx.editais.find((e) => e.id === v), ctx.grupos); if (b) novo.b = b; }
+  }
   return novo;
 }
 

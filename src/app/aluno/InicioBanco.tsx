@@ -7,6 +7,7 @@ import type { Grupo } from '@/lib/filtros';
 import { CartaoCapa } from '@/components/CartaoCapa';
 import { iconePorDisciplina } from '@/components/Capa';
 import { seguirEdital } from './actions';
+import { SeletorEdital } from './SeletorEdital';
 import { PlanoDoDia } from './PlanoDoDia';
 import { carregarLoja, linkCompra, produtoQueLibera, quadrosSimulados } from '@/lib/loja';
 import { CartaoProduto, Cadeado } from '@/components/CartaoProduto';
@@ -81,14 +82,8 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
             </span>
           )}
         </div>
-        <form action={seguirEdital} className="linha-flex" style={{ gap: 8 }}>
-          <label htmlFor="sed" className="sr-only">Edital</label>
-          <select id="sed" name="edital" defaultValue={meu?.id ?? ''} style={{ minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--cartao)', color: 'var(--texto)', font: 'inherit', maxWidth: '100%' }}>
-            <option value="">Nenhum (ver todas as questões)</option>
-            {editais.map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
-          </select>
-          <button className="btn btn-ciano">{meu ? 'Trocar' : 'Seguir este edital'}</button>
-        </form>
+        <SeletorEdital editais={editais} atual={meu?.id ?? ''} acao={seguirEdital}
+          estilo={{ minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--cartao)', color: 'var(--texto)', font: 'inherit', maxWidth: '100%' }} />
       </section>
 
       {meu && <PlanoDoDia supabase={supabase} alunoId={perfil.id} edital={meu} curso={acesso.curso} grupos={grupos} diaEscolhido={dia} />}
@@ -201,7 +196,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
       <section className={s.grupo} aria-labelledby="mais">
         <h2 id="mais" className="display">Treine do seu jeito</h2>
         <div className="cc-grade">
-          <CartaoCapa href="/aluno/questoes/listas" tipo="lista" rotulo="Lista impressa" titulo="Monte e imprima uma lista"
+          <CartaoCapa href="/aluno/questoes/listas" tipo="lista" rotulo="Lista em PDF" titulo="Crie uma lista em PDF"
             texto={`Escolha edital, disciplina, banca e dificuldade${acesso.completo ? '' : `. No plano grátis, listas de até ${acesso.listaMax} questões`}.`}
             rodape={<Link href="/aluno/questoes/listas" className="btn btn-azul">Montar lista</Link>} />
         </div>

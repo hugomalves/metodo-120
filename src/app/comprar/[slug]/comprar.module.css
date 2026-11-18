@@ -1,0 +1,9 @@
+.pagina { display: flex; flex-direction: column; gap: 16px; padding-top: 48px; padding-bottom: 80px; max-width: 760px; margin-left: auto; margin-right: auto; }
+.pagina h1 { margin: 0; font-size: clamp(32px, 5vw, 52px); color: #fff; }
+.preco { font-family: var(--font-titulo); font-size: 36px; color: #fff; }
+.passos { margin: 8px 0; padding: 0; list-style: none; counter-reset: p; display: flex; flex-direction: column; gap: 12px; }
+.passos li { counter-increment: p; position: relative; padding: 18px 20px 18px 64px; background: #0c0d10; box-shadow: inset 0 0 0 1px #22262e; color: #c3c9d4; }
+.passos li::before { content: counter(p); position: absolute; left: 18px; top: 16px; width: 32px; height: 32px; display: grid; place-items: center; background: var(--azul); color: #fff; font-family: var(--font-titulo); font-weight: 700; }
+.passos b { color: #fff; }
+.email { font-family: var(--font-mono); color: #fff; word-break: break-all; }
+.acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }

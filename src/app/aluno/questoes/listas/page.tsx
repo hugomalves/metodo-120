@@ -10,7 +10,7 @@ import { CartaoCapa, BarraProgresso } from '@/components/CartaoCapa';
 import { iconePorTitulo } from '@/components/Capa';
 import s from '../../aluno.module.css';
 
-export const metadata = { title: 'Listas impressas' };
+export const metadata = { title: 'Criar listas em PDF' };
 
 type Lista = { id: string; titulo: string; questoes: string[]; criada_em: string };
 
@@ -29,16 +29,16 @@ export default async function Listas({ searchParams }: { searchParams: Promise<R
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Listas impressas' }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Criar listas em PDF' }]} />
       <div className={s.cabeca}>
-        <h1 className={`display ${s.titulo}`}>Listas impressas</h1>
+        <h1 className={`display ${s.titulo}`}>Criar listas em PDF</h1>
         <p className="suave" style={{ margin: 0, maxWidth: '64ch' }}>
           Escolha o edital, a disciplina, a banca e quantas questões. A lista prioriza as questões que você ainda não fez e fica salva aqui para continuar depois.
         </p>
       </div>
 
       <section className="cartao" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, borderColor: 'var(--ciano)' }} aria-labelledby="nova">
-        <h2 id="nova" className="display" style={{ margin: 0, fontSize: 19 }}>Montar uma lista</h2>
+        <h2 id="nova" className="display" style={{ margin: 0, fontSize: 19 }}>Criar uma lista em PDF</h2>
         <MontarLista grupos={grupos} editais={editais} inicial={inicial} maxQtd={acesso.listaMax} />
       </section>
 
@@ -53,7 +53,7 @@ export default async function Listas({ searchParams }: { searchParams: Promise<R
             const pronta = feitas === l.questoes.length;
             const href = `/aluno/questoes/lista/${l.id}`;
             return (
-              <CartaoCapa key={l.id} href={href} tipo="lista" compacto rotulo="Lista impressa" destaque={String(l.questoes.length)}
+              <CartaoCapa key={l.id} href={href} tipo="lista" compacto rotulo="Lista em PDF" destaque={String(l.questoes.length)}
                 icone={iconePorTitulo(l.titulo)} titulo={l.titulo}
                 selo={pronta ? `${acertos}/${l.questoes.length} acertos` : feitas ? 'Em andamento' : 'Nova'}
                 texto={`${pronta ? 'Concluída' : `${feitas} de ${l.questoes.length} feitas`} · criada em ${new Date(l.criada_em).toLocaleDateString('pt-BR')}`}

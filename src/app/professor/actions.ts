@@ -457,6 +457,7 @@ export async function salvarEdital(_: Resultado, f: FormData): Promise<Resultado
     esfera: ['municipal', 'estadual', 'federal'].includes(txt(f, 'esfera')) ? txt(f, 'esfera') : 'estadual',
     escolaridade: ['fundamental', 'medio', 'superior'].includes(txt(f, 'escolaridade')) ? txt(f, 'escolaridade') : null,
     situacao: ['previsto', 'aberto', 'encerrado'].includes(txt(f, 'situacao')) ? txt(f, 'situacao') : 'previsto',
+    carreira: ['federais', 'civis', 'militares', 'guardas'].includes(txt(f, 'carreira')) ? txt(f, 'carreira') : null,
     data_prova: /^\d{4}-\d{2}-\d{2}$/.test(txt(f, 'data_prova')) ? txt(f, 'data_prova') : null,
     tipo_prova: txt(f, 'tipo_prova') === 'certo_errado' ? 'certo_errado' : 'multipla',
     n_alternativas: txt(f, 'n_alternativas') === '4' ? 4 : 5,
@@ -528,7 +529,7 @@ export async function salvarProdutoLoja(_: Resultado, f: FormData): Promise<Resu
   const linha = {
     nome, tipo, descricao: ouNulo(txt(f, 'descricao').slice(0, 600)), preco: ouNulo(txt(f, 'preco').slice(0, 60)),
     beneficios: txt(f, 'beneficios').split('\n').map((x) => x.trim()).filter(Boolean).slice(0, 10),
-    edital_id: /^[0-9a-f-]{36}$/i.test(edital) ? edital : null, destaque: f.get('destaque') === 'on', selo: ouNulo(txt(f, 'selo').slice(0, 30)),
+    edital_id: /^[0-9a-f-]{36}$/i.test(edital) ? edital : null, carreira: ['federais', 'civis', 'militares', 'guardas'].includes(txt(f, 'carreira')) ? txt(f, 'carreira') : null, destaque: f.get('destaque') === 'on', selo: ouNulo(txt(f, 'selo').slice(0, 30)),
     ordem: parseInt(txt(f, 'ordem'), 10) || 0, checkout_url: checkout || null, kiwify_product_id: ouNulo(txt(f, 'kiwify_product_id')),
     venda_aberta: f.get('venda_aberta') === 'on', gratuito: f.get('gratuito') === 'on', acesso_ate: ouNulo(txt(f, 'acesso_ate')),
     dias_acesso: (() => { const n = parseInt(txt(f, 'dias_acesso'), 10); return n >= 1 && n <= 3650 ? n : null; })(),

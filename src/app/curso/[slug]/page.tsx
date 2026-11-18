@@ -34,12 +34,16 @@ const dataBr = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-B
 const sombra = (url: string, forte = 0.95) => `linear-gradient(90deg, rgba(7,26,61,${forte}) 0%, rgba(7,26,61,0.85) 50%, rgba(7,26,61,0.55) 100%), url(${url})`;
 
 // Botão de compra (ou de conta grátis, enquanto o link da Kiwify não foi cadastrado)
-function Cta({ p, grande = true }: { p: Produto; grande?: boolean }) {
+function Cta({ p, grande = true, logado = false }: { p: Produto; grande?: boolean; logado?: boolean }) {
   const g = grande ? ' btn-grande' : '';
-  if (p.gratuito) return <Link href="/entrar?modo=criar" className={`btn btn-azul${g}`}>Começar grátis →</Link>;
+  if (p.gratuito) return logado
+    ? <Link href="/aluno" className={`btn btn-azul${g}`}>Abrir na minha área →</Link>
+    : <Link href="/entrar?modo=criar" className={`btn btn-azul${g}`}>Começar grátis →</Link>;
+  // quem já está logado passa por uma página do site que explica o pagamento antes de sair para a Kiwify
+  if (p.checkout_url && logado) return <Link href={`/comprar/${p.slug}`} className={`btn btn-vermelho${g}`}>Quero este →</Link>;
   return p.checkout_url
     ? <a href={p.checkout_url} target="_blank" rel="noopener" className={`btn btn-vermelho${g}`}>Quero este →</a>
-    : <Link href="/entrar?modo=criar" className={`btn btn-azul${g}`}>Criar conta grátis</Link>;
+    : <Link href={logado ? '/aluno' : '/entrar?modo=criar'} className={`btn btn-azul${g}`}>{logado ? 'Ir para a minha área' : 'Criar conta grátis'}</Link>;
 }
 
 // Página de um produto da loja (aberta a todos): o que é, o que inclui, preço e o botão de compra.
@@ -52,6 +56,8 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
     .eq('slug', slug).maybeSingle();
   const p = data as (Produto & { acesso_ate: string | null }) | null;
   if (!p || !p.venda_aberta) notFound();
+  const { data: { user } } = await supabase.auth.getUser();
+  const logado = !!user;
 
   const [videos, edRes] = await Promise.all([
     carregarVideosCurso(supabase),
@@ -84,7 +90,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
     { q: 'Como recebo o acesso depois de pagar?', a: 'Você paga no checkout da Kiwify e cria a sua conta aqui no site com o mesmo e-mail da compra. O acesso é liberado automaticamente, mesmo que você crie a conta depois de pagar.' },
     { q: 'Posso testar antes de comprar?', a: 'Pode. Crie a conta grátis e use o banco de questões, com limite diário, e um minissimulado por dia.' },
     { q: 'O curso garante a aprovação?', a: ed ? 'Não. O curso entrega o plano de estudo até a prova, organizado pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' : 'Não. O Método 120 entrega o plano: 2 horas por dia, organizadas pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' },
-    { q: 'Posso imprimir o material?', a: 'Sim. As listas de questões podem ser impressas em PDF quantas vezes você quiser.' },
+    { q: 'Posso imprimir o material?', a: 'Sim. Você cria listas de questões em PDF quantas vezes quiser e pode imprimir.' },
     ...(p.acesso_ate ? [{ q: 'Até quando vale o meu acesso?', a: `O acesso a este curso vale até ${dataBr(p.acesso_ate)}.` }] : []),
     { q: 'E se eu não gostar?', a: 'Os dias de garantia e como pedir o reembolso aparecem no checkout da Kiwify, antes de você pagar.' },
   ];
@@ -118,14 +124,14 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
             {p.gratuito ? (
               <>
                 <span className={styles.aviso}>Acesso gratuito por tempo limitado: crie a sua conta e tudo deste curso é liberado, com aulas, minissimulados, simulados e o banco de questões.</span>
-                <Cta p={p} />
+                <Cta p={p} logado={logado} />
               </>
             ) : p.checkout_url ? (
-              <Cta p={p} />
+              <Cta p={p} logado={logado} />
             ) : (
               <>
                 <span className={styles.aviso}>As vendas deste curso abrem em breve. Crie a sua conta grátis para treinar com o banco de questões enquanto isso.</span>
-                <Cta p={p} />
+                <Cta p={p} logado={logado} />
               </>
             )}
           </div>
@@ -180,7 +186,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
             <h2 className="display">{img.chamada ?? (ed ? (ed.data_prova && dias !== null && dias > 0 ? `Prova em ${dataBr(ed.data_prova)}. Comece hoje.` : 'Comece hoje.') : '2 horas por dia. Todos os dias. Por 1 ano.')}</h2>
             <p>{img.texto ?? (ed ? 'Estudo organizado pelo que o edital cobra.' : 'Plano de estudo diário, do primeiro ao último dia.')} {p.gratuito ? 'Acesso gratuito por tempo limitado.' : p.preco ? `${p.preco}.` : 'As vendas abrem em breve.'} O curso não garante aprovação: entrega o plano e as ferramentas para você cumprir.</p>
           </div>
-          <Cta p={p} />
+          <Cta p={p} logado={logado} />
         </section>
 
         <section className={`cartao ${styles.expert}`} aria-label="Quem vai te guiar">
@@ -211,7 +217,7 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
 
       <div className={styles.fixo}>
         <div><b>{p.gratuito ? 'Grátis' : p.preco ?? 'Em breve'}</b><span>{p.nome}</span></div>
-        <Cta p={p} grande={false} />
+        <Cta p={p} grande={false} logado={logado} />
       </div>
     </div>
   );

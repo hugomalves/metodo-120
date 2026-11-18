@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { acessoAtual } from '@/lib/acesso';
 import { Caminho, PAINEL_ALUNO } from '@/components/Caminho';
 import { buscarQuestoes, dadosDosFiltros, filtroDaUrl, urlFiltro } from '@/lib/banco';
-import { CHAVES, CHAVES_VISIVEIS } from '@/lib/filtros';
+import { bancaDoEdital, CHAVES, CHAVES_VISIVEIS, legivel } from '@/lib/filtros';
 import { carregarQuestoes, porPagina as lerPorPagina } from '@/lib/questao';
 import { Caderno } from '@/components/Caderno';
 import { FiltrosBanco } from './FiltrosBanco';
@@ -18,8 +18,13 @@ export default async function BancoQuestoes({ searchParams }: { searchParams: Pr
   const { supabase, perfil, acesso } = await acessoAtual();
 
   // sem filtro na URL, o banco abre no edital que o aluno está seguindo
-  if (!Object.keys(filtro).length && perfil.edital_id && !sp.todos) filtro.e = perfil.edital_id;
-  const [{ lista, minhas }, { grupos, editais }] = await Promise.all([buscarQuestoes(supabase, perfil.id, filtro), dadosDosFiltros(supabase)]);
+  const { grupos, editais } = await dadosDosFiltros(supabase);
+  if (!Object.keys(filtro).length && perfil.edital_id && !sp.todos) {
+    filtro.e = perfil.edital_id;
+    const b = bancaDoEdital(editais.find((e) => e.id === perfil.edital_id), grupos);   // o edital já traz a banca dele
+    if (b) filtro.b = b;
+  }
+  const { lista, minhas } = await buscarQuestoes(supabase, perfil.id, filtro);
   const total = lista.length;
   const paginas = Math.max(1, Math.ceil(total / pp));
   const pagina = Math.min(paginas, Math.max(1, parseInt(sp.p ?? '1', 10) || 1));
@@ -36,12 +41,12 @@ export default async function BancoQuestoes({ searchParams }: { searchParams: Pr
       <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Questões' }]} />
       <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div className={s.cabeca}>
-          <h1 className={`display ${s.titulo}`}>{filtro.d ? `Questões de ${filtro.d}` : edital ? `Questões · ${edital.nome}` : 'Banco de questões'}</h1>
+          <h1 className={`display ${s.titulo}`}>{filtro.d ? `Questões de ${legivel(filtro.d)}` : edital ? `Questões · ${edital.nome}` : 'Banco de questões'}</h1>
           <span className="suave">
             {feitas.length} resolvidas · {feitas.length ? `${Math.round((100 * acertos) / feitas.length)}% de acertos` : 'nenhuma ainda'}
           </span>
         </div>
-        <Link href="/aluno/questoes/listas" className="btn btn-linha">Montar uma lista sob medida</Link>
+        <Link href="/aluno/questoes/listas" className="btn btn-linha">Criar lista em PDF</Link>
       </div>
 
       {!acesso.completo && (

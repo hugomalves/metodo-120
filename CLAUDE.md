@@ -130,3 +130,17 @@ Títulos em Chakra Petch maiúsculos, rótulos "//" em IBM Plex Mono, cantos cor
 - `produtos.gratuito`: caixa "Gratuito por enquanto" em Painel → Produtos e loja. Ligada, todos os alunos (atuais e novos, via trigger em `perfis`) ganham matrícula do produto (`origem 'manual'`, `checkout_ref = 'gratuito:<id>'`), o que libera aulas, PDF com marca d'água, minissimulados, simulados do edital e o banco completo (`tem_banco_completo()` vale para qualquer matrícula ativa). Desligada, só as matrículas gratuitas são canceladas; quem comprou continua.
 - Páginas mostram "Grátis" (cartão, página do curso, bloco do edital na home). Reta Final PM PE começa gratuita pela própria migração.
 - Simulados e minissimulados da PMPE: Painel → Simulados (edital = PM PE; minissimulado = ligado a uma aula). O aluno precisa informar nome, CPF e telefone uma vez para baixar PDF com marca d'água.
+
+## Filtros do banco, listas em PDF e compra logada (nov/2026, migração 0011)
+- Filtros em construção (`FiltrosBanco`, `CamposFiltro`, `lib/filtros.ts`): banca, ano, disciplina, assunto, tipo e dificuldade aceitam VÁRIOS valores (na URL separados por `|`); edital é um só. Nada vale até clicar em "Filtrar". Banca aparece sempre, ordenada por quantidade de questões no banco (`bancasPorQuantidade`). Escolher um edital já marca a banca dele (`bancaDoEdital`, compara por nome sem acento); o aluno pode trocar a banca depois. Etiquetas com × mostram o que está escolhido. A migração 0011 refaz `gerar_lista` para aceitar vários valores (`p_ano` virou texto) e sobe o limite diário de listas do banco completo para 200.
+- "Listas impressas" virou "Criar listas em PDF" (menu, página, cartões).
+- Banco irrestrito para quem tem qualquer matrícula ativa: `tem_banco_completo()` não olha banca nem edital.
+- Compra já logado: o botão do curso leva a `/comprar/[slug]` (explica o pagamento e abre a Kiwify com `?email=` e `?name=` da conta; o acesso é liberado pelo e-mail da compra). Cabeçalho mostra "Minha área" quando logado. Não há parâmetro garantido da Kiwify para preencher o e-mail: testar uma compra.
+- Trocar de edital: `SeletorEdital` (início e cronograma) troca ao escolher na lista.
+- Auditoria: nenhum link interno quebrado e nenhum botão solto encontrados (script: href contra as rotas de `src/app`).
+
+## Notícias de concurso (aba "Notícias")
+- Migração `0012_noticias_concursos.sql`: tabela `noticias_concursos` (carreira, título, fonte, url único, oculta, origem busca/manual) e coluna `carreira` em `produtos` e `editais` (federais | civis | militares | guardas).
+- `src/lib/noticiasConcursos.ts`: `CARREIRAS` e `atualizarNoticias()` (Google Notícias RSS; cada manchete vai para a carreira que o título cita; guarda 25 por carreira; apaga as da busca com mais de 45 dias).
+- Busca automática: `vercel.json` (cron a cada 2 dias) → `/api/cron/noticias`, exige `CRON_SECRET` na Vercel. Manual: painel "Notícias de concurso" → "Buscar notícias agora".
+- Páginas: `/noticias` (4 quadrados com manchetes girando) e `/noticias/[carreira]` (notícias + cursos da carreira: do edital aberto e extensivos). Para um curso aparecer ali, escolha a "Carreira" no cadastro do produto (e do edital).

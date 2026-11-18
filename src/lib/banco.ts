@@ -9,6 +9,7 @@ export type QuestaoLista = { id: string; codigo: string; disciplina: string; ass
 export type MinhaResposta = { questao_id: string; acertou: boolean };
 
 const UUID = /^[0-9a-f-]{36}$/i;
+const vs = (v: string) => v.split('|').filter(Boolean);
 
 // disciplinas de um edital (para filtrar o banco pelo edital)
 async function disciplinasDoEdital(supabase: SupabaseClient, edital: string): Promise<string[]> {
@@ -25,16 +26,17 @@ export async function buscarQuestoes(supabase: SupabaseClient, alunoId: string, 
       .order('ano', { ascending: false, nullsFirst: false }).order('prova', { nullsFirst: false }).order('numero_prova', { nullsFirst: false })
       .order('codigo');
     if (discEdital) q = q.in('disciplina', discEdital);
-    if (f.d) q = q.eq('disciplina', f.d);
-    if (f.a) q = q.eq('assunto', f.a);
-    if (f.b) q = q.eq('banca', f.b);
-    if (f.t) q = q.eq('tipo', f.t);
-    if (f.o) q = q.eq('orgao', f.o);
-    if (f.c) q = q.eq('cargo', f.c);
-    if (f.y && /^\d{4}$/.test(f.y)) q = q.eq('ano', parseInt(f.y, 10));
-    if (f.esc) q = q.eq('escolaridade', f.esc);
-    if (f.n) q = q.eq('nivel', f.n);
-    if (f.or) q = q.eq('origem', f.or);
+    if (f.d) q = q.in('disciplina', vs(f.d));
+    if (f.a) q = q.in('assunto', vs(f.a));
+    if (f.b) q = q.in('banca', vs(f.b));
+    if (f.t) q = q.in('tipo', vs(f.t));
+    if (f.o) q = q.in('orgao', vs(f.o));
+    if (f.c) q = q.in('cargo', vs(f.c));
+    const anos = f.y ? vs(f.y).filter((a) => /^\d{4}$/.test(a)).map(Number) : [];
+    if (anos.length) q = q.in('ano', anos);
+    if (f.esc) q = q.in('escolaridade', vs(f.esc));
+    if (f.n) q = q.in('nivel', vs(f.n));
+    if (f.or) q = q.in('origem', vs(f.or));
     return q;
   };
   // busca em páginas de 1000 (o Supabase corta em 1000 por chamada)
@@ -60,15 +62,15 @@ export async function contagemBanco(supabase: SupabaseClient): Promise<Grupo[]> 
 export async function dadosDosFiltros(supabase: SupabaseClient): Promise<{ grupos: Grupo[]; editais: EditalFiltro[] }> {
   const [g, { data: e }] = await Promise.all([
     contagemBanco(supabase),
-    supabase.from('editais').select('id, nome, data_prova, edital_disciplinas(disciplina)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
+    supabase.from('editais').select('id, nome, banca, data_prova, edital_disciplinas(disciplina)').eq('publicado', true).order('data_prova', { nullsFirst: false }),
   ]);
-  const editais = ((e ?? []) as { id: string; nome: string; edital_disciplinas: { disciplina: string }[] }[])
-    .map((x) => ({ id: x.id, nome: x.nome, disciplinas: x.edital_disciplinas.map((d) => d.disciplina) }));
+  const editais = ((e ?? []) as { id: string; nome: string; banca: string | null; edital_disciplinas: { disciplina: string }[] }[])
+    .map((x) => ({ id: x.id, nome: x.nome, banca: x.banca, disciplinas: x.edital_disciplinas.map((d) => d.disciplina) }));
   return { grupos: g, editais };
 }
 
 export function filtroDaUrl(sp: Record<string, string | undefined>): FiltroBanco {
-  const limpo = (v?: string) => (v && v.length <= 80 ? v : undefined);
+  const limpo = (v?: string) => (v && v.length <= 600 ? v : undefined);
   const f: FiltroBanco = {};
   [...CHAVES, 's' as const].forEach((k) => { const v = limpo(sp[k]); if (v) f[k] = v; });
   return f;

@@ -130,11 +130,10 @@ export async function criarLista(_: ResAluno, f: FormData): Promise<ResAluno> {
   if (!id) return { erro: 'Faça login de novo.' };
   const v = (k: string) => String(f.get(k) ?? '').trim() || null;
   const edital = v('e');
-  const ano = v('y');
   const { data, error } = await supabase.rpc('gerar_lista', {
     p_qtd: parseInt(v('qtd') ?? '10', 10) || 10,
     p_edital: edital && /^[0-9a-f-]{36}$/i.test(edital) ? edital : null,
-    p_banca: v('b'), p_orgao: v('o'), p_cargo: v('c'), p_ano: ano && /^\d{4}$/.test(ano) ? parseInt(ano, 10) : null,
+    p_banca: v('b'), p_orgao: v('o'), p_cargo: v('c'), p_ano: v('y'),
     p_escolaridade: v('esc'), p_disciplina: v('d'), p_assunto: v('a'), p_tipo: v('t'), p_nivel: v('n'), p_origem: v('or'),
     p_somente_novas: f.get('novas') === 'on',
   });
