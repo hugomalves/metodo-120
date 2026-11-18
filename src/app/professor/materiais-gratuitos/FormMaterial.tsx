@@ -14,7 +14,7 @@ export function FormMaterial() {
     catch (err) { setCaminho(''); setMsg(err instanceof Error ? err.message : 'Erro ao enviar.'); }
   }
   return (
-    <FormAcao key={caminho || 'novo'} acao={salvarMaterialGratuito} botao="Publicar material">
+    <FormAcao acao={salvarMaterialGratuito} botao="Publicar material">
       <div className="campo"><label htmlFor="mt">Título</label><input id="mt" name="titulo" required maxLength={140} placeholder="Mapa mental de Concordância" /></div>
       <div className="campo"><label htmlFor="md">Descrição curta (opcional)</label><input id="md" name="descricao" maxLength={400} /></div>
       <div className="campo"><label htmlFor="mp">PDF</label><input id="mp" type="file" accept="application/pdf" onChange={aoEscolher} style={{ paddingBlock: 10 }} />{msg && <span role="status" className="suave">{msg}</span>}</div>
