@@ -150,3 +150,9 @@ Títulos em Chakra Petch maiúsculos, rótulos "//" em IBM Plex Mono, cantos cor
 - `/materiais` (aba "Materiais grátis"): lista `materiais_gratuitos`; `/api/gratis/[id]` exige login, aplica a marca d'água (nome, CPF, telefone) e registra em `materiais_gratuitos_baixas`. PDFs ficam no bucket privado `produtos-pdf`.
 - Painel: `/professor/materiais-gratuitos` (publicar PDFs, ver downloads, lista de leads e CSV).
 - `/entrar?voltar=/caminho` leva a pessoa de volta depois de entrar/cadastrar.
+
+## Notícias com imagem, resumo e "Saiba mais"
+- Migração `0014`: `noticias_concursos.texto/imagem_path` e tabela `noticias_imagens` (palavras do título → imagem, ou imagem padrão do quadrado). Imagem no bucket público `vitrine`.
+- `imagemDaNoticia()` em `src/lib/noticiasConcursos.ts`: imagem própria > assunto (palavra mais longa no título) > padrão do quadrado.
+- Resumo por IA: `resumirPendentes()` (modelo `claude-haiku-5-5`, só usa o que o título diz) roda junto da busca se existir `ANTHROPIC_API_KEY`; sem a chave, o professor escreve o texto no painel.
+- NÃO copiamos o texto das matérias (direito autoral): a página `/noticias/n/[id]` tem texto nosso, a fonte em letra pequena e o link "Ler a matéria original"; ao lado, as ofertas (`Ofertas.tsx`).

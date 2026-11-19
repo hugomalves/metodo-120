@@ -5,11 +5,22 @@
 .topo p { margin: 0; color: #a7afbd; font-size: 17px; }
 .grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .corte { --c: 18px; clip-path: polygon(0 0, calc(100% - var(--c)) 0, 100% var(--c), 100% 100%, var(--c) 100%, 0 calc(100% - var(--c))); }
-.quadro { background: #0f1115; box-shadow: inset 0 0 0 1px #22262e; padding: 26px 26px 22px; display: flex; flex-direction: column; gap: 12px; min-height: 340px; }
+.quadro { background: #0f1115; box-shadow: inset 0 0 0 1px #22262e; padding: 26px 26px 22px; display: flex; flex-direction: column; gap: 12px; min-height: 460px; }
+.cabecaQuadro { display: flex; flex-direction: column; gap: 6px; }
+.cartaoNoticia { flex: 1; display: flex; flex-direction: column; gap: 10px; animation: entra 0.45s ease; }
+.foto { position: relative; display: flex; align-items: flex-end; min-height: 190px; padding: 16px; background: #14181f center / cover no-repeat; text-decoration: none; isolation: isolate; box-shadow: inset 0 0 0 1px #22262e; }
+.foto::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(8, 9, 12, 0.92) 8%, rgba(8, 9, 12, 0.45) 60%, rgba(8, 9, 12, 0.15)); }
+.resumo { margin: 0; color: #c3c9d4; font-size: 14.5px; line-height: 1.45; }
+.fonte { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f7888; }
+.saibaMais { font-size: 13.5px; font-weight: 700; color: #fff; text-decoration: none; }
+.saibaMais:hover { color: #6D9BFF; }
+.fotoGrande { min-height: 280px; }
+.corpo { display: flex; flex-direction: column; gap: 14px; }
+.corpo p { margin: 0; color: #d3d8e2; font-size: 17px; line-height: 1.6; }
+.original { font-size: 12.5px; color: #8b93a3; }
 .desc { margin: 0; color: #8b93a3; font-size: 13.5px; }
 .manchete { flex: 1; display: flex; flex-direction: column; gap: 10px; justify-content: center; border-top: 1px solid #22262e; border-bottom: 1px solid #22262e; padding: 18px 0; }
-.titulo { font-family: var(--font-titulo); font-weight: 700; font-size: clamp(20px, 2.4vw, 26px); line-height: 1.2; color: #fff; text-decoration: none; animation: entra 0.45s ease; }
-.titulo:hover { color: #6D9BFF; }
+.titulo { font-family: var(--font-titulo); font-weight: 700; font-size: clamp(18px, 2vw, 23px); line-height: 1.2; color: #fff; }
 .manchete small { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f7888; }
 .pontos { display: flex; gap: 6px; }
 .pontos i { width: 18px; height: 3px; background: #2a2f38; }

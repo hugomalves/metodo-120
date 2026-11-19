@@ -14,7 +14,7 @@ export const CARREIRAS: { chave: Carreira; nome: string; curto: string; descrica
 ];
 export const carreiraDe = (c: string) => CARREIRAS.find((x) => x.chave === c);
 
-export type NoticiaConcurso = { id: string; carreira: Carreira; titulo: string; fonte: string | null; url: string; resumo: string | null; publicada_em: string; oculta: boolean; origem: string };
+export type NoticiaConcurso = { id: string; carreira: Carreira; titulo: string; fonte: string | null; url: string; resumo: string | null; texto?: string | null; imagem_path?: string | null; publicada_em: string; oculta: boolean; origem: string };
 
 // ---------- busca (RSS do Google Notícias) ----------
 const ENTIDADES: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&apos;': "'", '&nbsp;': ' ' };
@@ -77,5 +77,68 @@ export async function atualizarNoticias(admin: SupabaseClient): Promise<{ novas:
   }
   // limpeza: o que veio da busca e tem mais de 45 dias sai da lista
   await admin.from('noticias_concursos').delete().eq('origem', 'busca').lt('publicada_em', new Date(Date.now() - 45 * 864e5).toISOString());
+  const res = await resumirPendentes(admin);
+  if (res.aviso) erros.push(res.aviso);
   return { novas, erros };
+}
+
+// ---------- imagem de cada notícia ----------
+export type ImagemAssunto = { palavras: string[]; carreira: string | null; imagem_path: string };
+const semAcento = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+// 1) imagem própria da notícia; 2) a do assunto cuja palavra (a mais longa) aparece no título; 3) a padrão do quadrado
+export function imagemDaNoticia(n: { titulo: string; carreira: string; imagem_path?: string | null }, imagens: ImagemAssunto[]): string | null {
+  if (n.imagem_path) return n.imagem_path;
+  const t = ` ${semAcento(n.titulo).replace(/[^a-z0-9]+/g, ' ')} `;
+  let melhor: { tam: number; caminho: string } | null = null;
+  for (const im of imagens) for (const p of im.palavras) {
+    const k = semAcento(p).replace(/[^a-z0-9]+/g, ' ').trim();
+    if (k && t.includes(` ${k} `) && (!melhor || k.length > melhor.tam)) melhor = { tam: k.length, caminho: im.imagem_path };
+  }
+  if (melhor) return melhor.caminho;
+  return imagens.find((i) => !i.palavras.length && i.carreira === n.carreira)?.imagem_path ?? null;
+}
+
+// ---------- resumo escrito por IA (só roda se existir ANTHROPIC_API_KEY na Vercel) ----------
+async function resumirUma(titulo: string, fonte: string | null, chave: string): Promise<{ resumo: string; texto: string } | null> {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST', headers: { 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-haiku-5-5', max_tokens: 500,
+      messages: [{ role: 'user', content:
+        `Você escreve para o site Método 120, de preparação para concursos de polícia e guarda.\n` +
+        `Notícia (só temos o título): "${titulo}"${fonte ? ` — fonte: ${fonte}` : ''}.\n\n` +
+        `Responda SOMENTE com JSON: {"resumo": "...", "texto": "..."}.\n` +
+        `- "resumo": 1 ou 2 frases curtas (até 170 caracteres) dizendo o que a notícia informa.\n` +
+        `- "texto": 3 a 4 frases com palavras suas: o que a notícia informa e o que isso significa para quem estuda (começar a estudar já, acompanhar o edital etc.).\n` +
+        `REGRAS: use apenas o que o título diz; NÃO invente números, datas, bancas, salários nem fatos que não estejam no título; não copie o título; não use aspas nem emojis; português do Brasil, tom direto.` }],
+    }),
+    signal: AbortSignal.timeout(25000),
+  });
+  if (!r.ok) throw new Error(`IA ${r.status}`);
+  const j = (await r.json()) as { content?: { text?: string }[] };
+  const bruto = j.content?.[0]?.text ?? '';
+  const m = bruto.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  const o = JSON.parse(m[0]) as { resumo?: string; texto?: string };
+  if (!o.resumo || !o.texto) return null;
+  return { resumo: o.resumo.trim().slice(0, 220), texto: o.texto.trim().slice(0, 900) };
+}
+
+// Escreve o resumo das notícias que ainda não têm (até 20 por rodada). Sem chave, não faz nada.
+export async function resumirPendentes(admin: SupabaseClient): Promise<{ feitos: number; aviso?: string }> {
+  const chave = process.env.ANTHROPIC_API_KEY;
+  if (!chave) return { feitos: 0, aviso: 'Resumos por IA desligados (falta ANTHROPIC_API_KEY na Vercel): escreva à mão no painel.' };
+  const { data } = await admin.from('noticias_concursos').select('id, titulo, fonte').is('resumo', null).eq('origem', 'busca').eq('oculta', false).order('publicada_em', { ascending: false }).limit(20);
+  let feitos = 0; let aviso: string | undefined;
+  const fila = [...((data ?? []) as { id: string; titulo: string; fonte: string | null }[])];
+  await Promise.all(Array.from({ length: 4 }, async () => {
+    for (let n = fila.shift(); n; n = fila.shift()) {
+      try {
+        const r = await resumirUma(n.titulo, n.fonte, chave);
+        if (r) { await admin.from('noticias_concursos').update(r).eq('id', n.id); feitos++; }
+      } catch (e) { aviso = (e as Error).message; }
+    }
+  }));
+  return { feitos, aviso: aviso ? `Falha ao resumir algumas: ${aviso}` : undefined };
 }
