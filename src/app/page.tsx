@@ -4,7 +4,8 @@ import { Logo120 } from '@/components/Marca';
 import { Cabecalho } from '@/components/Cabecalho';
 import type { SlideNoticia } from '@/components/CarrosselVitrine';
 import { CartaoProduto } from '@/components/CartaoProduto';
-import { HeroOfertas, type Oferta } from '@/components/HeroOfertas';
+import { HeroOfertas, type SlideTopo } from '@/components/HeroOfertas';
+import { SlideOferta } from '@/components/SlideOferta';
 import { urlImagemProduto } from '@/lib/loja';
 import type { Produto as ProdutoLoja } from '@/lib/loja';
 import { createClient } from '@/lib/supabase/server';
@@ -69,14 +70,36 @@ export default async function Vitrine() {
   // Topo: a oferta principal (PM PE, ou o curso em destaque) e as próximas, ainda "em breve"
   const cursos = loja.filter((p) => p.tipo === 'curso');
   const principal = cursos.find((p) => /pm\s?-?pe|pmpe|pernambuco/i.test(p.nome + ' ' + p.slug)) ?? cursos.find((p) => p.destaque) ?? cursos[0];
-  const ofertas: Oferta[] = [];
-  if (principal) ofertas.push({
-    id: principal.id, selo: principal.selo ?? (principal.gratuito ? 'Grátis por tempo limitado' : 'Oferta principal'), titulo: principal.nome,
-    preco: principal.gratuito ? 'GRÁTIS' : principal.preco, beneficios: principal.beneficios ?? [], href: `/curso/${principal.slug}`,
-    botao: principal.gratuito ? 'Quero acessar' : 'Garantir minha vaga', imagem: urlImagemProduto(principal.imagem_path),
-  });
-  else ofertas.push({ id: 'pmpe', selo: 'Oferta principal', titulo: 'Reta Final PM PE', preco: null, beneficios: [], href: '/loja', botao: 'Ver a loja', imagem: null });
-  for (let k = 1; k <= 3; k++) ofertas.push({ id: `breve-${k}`, selo: 'Em breve', titulo: 'Nova oferta chegando', preco: null, beneficios: [], href: null, botao: 'Em breve', imagem: null, emBreve: true });
+  const foto = EXPERT.fotoCorpo ?? EXPERT.fotoRosto;
+  const slides: SlideTopo[] = [
+    // 1) a principal: a apresentação do expert, como sempre foi
+    { id: 'expert', rotulo: 'Plano de 1 ano', conteudo: (
+      <div className={styles.heroDentro}>
+        <div>
+          <div className={styles.etiquetas}><span>//{MARCA.nome}</span><span>Plano de 1 ano</span></div>
+          <h1 className={`display ${styles.heroTitulo}`}>Eu tenho um plano para você <span className={styles.acento}>chutar a CLT.</span></h1>
+          <p className={styles.heroSub}>{MARCA.descricao}</p>
+          <p className={styles.heroForte}>2 horas. Todos os dias. Por 1 ano.</p>
+          <div className={styles.heroAcoes}>
+            <Link href="/planos" className="btn-claro grande"><span>Quero conhecer o plano</span><i>→</i></Link>
+            <Link href="/entrar?modo=criar" className={styles.linkSimples}>Criar conta grátis</Link>
+          </div>
+          <p className={styles.heroNumero}><b>2h/dia</b>com o plano do dia sempre pronto</p>
+        </div>
+        <div className={styles.painelFoto}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={foto} alt={EXPERT.nome} width={900} height={1100} />
+          <div className={styles.painelLegenda}>{EXPERT.chamada}<b>{EXPERT.nome}</b></div>
+        </div>
+      </div>) },
+    // 2) a oferta da PM PE (ou o curso em destaque), com preço e o que inclui
+    { id: 'pmpe', rotulo: principal?.nome ?? 'Reta Final PM PE', conteudo: principal ? (
+      <SlideOferta selo={principal.selo ?? (principal.gratuito ? 'Grátis por tempo limitado' : 'Oferta principal')} titulo={principal.nome}
+        preco={principal.gratuito ? 'GRÁTIS' : principal.preco} beneficios={principal.beneficios ?? []} href={`/curso/${principal.slug}`}
+        botao={principal.gratuito ? 'Quero acessar' : 'Garantir minha vaga'} imagem={urlImagemProduto(principal.imagem_path)} />
+    ) : <SlideOferta selo="Oferta principal" titulo="Reta Final PM PE" preco={null} beneficios={[]} href="/loja" botao="Ver a loja" imagem={null} /> },
+    ...[1, 2, 3].map((k) => ({ id: `breve-${k}`, rotulo: 'Em breve', conteudo: <SlideOferta selo="Em breve" titulo="Nova oferta chegando" preco={null} beneficios={[]} href={null} botao="Em breve" imagem={null} emBreve /> })),
+  ];
   const ctaHref = cursoAberto?.checkout_url ?? '/planos';
 
   return (
@@ -86,9 +109,7 @@ export default async function Vitrine() {
       <main className={styles.pagina}>
         {/* ===== HERO ===== */}
         <section className={styles.hero}>
-          <div className={`${styles.miolo} ${styles.heroDentro}`} style={{ gridTemplateColumns: "1fr" }}>
-            <HeroOfertas ofertas={ofertas} />
-          </div>
+          <HeroOfertas slides={slides} />
         </section>
         <div className={styles.faixaCarreiras}>
           <div className={`${styles.miolo} ${styles.carreiras}`}>
