@@ -96,8 +96,24 @@ export function imagemDaNoticia(n: { titulo: string; carreira: string; imagem_pa
     if (k && t.includes(` ${k} `) && (!melhor || k.length > melhor.tam)) melhor = { tam: k.length, caminho: im.imagem_path };
   }
   if (melhor) return melhor.caminho;
-  return imagens.find((i) => !i.palavras.length && i.carreira === n.carreira)?.imagem_path ?? null;
+  const padraoPainel = imagens.find((i) => !i.palavras.length && i.carreira === n.carreira)?.imagem_path;
+  if (padraoPainel) return padraoPainel;
+  // imagens que já vêm com o site (o painel, quando tiver imagem para o assunto, vence estas)
+  for (const d of IMAGENS_DO_SITE) if (d.palavras.some((p) => t.includes(` ${p} `))) return d.src;
+  if (n.carreira === 'federais') return '/img/noticias/pf.jpg';
+  if (n.carreira === 'militares') return '/img/noticias/pm.jpg';
+  if (n.carreira === 'civis') return '/img/noticias/pc.jpg';
+  if (n.carreira === 'guardas') return '/img/noticias/gm.jpg';
+  return `/img/noticias/${n.carreira}.svg`;
 }
+
+const IMAGENS_DO_SITE = [
+  { palavras: ['policia penal federal', 'penal federal', 'ppf', 'depen'], src: '/img/noticias/penal-federal.jpg' },
+  { palavras: ['policia penal', 'agente penitenciario', 'agentes penitenciarios', 'penitenciario', 'penitenciaria'], src: '/img/noticias/pp.jpg' },
+  { palavras: ['pm pe', 'pmpe', 'policia militar de pernambuco', 'militar de pernambuco'], src: '/img/noticias/pm-pe.jpg' },
+  { palavras: ['prf', 'rodoviaria federal'], src: '/img/noticias/prf.jpg' },
+  { palavras: ['policia federal', 'pf', 'delegado federal', 'agente federal'], src: '/img/noticias/pf.jpg' },
+];
 
 // ---------- resumo escrito por IA (só roda se existir ANTHROPIC_API_KEY na Vercel) ----------
 async function resumirUma(titulo: string, fonte: string | null, chave: string): Promise<{ resumo: string; texto: string } | null> {
