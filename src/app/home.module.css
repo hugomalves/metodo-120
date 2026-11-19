@@ -34,9 +34,9 @@
 .heroNumero { margin-top: 18px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #aab1be; }
 .heroNumero b { color: #fff; font-family: var(--font-titulo); font-size: 18px; margin-right: 8px; letter-spacing: 0; }
 .painelFoto { --c: 28px; position: relative; aspect-ratio: 4 / 5; background: #000; clip-path: polygon(0 0, calc(100% - var(--c)) 0, 100% var(--c), 100% 100%, 0 100%); }
-.painelFoto img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15) brightness(0.92); }
-.painelFoto::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(160deg, rgba(47, 107, 255, 0.55), rgba(0, 10, 40, 0.35)); mix-blend-mode: multiply; }
-.painelFoto::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 45%); }
+.painelFoto img { width: 100%; height: 100%; object-fit: cover; filter: none; }
+.painelFoto::before { content: ''; position: absolute; inset: 0; z-index: 1; background: none; }
+.painelFoto::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 38%); }
 .painelLegenda { position: absolute; z-index: 2; left: 18px; bottom: 16px; right: 18px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfd3db; }
 .painelLegenda b { display: block; font-family: var(--font-titulo); font-size: 24px; letter-spacing: 0; color: #fff; margin-top: 2px; }
 .faixaCarreiras { background: #000; border-top: 1px solid #1b1e24; border-bottom: 1px solid #1b1e24; }
