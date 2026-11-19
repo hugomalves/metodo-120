@@ -14,7 +14,7 @@
 .acento { color: var(--vermelho-vivo); }
 
 /* ===== Hero ===== */
-.hero { position: relative; overflow: hidden; min-height: min(86vh, 760px); display: flex; align-items: center; background: #0b0b0c; isolation: isolate; }
+.hero { position: relative; overflow: hidden; min-height: 0; display: flex; align-items: center; background: #0b0b0c; isolation: isolate; }
 .hero::before { content: ''; position: absolute; inset: 0; z-index: -2;
   background:
     radial-gradient(40% 60% at 12% 35%, rgba(30, 80, 220, 0.85), transparent 70%),
