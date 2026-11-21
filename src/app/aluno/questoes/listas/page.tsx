@@ -4,13 +4,14 @@ import { Caminho, PAINEL_ALUNO } from '@/components/Caminho';
 import { respostasDasListas } from '@/lib/questao';
 import { apagarLista } from '../../actions';
 import { MontarLista } from './MontarLista';
+import { AbasBanco } from '../AbasBanco';
 import { dadosDosFiltros } from '@/lib/banco';
 import { CHAVES } from '@/lib/filtros';
 import { CartaoCapa, BarraProgresso } from '@/components/CartaoCapa';
 import { iconePorTitulo } from '@/components/Capa';
 import s from '../../aluno.module.css';
 
-export const metadata = { title: 'Criar listas em PDF' };
+export const metadata = { title: 'Imprimir lista em PDF' };
 
 type Lista = { id: string; titulo: string; questoes: string[]; criada_em: string };
 
@@ -29,9 +30,10 @@ export default async function Listas({ searchParams }: { searchParams: Promise<R
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Criar listas em PDF' }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Imprimir lista em PDF' }]} />
+      <AbasBanco ativa="pdf" />
       <div className={s.cabeca}>
-        <h1 className={`display ${s.titulo}`}>Criar listas em PDF</h1>
+        <h1 className={`display ${s.titulo}`}>Imprimir lista em PDF</h1>
         <p className="suave" style={{ margin: 0, maxWidth: '64ch' }}>
           Escolha o edital, a disciplina, a banca e quantas questões. A lista prioriza as questões que você ainda não fez e fica salva aqui para continuar depois.
         </p>

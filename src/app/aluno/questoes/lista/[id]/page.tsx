@@ -6,6 +6,7 @@ import { Caminho, PAINEL_ALUNO } from '@/components/Caminho';
 import { NIVEIS } from '@/lib/assuntos';
 import { carregarQuestoes, porPagina as lerPorPagina, respostasDasListas } from '@/lib/questao';
 import { Caderno } from '@/components/Caderno';
+import { AbasBanco } from '../../AbasBanco';
 import s from '../../../aluno.module.css';
 
 type Lista = { id: string; titulo: string; questoes: string[]; filtros: Record<string, unknown> };
@@ -53,9 +54,10 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Listas', href: '/aluno/questoes/listas' }, { rotulo: lista.titulo }]} />
+      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Meus cadernos', href: '/aluno/questoes/cadernos' }, { rotulo: lista.titulo }]} />
+      <AbasBanco ativa="cadernos" />
       <div className={s.cabeca}>
-        <span className="rotulo">Lista em PDF</span>
+        <span className="rotulo">Caderno</span>
         <h1 className={`display ${s.titulo}`} style={{ fontSize: 'clamp(22px, 2.8vw, 30px)' }}>{lista.titulo}</h1>
       </div>
 
@@ -69,10 +71,10 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
         )}
         <div className="linha-flex" style={{ flex: '1 1 240px', minWidth: 0, gap: 10 }}>
           {proxima ? (
-            <a href="#caderno" className="btn btn-ciano btn-grande">{feitas ? 'Continuar a lista' : 'Começar a lista'}</a>
+            <a href="#caderno" className="btn btn-ciano btn-grande">{feitas ? 'Continuar o caderno' : 'Começar o caderno'}</a>
           ) : (
             <span style={{ color: 'var(--texto-2)' }}>
-              Lista concluída: {Math.round((100 * acertos) / Math.max(1, questoes.length))}% de acertos.
+              Caderno concluído: {Math.round((100 * acertos) / Math.max(1, questoes.length))}% de acertos.
             </span>
           )}
           <a href={`/imprimir/lista/${lista.id}`} target="_blank" rel="noopener" className="btn btn-azul">Imprimir em PDF</a>
@@ -80,7 +82,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
       </section>
 
       <section className="cartao" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }} aria-labelledby="q">
-        <h2 id="q" className="display" style={{ margin: 0, fontSize: 19 }}>Questões da lista</h2>
+        <h2 id="q" className="display" style={{ margin: 0, fontSize: 19 }}>Questões do caderno</h2>
         <div className="linha-flex" style={{ gap: 8 }}>
           {questoes.map((q, i) => {
             const r = respostas.get(q.id);
@@ -121,7 +123,7 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
               ))}
             </p>
           )}
-          <Link href="/aluno/questoes/listas" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Montar outra lista</Link>
+          <Link href="/aluno/questoes/filtrar" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Criar outro caderno</Link>
         </section>
       )}
     </>

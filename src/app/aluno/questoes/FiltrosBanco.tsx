@@ -7,8 +7,8 @@ import s from '../aluno.module.css';
 
 // Filtros do banco (formulário GET). O que o aluno escolhe aqui é um filtro em construção:
 // só vale quando ele clica em "Filtrar". Escolher um edital já escolhe a banca dele (e dá para trocar depois).
-export function FiltrosBanco({ grupos, editais, inicial, situacao = '', pp }: {
-  grupos: Grupo[]; editais: EditalFiltro[]; inicial: Partial<ValoresFiltro>; situacao?: string; pp?: string;
+export function FiltrosBanco({ grupos, editais, inicial, situacao = '', pp, m }: {
+  grupos: Grupo[]; editais: EditalFiltro[]; inicial: Partial<ValoresFiltro>; situacao?: string; pp?: string; m?: string;
 }) {
   const mapa = useMemo(() => mapaEditais(editais), [editais]);
   const [f, setF] = useState<ValoresFiltro>({ ...VAZIO, ...Object.fromEntries(Object.entries(inicial).filter(([, v]) => v)) });
@@ -19,6 +19,7 @@ export function FiltrosBanco({ grupos, editais, inicial, situacao = '', pp }: {
   return (
     <form method="get" className={s.filtrosForm} aria-label="Filtros">
       {pp && <input type="hidden" name="pp" value={pp} />}
+      {m && <input type="hidden" name="m" value={m} />}
       <div className={s.filtrosAluno}>
         <CamposFiltro grupos={grupos} editais={editais} mapa={mapa} f={f} muda={muda} prefixo="fb" />
         <div className="campo">
@@ -33,7 +34,7 @@ export function FiltrosBanco({ grupos, editais, inicial, situacao = '', pp }: {
       </div>
       <EtiquetasFiltro f={f} muda={muda} editais={editais} />
       <div className={s.filtrosRodape}>
-        <a href="/aluno/questoes?todos=1" className={s.filtrosLimpar}>Limpar filtros</a>
+        <a href="/aluno/questoes/resolver?todos=1" className={s.filtrosLimpar}>Limpar filtros</a>
         <span className={s.filtrosDica}>Os filtros só valem depois de clicar em Filtrar.</span>
         <button className="btn btn-azul">Filtrar · {n} {n === 1 ? 'questão' : 'questões'}</button>
       </div>

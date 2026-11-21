@@ -2,9 +2,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { minhasTentativas } from '@/lib/questao';
 import { CHAVES, type Chave, type EditalFiltro, type Grupo } from '@/lib/filtros';
 import { todasAsLinhas } from '@/lib/paginar';
+import { marcas, passaM, selecaoDe, type LinhaAssunto } from '@/lib/arvoreAssuntos';
 
 // filtros que vêm na URL (mais a situação: não fiz / errei / acertei)
-export type FiltroBanco = Partial<Record<Chave | 's', string>>;
+// m = matéria e assunto escolhidos na árvore (ver arvoreAssuntos.ts)
+export type FiltroBanco = Partial<Record<Chave | 's' | 'm', string>>;
 export type QuestaoLista = { id: string; codigo: string; disciplina: string; assunto: string | null; nivel: string | null };
 export type MinhaResposta = { questao_id: string; acertou: boolean };
 
@@ -47,6 +49,11 @@ export async function buscarQuestoes(supabase: SupabaseClient, alunoId: string, 
   const minhas = new Map<string, MinhaResposta>();
   tentativas.forEach((t) => { if (!minhas.has(t.questao_id)) minhas.set(t.questao_id, { questao_id: t.questao_id, acertou: t.acertou }); });
   let lista = data;
+  if (f.m) {
+    const { data: ass } = await supabase.from('assuntos').select('id, disciplina, nome, pai_id, ordem');
+    const sel = selecaoDe(marcas(f.m), (ass ?? []) as LinhaAssunto[]);
+    lista = lista.filter((x) => passaM(sel, x.disciplina, x.assunto));
+  }
   if (f.s === 'nao_feitas') lista = lista.filter((x) => !minhas.has(x.id));
   if (f.s === 'erradas') lista = lista.filter((x) => minhas.get(x.id)?.acertou === false);
   if (f.s === 'acertadas') lista = lista.filter((x) => minhas.get(x.id)?.acertou === true);
@@ -73,6 +80,7 @@ export function filtroDaUrl(sp: Record<string, string | undefined>): FiltroBanco
   const limpo = (v?: string) => (v && v.length <= 600 ? v : undefined);
   const f: FiltroBanco = {};
   [...CHAVES, 's' as const].forEach((k) => { const v = limpo(sp[k]); if (v) f[k] = v; });
+  if (sp.m && sp.m.length <= 3000) f.m = sp.m;
   return f;
 }
 
