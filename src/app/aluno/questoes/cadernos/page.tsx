@@ -7,6 +7,7 @@ import { AbasBanco } from '../AbasBanco';
 import { IconeCaderno, IconePasta } from '../Icones';
 import { apagarCaderno, excluirPasta, moverCaderno, renomearCaderno, renomearPasta } from '../acoes';
 import { NovaPasta } from './NovaPasta';
+import { CadernosDoCurso } from './CadernosDoCurso';
 import b from '../banco.module.css';
 import s from '../../aluno.module.css';
 
@@ -36,6 +37,21 @@ export default async function MeusCadernos({ searchParams }: { searchParams: Pro
   const { data: cad } = await consulta;
   const cadernos = (cad ?? []) as Caderno[];
   const respostas = await respostasDasListas(supabase, perfil.id, cadernos);
+
+  // cadernos prontos do curso (só na tela de início, sem pasta nem busca)
+  const mostrarCurso = !busca && !atual;
+  let modelos: Parameters<typeof CadernosDoCurso>[0]['modelos'] = [];
+  const progresso = new Map<string, { feitas: number; total: number }>();
+  if (mostrarCurso) {
+    const [{ data: mod }, { data: copias }] = await Promise.all([
+      supabase.from('cadernos_modelo').select('codigo, titulo, sigla, disciplina, aula, bloco, total').order('ordem').order('aula').order('bloco', { nullsFirst: true }),
+      supabase.from('listas_questoes').select('id, modelo_codigo, questoes').eq('aluno_id', perfil.id).not('modelo_codigo', 'is', null),
+    ]);
+    modelos = (mod ?? []) as typeof modelos;
+    const cp = (copias ?? []) as { id: string; modelo_codigo: string; questoes: string[] }[];
+    const rs = await respostasDasListas(supabase, perfil.id, cp);
+    cp.forEach((c) => progresso.set(c.modelo_codigo, { feitas: c.questoes.filter((q) => rs.get(c.id)?.has(q)).length, total: c.questoes.length }));
+  }
 
   const subpastas = busca ? [] : pastas.filter((p) => p.pai_id === atual).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
   const trilha = caminhoDaPasta(pastas, atual);
@@ -107,6 +123,8 @@ export default async function MeusCadernos({ searchParams }: { searchParams: Pro
       )}
 
       {atual && !busca && <Link href={pai ? `/aluno/questoes/cadernos?pasta=${pai}` : '/aluno/questoes/cadernos'} style={{ alignSelf: 'flex-start' }}>‹ Voltar</Link>}
+
+      {mostrarCurso && <CadernosDoCurso modelos={modelos} progresso={progresso} />}
 
       <section className="cartao" aria-label="Cadernos">
         {cadernos.length === 0 && (
