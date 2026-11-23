@@ -17,6 +17,8 @@ type AulaCat = { aula_id: string; modulo_titulo: string; disciplina: string | nu
 import s from './aluno.module.css';
 import { contagemBanco } from '@/lib/banco';
 import { hojeBr } from '@/lib/cronograma';
+import { carregarPlano } from '@/lib/planoServidor';
+import { CronogramaHoje } from './cronograma/reta-final/CronogramaHoje';
 
 type Edital = { id: string; nome: string; banca: string | null; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[] };
 
@@ -30,7 +32,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
     carregarLoja(supabase, perfil.id),
     supabase.rpc('catalogo_aulas'),
   ]);
-  const simulados = await quadrosSimulados(supabase, perfil.id, loja.produtos, 4);
+  const [simulados, planoCurso] = await Promise.all([quadrosSimulados(supabase, perfil.id, loja.produtos, 4), carregarPlano(supabase, perfil.id)]);
   // resumo do cronograma de hoje (blocos e revisões)
   const hoje = hojeBr();
   const [{ count: blocosHoje }, { count: revisoesHoje }, { count: temCronograma }] = await Promise.all([
@@ -61,7 +63,10 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
         <p className="suave" style={{ margin: 0 }}>{acesso.curso ? 'Curso Método 120' : `Banco de questões · ${acesso.completo ? 'acesso completo' : 'plano grátis'}`}</p>
       </div>
 
-      <Link href="/aluno/cronograma" className={s.cronoResumo}>
+      {/* quem tem a Reta Final: o Início mostra o mesmo cronograma personalizado da aba Cronograma */}
+      {planoCurso && planoCurso.itens.length > 0 && <CronogramaHoje d={planoCurso} />}
+
+      {!(planoCurso && planoCurso.itens.length > 0) && <Link href="/aluno/cronograma" className={s.cronoResumo}>
         <span className={s.cronoIcone} aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6" /></svg>
         </span>
@@ -70,7 +75,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
           <span>{temCronograma ? `${blocosHoje ?? 0} ${blocosHoje === 1 ? 'bloco' : 'blocos'} de estudo e ${revisoesHoje ?? 0} ${revisoesHoje === 1 ? 'revisão' : 'revisões'} para hoje` : 'Monte o seu cronograma: o site distribui o edital pelos seus dias e agenda as revisões.'}</span>
         </span>
         <span className={s.cronoAcao}>{temCronograma ? 'Abrir' : 'Montar'} →</span>
-      </Link>
+      </Link>}
 
       <section className="cartao-gradiente" style={{ padding: 22, borderRadius: 4, display: 'flex', flexWrap: 'wrap', gap: 18, alignItems: 'center', justifyContent: 'space-between' }} aria-labelledby="edital">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: '1 1 300px' }}>
@@ -86,7 +91,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
           estilo={{ minHeight: 44, padding: '0 12px', borderRadius: 4, border: '1.5px solid var(--linha-forte)', background: 'var(--cartao)', color: 'var(--texto)', font: 'inherit', maxWidth: '100%' }} />
       </section>
 
-      {meu && <PlanoDoDia supabase={supabase} alunoId={perfil.id} edital={meu} curso={acesso.curso} grupos={grupos} diaEscolhido={dia} />}
+      {meu && !(planoCurso && planoCurso.itens.length > 0) && <PlanoDoDia supabase={supabase} alunoId={perfil.id} edital={meu} curso={acesso.curso} grupos={grupos} diaEscolhido={dia} />}
 
       {(() => {
         // Reta Final (ou outro curso em destaque) do edital, para quem ainda não comprou
@@ -94,7 +99,7 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
         return destaque ? <div className="loja-grade" style={{ gridTemplateColumns: 'minmax(0, 240px)' }}><CartaoProduto p={destaque} meu={false} /></div> : null;
       })()}
 
-      {meu && (() => {
+      {meu && !(planoCurso && planoCurso.itens.length > 0) && (() => {
         // PDFs do curso: as aulas das disciplinas do edital (abertas para quem tem o curso; com cadeado para os demais)
         const discs = new Set(meu.edital_disciplinas.map((d) => d.disciplina));
         const aulas = ((cat ?? []) as AulaCat[]).filter((a) => a.disciplina && discs.has(a.disciplina)).slice(0, 6);

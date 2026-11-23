@@ -82,13 +82,8 @@ export function Topo({ b, editais, trocar }: { b: Base; editais: { id: string; n
 export function Abas({ atual, retaFinal }: { atual: Aba; retaFinal?: boolean }) {
   return (
     <nav className={s.abas} aria-label="Seções do cronograma">
-      {retaFinal && (
-        <Link href="/aluno/cronograma/reta-final">
-          <Icone d="M5 3v18M5 4h12l-2 4 2 4H5" />Plano Reta Final
-        </Link>
-      )}
       {ABAS.map((a) => (
-        <Link key={a.id} href={`/aluno/cronograma?aba=${a.id}`} aria-current={a.id === atual ? 'page' : undefined}>
+        <Link key={a.id} href={retaFinal && a.id === 'cronograma' ? '/aluno/cronograma/reta-final' : `/aluno/cronograma?aba=${a.id}`} aria-current={a.id === atual ? 'page' : undefined}>
           <Icone d={a.icone} />{a.rotulo}
         </Link>
       ))}

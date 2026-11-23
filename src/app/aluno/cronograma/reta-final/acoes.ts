@@ -26,6 +26,7 @@ export async function salvarPlano(_: R, f: FormData): Promise<R> {
   });
   if (error) return { erro: 'Não foi possível salvar: ' + error.message };
   revalidatePath(CAMINHO);
+  revalidatePath('/aluno');
   redirect(CAMINHO);
 }
 
@@ -45,4 +46,5 @@ export async function alternarFeito(f: FormData): Promise<void> {
     if (!error) await supabase.rpc('ajustar_minutos_dia', { p_dia: hojeBr(), p_minutos: (it as { minutos: number }).minutos });
   }
   revalidatePath(CAMINHO);
+  revalidatePath('/aluno');
 }

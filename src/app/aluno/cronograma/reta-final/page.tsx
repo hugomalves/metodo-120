@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import { acessoAtual } from '@/lib/acesso';
 import { dataCurta, dataLonga, diasEntre, hojeBr, somarDias } from '@/lib/cronograma';
-import { CURSO, DATA_PROVA, OPCOES_TEMPO, fimCom, montarPlano, rotuloTempo, type ConfigPlano, type ItemPlano } from '@/lib/planoCurso';
-import { FormAcao } from '@/app/professor/FormAcao';
-import { salvarPlano } from './acoes';
+import { DATA_PROVA, OPCOES_TEMPO, fimCom, montarPlano, rotuloTempo, type ItemPlano } from '@/lib/planoCurso';
+import { carregarPlano } from '@/lib/planoServidor';
+import { Abas } from '../Vistas';
+import { FaixaRitmo } from './CronogramaHoje';
+import { FormRitmo } from './FormRitmo';
 import { Lista } from './ListaPlano';
 import s from './plano.module.css';
+import c from '../cronograma.module.css';
 
-export const metadata = { title: 'Plano da Reta Final PM PE' };
+export const metadata = { title: 'Cronograma personalizado' };
 export const dynamic = 'force-dynamic';
 
 const SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -20,82 +23,52 @@ export default async function PlanoRetaFinal({ searchParams }: { searchParams: P
   const sp = await searchParams;
   const { supabase, perfil } = await acessoAtual();
   const hoje = hojeBr();
-  const { data: tem } = await supabase.rpc('tem_curso', { p_slug: CURSO });
+  const d = await carregarPlano(supabase, perfil.id);
 
-  if (!tem) {
+  if (!d) {
     return (
       <div className={s.pagina}>
         <Voltar />
         <section className={s.cartao}>
           <span className="rotulo">Reta Final PM PE</span>
-          <h1 className={s.h1}>O plano de 8 semanas é do curso Reta Final PM PE</h1>
+          <h1 className={s.h1}>O cronograma personalizado é do curso Reta Final PM PE</h1>
           <p className="suave">Quem tem o curso recebe aqui o plano do dia: os PDFs de cada bloco de 15 minutos e as questões de cada bloco.</p>
           <Link href="/curso/reta-final-pmpe" className="btn btn-azul" style={{ alignSelf: 'flex-start' }}>Conhecer o curso</Link>
         </section>
       </div>
     );
   }
-
-  const [{ data: its }, { data: cfgRaw }, { data: fts }, { data: pdfs }] = await Promise.all([
-    supabase.from('plano_curso_itens').select('codigo, seq, tipo, sigla, disciplina, titulo, subtitulo, minutos, pdf, caderno, aula, ciclo, extra').eq('produto_slug', CURSO).order('seq'),
-    supabase.from('planos_aluno').select('inicio, minutos_dia, dias_semana').eq('aluno_id', perfil.id).eq('produto_slug', CURSO).maybeSingle(),
-    supabase.from('plano_feitos').select('codigo, dia').eq('aluno_id', perfil.id).eq('produto_slug', CURSO),
-    supabase.from('pdfs_curso').select('codigo').eq('produto_slug', CURSO),
-  ]);
-  const itens = (its ?? []) as ItemPlano[];
-  const cfg = cfgRaw as ConfigPlano | null;
-  const feitos = new Map(((fts ?? []) as { codigo: string; dia: string }[]).map((x) => [x.codigo, x.dia]));
-  const temPdf = new Set(((pdfs ?? []) as { codigo: string }[]).map((x) => x.codigo));
+  const { itens, cfg, feitos, temPdf } = d;
+  // as outras abas do cronograma (revisões, histórico…) só para quem também montou o cronograma do edital
+  const { count: temGeral } = await supabase.from('cronogramas').select('edital_id', { count: 'exact', head: true }).eq('aluno_id', perfil.id);
+  const abas = temGeral ? <div className={c.abasLinha}><Abas atual="cronograma" retaFinal /></div> : null;
 
   if (!itens.length) {
-    return (<div className={s.pagina}><Voltar /><section className={s.cartao}><h1 className={s.h1}>O plano está sendo preparado</h1><p className="suave">Volte em breve.</p></section></div>);
+    return (<div className={s.pagina}><section className={s.cartao}><h1 className={s.h1}>O cronograma está sendo preparado</h1><p className="suave">Volte em breve.</p></section></div>);
   }
 
-  // montar ou ajustar o ritmo
-  if (!cfg || sp.ajustar === '1') {
-    const base: ConfigPlano = cfg ?? { inicio: hoje, minutos_dia: 120, dias_semana: [0, 1, 2, 3, 4, 5, 6] };
-    const previsoes = OPCOES_TEMPO.map((m) => ({ m, fim: fimCom(itens, feitos, base, hoje, m) }));
+  // primeira vez: iniciar o cronograma
+  if (!cfg) {
+    return (<div className={s.pagina}>{abas}<FaixaRitmo d={d} /></div>);
+  }
+
+  // ajustar dia e horas
+  if (sp.ajustar === '1') {
     return (
       <div className={s.pagina}>
-        <Voltar />
-        <section className={s.cartao}>
-          <span className="rotulo">Reta Final PM PE</span>
-          <h1 className={s.h1}>{cfg ? 'Ajustar o seu ritmo' : 'Monte o seu plano de 8 semanas'}</h1>
-          <p className="suave" style={{ margin: 0 }}>
-            O padrão é <b>2 horas por dia</b> (8 blocos de 15 minutos), todos os dias: assim o curso cabe em cerca de 8 semanas.
-            Se você tem mais tempo, escolha abaixo: o plano anda mais rápido. Você pode mudar quando quiser, sem perder o que já fez.
-          </p>
-          <FormAcao acao={salvarPlano} botao={cfg ? 'Salvar e refazer o plano' : 'Começar meu plano'}>
-            <div className={s.grade}>
-              <div className="campo">
-                <label htmlFor="pl-min">Tempo de estudo por dia</label>
-                <select id="pl-min" name="minutos" defaultValue={base.minutos_dia}>
-                  {previsoes.map(({ m, fim }) => (
-                    <option key={m} value={m}>{rotuloTempo(m)} por dia{m === 120 ? ' (padrão)' : ''}{fim ? ` · termina em ${dataCurta(fim)}` : ''}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="campo">
-                <label htmlFor="pl-ini">Começar em</label>
-                <input id="pl-ini" type="date" name="inicio" defaultValue={base.inicio < hoje ? hoje : base.inicio} min={hoje} />
-              </div>
-            </div>
-            <fieldset className={s.dias}>
-              <legend>Dias de estudo</legend>
-              {SEMANA.map((d, i) => (
-                <label key={d}><input type="checkbox" name="dias" value={i} defaultChecked={base.dias_semana.includes(i)} />{d}</label>
-              ))}
-            </fieldset>
-            <p className="suave" style={{ margin: 0, fontSize: 14 }}>A prova está prevista para {dataLonga(DATA_PROVA)}. Os simulados ocupam um dia inteiro (4h30).</p>
-          </FormAcao>
-          {cfg && <Link href="/aluno/cronograma/reta-final">← Voltar ao plano</Link>}
+        {abas}
+        <section className={`cartao-gradiente ${s.destaque}`} aria-labelledby="ajustar">
+          <span className="rotulo">Cronograma personalizado</span>
+          <h1 id="ajustar" className={s.destaqueTitulo}>Ajustar dia e horas</h1>
+          <p className={s.destaqueTexto}>Mude quando quiser: o que você já concluiu continua feito e o resto é redistribuído.</p>
+          <FormRitmo itens={itens} feitos={feitos} cfg={cfg} hoje={hoje} />
+          <Link href="/aluno/cronograma/reta-final" style={{ color: '#fff' }}>← Voltar ao cronograma</Link>
         </section>
       </div>
     );
   }
 
   const plano = montarPlano(itens, feitos, cfg, hoje);
-  const pct = Math.round((100 * plano.feito) / Math.max(1, plano.total));
   const doDia = (d: string) => plano.dias.find((x) => x.dia === d);
   const hojeP = doDia(hoje);
   const futuros = plano.dias.filter((d) => d.dia > hoje && d.itens.some((i) => !i.feito));
@@ -107,20 +80,8 @@ export default async function PlanoRetaFinal({ searchParams }: { searchParams: P
 
   return (
     <div className={s.pagina}>
-      <Voltar />
-      <section className={s.topo}>
-        <div>
-          <span className="rotulo">Reta Final PM PE · {rotuloTempo(cfg.minutos_dia)} por dia</span>
-          <h1 className={s.h1}>Seu plano de estudos</h1>
-          <p className="suave" style={{ margin: 0 }}>
-            {plano.fim ? <>Término previsto: <b>{dataLonga(plano.fim)}</b> ({semanas(diasEntre(cfg.inicio, plano.fim) + 1)} desde o início). Prova: {dataLonga(DATA_PROVA)}.</> : <b>Você concluiu o plano inteiro. Parabéns!</b>}
-          </p>
-        </div>
-        <Link href="/aluno/cronograma/reta-final?ajustar=1" className="btn btn-linha">Ajustar tempo por dia</Link>
-      </section>
-      <div className={s.progresso} aria-label={`${pct}% do plano concluído`}><span style={{ width: `${pct}%` }} /></div>
-      <p className="suave" style={{ margin: 0, fontSize: 14 }}>{pct}% concluído · {duracao(plano.feito)} de {duracao(plano.total)}</p>
-
+      {abas}
+      <FaixaRitmo d={d} />
       {passou && (
         <p className={s.alerta} role="alert">
           Neste ritmo o plano termina depois da prova.{comMais ? <> Com <b>{rotuloTempo(comMais.m)} por dia</b> ele termina em {dataCurta(comMais.fim!)}. <Link href="/aluno/cronograma/reta-final?ajustar=1">Ajustar</Link></> : ' Aumente o tempo por dia ou estude também nos dias livres.'}
