@@ -3,7 +3,7 @@ import { dataCurta, dataLonga, hojeBr } from '@/lib/cronograma';
 import { montarPlano, rotuloTempo } from '@/lib/planoCurso';
 import type { DadosPlano } from '@/lib/planoServidor';
 import { FormRitmo } from './FormRitmo';
-import { Lista } from './ListaPlano';
+import { PainelDia } from './VistaPlano';
 import s from './plano.module.css';
 
 const NOME_DIA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
@@ -40,28 +40,18 @@ export function FaixaRitmo({ d, compacta }: { d: DadosPlano; compacta?: boolean 
   );
 }
 
-// Plano de hoje no Início (mesmo cronograma da aba Cronograma)
+// Plano de hoje no Início (mesmo cronograma, mesmo visual da aba Cronograma)
 export function CronogramaHoje({ d }: { d: DadosPlano }) {
   const hoje = hojeBr();
   if (!d.cfg) return <FaixaRitmo d={d} />;
   const plano = montarPlano(d.itens, d.feitos, d.cfg, hoje);
   const doDia = plano.dias.find((x) => x.dia === hoje);
-  const proximo = plano.dias.find((x) => x.dia > hoje && x.itens.some((i) => !i.feito));
-  const mostrar = doDia?.itens.length ? doDia : proximo;
-  const ehHoje = mostrar?.dia === hoje;
+  const proximo = plano.dias.find((x) => x.dia > hoje && x.itens.some((i) => !i.feito))?.dia;
   return (
     <>
       <FaixaRitmo d={d} compacta />
-      <section className={s.cartao} aria-labelledby="hoje-crono">
-        <div className="linha-flex" style={{ justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-          <h2 id="hoje-crono" className={s.h2}>
-            {mostrar ? (ehHoje ? `Hoje · ${NOME_DIA[diaSem(hoje)]}, ${dataCurta(hoje)}` : `Próximo dia de estudo · ${NOME_DIA[diaSem(mostrar.dia)]}, ${dataCurta(mostrar.dia)}`) : 'Cronograma concluído'}
-          </h2>
-          <Link href="/aluno/cronograma/reta-final" style={{ fontWeight: 600 }}>Ver o cronograma completo →</Link>
-        </div>
-        {mostrar && ehHoje && <p className="suave" style={{ margin: 0, fontSize: 14 }}>{mostrar.itens.filter((i) => i.feito).length} de {mostrar.itens.length} feitos</p>}
-        {mostrar && <Lista itens={mostrar.itens} temPdf={d.temPdf} podeMarcar />}
-      </section>
+      <PainelDia dia={doDia} hoje={hoje} temPdf={d.temPdf} primeiroFuturo={proximo} />
+      <Link href="/aluno/cronograma/reta-final" style={{ fontWeight: 600, alignSelf: 'flex-end' }}>Ver a agenda da semana e o cronograma completo →</Link>
     </>
   );
 }

@@ -1,25 +1,24 @@
 import Link from 'next/link';
 import { acessoAtual } from '@/lib/acesso';
-import { dataCurta, dataLonga, diasEntre, hojeBr, somarDias } from '@/lib/cronograma';
-import { DATA_PROVA, OPCOES_TEMPO, fimCom, montarPlano, rotuloTempo, type ItemPlano } from '@/lib/planoCurso';
+import { dataCurta, hojeBr, inicioDaSemana, valido } from '@/lib/cronograma';
+import { DATA_PROVA, OPCOES_TEMPO, fimCom, montarPlano, rotuloTempo } from '@/lib/planoCurso';
 import { carregarPlano } from '@/lib/planoServidor';
 import { Abas } from '../Vistas';
 import { FaixaRitmo } from './CronogramaHoje';
 import { FormRitmo } from './FormRitmo';
 import { Lista } from './ListaPlano';
-import s from './plano.module.css';
+import { PainelDia, SemanaPlano, TopoPlano } from './VistaPlano';
 import c from '../cronograma.module.css';
+import s from './plano.module.css';
 
 export const metadata = { title: 'Cronograma personalizado' };
 export const dynamic = 'force-dynamic';
 
 const SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-const NOME_DIA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 const diaSem = (d: string) => new Date(d + 'T12:00:00Z').getUTCDay();
 const duracao = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, '0') : ''}` : `${m} min`);
-const semanas = (d: number) => { const w = Math.floor(d / 7), r = d % 7; return `${w} semana${w === 1 ? '' : 's'}${r ? ` e ${r} dia${r === 1 ? '' : 's'}` : ''}`; };
 
-export default async function PlanoRetaFinal({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+export default async function CronogramaPersonalizado({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const { supabase, perfil } = await acessoAtual();
   const hoje = hojeBr();
@@ -27,8 +26,7 @@ export default async function PlanoRetaFinal({ searchParams }: { searchParams: P
 
   if (!d) {
     return (
-      <div className={s.pagina}>
-        <Voltar />
+      <div className={c.pagina}>
         <section className={s.cartao}>
           <span className="rotulo">Reta Final PM PE</span>
           <h1 className={s.h1}>O cronograma personalizado é do curso Reta Final PM PE</h1>
@@ -39,23 +37,18 @@ export default async function PlanoRetaFinal({ searchParams }: { searchParams: P
     );
   }
   const { itens, cfg, feitos, temPdf } = d;
-  // as outras abas do cronograma (revisões, histórico…) só para quem também montou o cronograma do edital
+  // as outras abas (revisões, histórico…) só para quem também montou o cronograma do edital
   const { count: temGeral } = await supabase.from('cronogramas').select('edital_id', { count: 'exact', head: true }).eq('aluno_id', perfil.id);
   const abas = temGeral ? <div className={c.abasLinha}><Abas atual="cronograma" retaFinal /></div> : null;
 
   if (!itens.length) {
-    return (<div className={s.pagina}><section className={s.cartao}><h1 className={s.h1}>O cronograma está sendo preparado</h1><p className="suave">Volte em breve.</p></section></div>);
+    return (<div className={c.pagina}><section className={s.cartao}><h1 className={s.h1}>O cronograma está sendo preparado</h1><p className="suave">Volte em breve.</p></section></div>);
   }
+  if (!cfg) return (<div className={c.pagina}>{abas}<FaixaRitmo d={d} /></div>);
 
-  // primeira vez: iniciar o cronograma
-  if (!cfg) {
-    return (<div className={s.pagina}>{abas}<FaixaRitmo d={d} /></div>);
-  }
-
-  // ajustar dia e horas
   if (sp.ajustar === '1') {
     return (
-      <div className={s.pagina}>
+      <div className={c.pagina}>
         {abas}
         <section className={`cartao-gradiente ${s.destaque}`} aria-labelledby="ajustar">
           <span className="rotulo">Cronograma personalizado</span>
@@ -69,82 +62,50 @@ export default async function PlanoRetaFinal({ searchParams }: { searchParams: P
   }
 
   const plano = montarPlano(itens, feitos, cfg, hoje);
-  const doDia = (d: string) => plano.dias.find((x) => x.dia === d);
-  const hojeP = doDia(hoje);
-  const futuros = plano.dias.filter((d) => d.dia > hoje && d.itens.some((i) => !i.feito));
+  const futuros = plano.dias.filter((x) => x.dia > hoje && x.itens.some((i) => !i.feito));
+  const selecionado = valido(sp.dia) ? sp.dia : hoje;
+  const doDia = plano.dias.find((x) => x.dia === selecionado);
+  const proximo = futuros.find((x) => x.dia > selecionado)?.dia;
+  const semana = valido(sp.semana) ? inicioDaSemana(sp.semana) : inicioDaSemana(selecionado);
   const passou = plano.fim && plano.fim > DATA_PROVA;
   const comMais = passou ? OPCOES_TEMPO.filter((m) => m > cfg.minutos_dia).map((m) => ({ m, fim: fimCom(itens, feitos, cfg, hoje, m) })).find((x) => x.fim && x.fim <= DATA_PROVA) : null;
-  const comecaDepois = cfg.inicio > hoje;
-  const proximos = comecaDepois ? futuros.slice(1) : futuros;
-  const ver = sp.ver === 'tudo' ? proximos : proximos.slice(0, 6);
 
   return (
-    <div className={s.pagina}>
+    <div className={c.pagina}>
+      <TopoPlano minutos={cfg.minutos_dia} feito={plano.feito} total={plano.total} fim={plano.fim} inicio={cfg.inicio} />
       {abas}
-      <FaixaRitmo d={d} />
       {passou && (
         <p className={s.alerta} role="alert">
-          Neste ritmo o plano termina depois da prova.{comMais ? <> Com <b>{rotuloTempo(comMais.m)} por dia</b> ele termina em {dataCurta(comMais.fim!)}. <Link href="/aluno/cronograma/reta-final?ajustar=1">Ajustar</Link></> : ' Aumente o tempo por dia ou estude também nos dias livres.'}
+          Neste ritmo o cronograma termina depois da prova.{comMais ? <> Com <b>{rotuloTempo(comMais.m)} por dia</b> ele termina em {dataCurta(comMais.fim!)}. <Link href="/aluno/cronograma/reta-final?ajustar=1">Ajustar dia e horas</Link></> : ' Aumente as horas por dia ou estude também nos dias livres.'}
         </p>
       )}
+      {selecionado !== hoje && <Link href="/aluno/cronograma/reta-final" className={s.voltar}>← Voltar para hoje</Link>}
+      <PainelDia dia={doDia} hoje={hoje} temPdf={temPdf} primeiroFuturo={proximo} />
+      <SemanaPlano dias={plano.dias} hoje={hoje} semana={semana} selecionado={selecionado} />
 
-      <section className={s.cartao} aria-labelledby="hoje">
-        <h2 id="hoje" className={s.h2}>{comecaDepois && futuros[0] ? `Seu plano começa ${NOME_DIA[diaSem(futuros[0].dia)]}, ${dataCurta(futuros[0].dia)}` : `Hoje · ${NOME_DIA[diaSem(hoje)]}, ${dataCurta(hoje)}`}</h2>
-        {comecaDepois ? (
-          <Lista itens={futuros[0]?.itens ?? []} temPdf={temPdf} podeMarcar />
-        ) : hojeP && hojeP.itens.length ? (
-          <>
-            <p className="suave" style={{ margin: 0, fontSize: 14 }}>{hojeP.itens.filter((i) => i.feito).length} de {hojeP.itens.length} feitos · {duracao(hojeP.minutos)} no total</p>
-            <Lista itens={hojeP.itens} temPdf={temPdf} podeMarcar />
-          </>
-        ) : (
-          <p className="suave" style={{ margin: 0 }}>Hoje não é dia de estudo no seu plano. Se quiser adiantar, conclua os itens do próximo dia: o plano se ajusta sozinho.</p>
-        )}
-      </section>
-
-      {proximos.length > 0 && (
-        <section className={s.cartao} aria-labelledby="proximos">
-          <h2 id="proximos" className={s.h2}>Próximos dias</h2>
-          {ver.map((d) => (
-            <details key={d.dia} className={s.dia}>
-              <summary>
-                <b>{SEMANA[diaSem(d.dia)]} {dataCurta(d.dia)}</b>
-                <span>{resumo(d.itens)}</span>
-                <span className={s.tempo}>{duracao(d.minutos)}</span>
-              </summary>
-              <Lista itens={d.itens} temPdf={temPdf} podeMarcar />
+      {sp.ver === 'tudo' && (
+        <section className={s.cartao} aria-labelledby="tudo">
+          <h2 id="tudo" className={s.h2}>Cronograma inteiro ({futuros.length} dias pela frente)</h2>
+          {futuros.map((x) => (
+            <details key={x.dia} className={s.dia}>
+              <summary><b>{SEMANA[diaSem(x.dia)]} {dataCurta(x.dia)}</b><span>{resumo(x.itens)}</span><span className={s.tempo}>{duracao(x.minutos)}</span></summary>
+              <Lista itens={x.itens} temPdf={temPdf} podeMarcar />
             </details>
           ))}
-          {sp.ver !== 'tudo' && proximos.length > ver.length && <Link href="/aluno/cronograma/reta-final?ver=tudo">Ver o plano inteiro ({proximos.length} dias) →</Link>}
         </section>
       )}
-
-      {plano.dias.some((d) => d.dia < hoje) && (
-        <details className={s.cartao}>
-          <summary className={s.h2} style={{ cursor: 'pointer' }}>Dias anteriores</summary>
-          {plano.dias.filter((d) => d.dia < hoje).reverse().slice(0, 30).map((d) => (
-            <div key={d.dia} className={s.passado}><b>{SEMANA[diaSem(d.dia)]} {dataCurta(d.dia)}</b> <span>{resumo(d.itens)}</span></div>
-          ))}
-        </details>
-      )}
       <p className="suave" style={{ fontSize: 13.5, margin: 0 }}>
-        Atrasou? Não precisa fazer nada: o que ficou para trás passa para os próximos dias. Adiantou? Conclua os itens de amanhã e o plano anda junto.
-        {' '}Seu plano começou em {dataCurta(cfg.inicio)}{cfg.inicio < hoje ? ` (${diasEntre(cfg.inicio, hoje)} dias atrás)` : ''}.
+        Atrasou? Não precisa fazer nada: o que ficou para trás passa para os próximos dias. Adiantou? Conclua os blocos de outro dia e o cronograma anda junto.
       </p>
     </div>
   );
 }
 
-function resumo(itens: (ItemPlano & { feito: boolean })[]) {
+function resumo(itens: { tipo: string; titulo: string; disciplina: string; sigla: string }[]) {
   const nomes: string[] = [];
   for (const i of itens) {
-    const n = i.tipo === 'simulado' ? i.titulo : i.tipo === 'mini' ? i.titulo : i.tipo === 'revisao' ? `Revisão ${i.sigla}` : i.tipo === 'proposta' ? 'Redação (proposta)' : `${i.disciplina} ${i.titulo.slice(0, 7)}`;
+    const n = i.tipo === 'simulado' || i.tipo === 'mini' ? i.titulo : i.tipo === 'revisao' ? `Revisão ${i.sigla}` : i.tipo === 'proposta' ? 'Redação (proposta)' : `${i.disciplina} ${i.titulo.slice(0, 7)}`;
     if (!nomes.includes(n)) nomes.push(n);
   }
   return nomes.join(' · ');
 }
-
-function Voltar() {
-  return <Link href="/aluno/cronograma" className={s.voltar}>← Cronograma</Link>;
-}
-
