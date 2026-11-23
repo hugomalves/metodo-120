@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { acessoAtual } from '@/lib/acesso';
 import { todasAsLinhas } from '@/lib/paginar';
 import {
@@ -32,6 +33,9 @@ export default async function Cronograma({ searchParams }: { searchParams: Promi
     ? await supabase.from('cronogramas').select('edital_id, inicio, blocos_por_dia, dias_semana, intervalos').eq('aluno_id', perfil.id).eq('edital_id', edital.id).maybeSingle()
     : { data: null };
   const config = cfgRaw as Config | null;
+  // quem tem a Reta Final PM PE e ainda não montou um cronograma próprio vai direto para o plano do curso
+  const { data: retaFinal } = await supabase.rpc('tem_curso', { p_slug: 'reta-final-pmpe' });
+  if (retaFinal && !config && sp.configurar !== '1') redirect('/aluno/cronograma/reta-final');
 
   // sem edital ou sem cronograma: tela de montar o cronograma
   if (!edital || !config || sp.configurar === '1') {
@@ -154,7 +158,7 @@ export default async function Cronograma({ searchParams }: { searchParams: Promi
     <div className={s.pagina}>
       <Topo b={b} editais={editais} trocar={seguirEdital} />
       <div className={s.abasLinha}>
-        <Abas atual={aba} />
+        <Abas atual={aba} retaFinal={!!retaFinal} />
         <Link href="/aluno/cronograma?configurar=1" className={s.ajustar}>Ajustar cronograma</Link>
       </div>
       {conteudo}
