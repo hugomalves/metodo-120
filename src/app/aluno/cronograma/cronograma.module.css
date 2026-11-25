@@ -1,5 +1,5 @@
 /* Cronograma (área do aluno). Usa as variáveis do tema: funciona no tema escuro do aluno e no claro. */
-.pagina { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 1000px; margin: 0 auto; }
+.pagina { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 1600px; }
 .rotuloTopo { font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ciano-texto); }
 .boasVindas { display: flex; flex-direction: column; gap: 8px; }
 .boasVindas h1 { margin: 0; font-family: var(--font-display); font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.02em; }
@@ -48,7 +48,7 @@
 .ajustar:hover { color: var(--ciano-texto); }
 
 /* painéis */
-.duasColunas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.duasColunas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
 .painelBloco { display: flex; flex-direction: column; background: var(--cartao); border: 1px solid var(--linha); border-radius: 4px; overflow: hidden; }
 .painelCabeca { padding: 16px; text-align: center; background: color-mix(in srgb, var(--azul) 22%, var(--cartao)); }
 .painelRevisao .painelCabeca { background: color-mix(in srgb, #14b8a6 18%, var(--cartao)); }

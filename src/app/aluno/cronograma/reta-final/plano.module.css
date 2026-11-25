@@ -1,4 +1,4 @@
-.pagina { display: flex; flex-direction: column; gap: 16px; max-width: 980px; }
+.pagina { display: flex; flex-direction: column; gap: 16px; }
 .voltar { font-size: 14px; color: var(--ciano-texto); align-self: flex-start; }
 .topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
 .h1 { font-family: var(--font-titulo); font-size: clamp(24px, 3vw, 32px); margin: 4px 0 6px; }

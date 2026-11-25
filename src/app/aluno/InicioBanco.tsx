@@ -19,6 +19,7 @@ import { contagemBanco } from '@/lib/banco';
 import { hojeBr } from '@/lib/cronograma';
 import { carregarPlano } from '@/lib/planoServidor';
 import { CronogramaHoje } from './cronograma/reta-final/CronogramaHoje';
+import { PainelLateral } from './PainelLateral';
 
 type Edital = { id: string; nome: string; banca: string | null; data_prova: string | null; edital_disciplinas: { disciplina: string; questoes: number; bloco: string | null; ordem: number }[] };
 
@@ -63,6 +64,8 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
         <p className="suave" style={{ margin: 0 }}>{acesso.curso ? 'Curso Método 120' : `Banco de questões · ${acesso.completo ? 'acesso completo' : 'plano grátis'}`}</p>
       </div>
 
+      <div className={s.inicioGrade}>
+      <div className={s.inicioPrincipal}>
       {/* quem tem a Reta Final: o Início mostra o mesmo cronograma personalizado da aba Cronograma */}
       {planoCurso && planoCurso.itens.length > 0 && <CronogramaHoje d={planoCurso} />}
 
@@ -206,6 +209,9 @@ export async function InicioBanco({ supabase, perfil, acesso, dia }: { supabase:
             rodape={<Link href="/aluno/questoes/listas" className="btn btn-azul">Montar lista</Link>} />
         </div>
       </section>
+      </div>
+      <PainelLateral supabase={supabase} alunoId={perfil.id} plano={planoCurso} prova={meu?.data_prova ?? null} nomeProva={meu?.nome ?? null} />
+      </div>
     </>
   );
 }

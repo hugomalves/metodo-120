@@ -123,3 +123,54 @@
 .etiqueta button:hover { background: var(--azul); }
 .etiquetasVazio { color: var(--suave); font-size: 14px; }
 .filtrosDica { color: var(--suave); font-size: 13.5px; margin-left: auto; }
+
+/* Início em duas colunas: conteúdo + coluna lateral (missões, questões, sequência, prova) */
+.inicioGrade { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.inicioPrincipal { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+@media (min-width: 1240px) { .inicioGrade { grid-template-columns: minmax(0, 1fr) 340px; } .lateral { position: sticky; top: 76px; } }
+@media (min-width: 1600px) { .inicioGrade { grid-template-columns: minmax(0, 1fr) 380px; } }
+.lateral { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.lCartao { background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.lTopo { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.lTopo h2 { margin: 0; font-size: 16.5px; font-family: var(--font-titulo); }
+.lTopo a { font-size: 13px; font-weight: 600; }
+.lSelo { font-family: var(--font-titulo); font-size: 15px; color: #9fbcff; background: rgba(47, 107, 255, 0.16); padding: 3px 10px; border-radius: 999px; }
+.lBarra { display: block; height: 8px; border-radius: 4px; background: var(--trilho); overflow: hidden; }
+.lBarra > span { display: block; height: 100%; background: linear-gradient(90deg, #2F6BFF, #5b8cff); }
+.lMissoes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lMissoes a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--faixa); border: 1px solid var(--linha); color: var(--texto); text-decoration: none; font-size: 14px; }
+.lMissoes a:hover { border-color: var(--azul); }
+.lMissoes li[data-ok] a { border-color: rgba(34, 179, 90, 0.5); }
+.lCheck { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--linha-forte); display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #fff; }
+.lMissoes li[data-ok] .lCheck { background: #22b35a; border-color: #22b35a; }
+.lRotulo { flex: 1; min-width: 0; color: var(--texto-2); }
+.lMissoes b { font-variant-numeric: tabular-nums; }
+.lLinha { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.anel { --p: 0; --cor: #22b35a; flex: none; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(closest-side, var(--cartao) 76%, transparent 77%), conic-gradient(var(--cor) calc(var(--p) * 1%), #3a2328 0); }
+.anel > div { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.anel b { font-size: 28px; }
+.anel span { font-size: 11.5px; color: var(--suave); margin-top: 4px; }
+.lNumeros { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 130px; display: flex; flex-direction: column; gap: 10px; }
+.lNumeros li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; font-size: 13.5px; color: var(--texto-2); }
+.lNumeros b { font-family: var(--font-titulo); font-size: 20px; }
+.lNumeros em { font-style: normal; font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 4px; }
+.lVerde { color: #34d17a; } .lVermelho { color: #ff7a7a; }
+.lVerdeFundo { background: rgba(34, 179, 90, 0.18); color: #34d17a; }
+.lVermelhoFundo { background: rgba(239, 68, 68, 0.18); color: #ff7a7a; }
+.lBotao { display: flex; justify-content: center; align-items: center; min-height: 40px; border: 1.5px solid var(--linha-forte); border-radius: 6px; color: var(--texto); font-weight: 700; font-size: 14px; text-decoration: none; }
+.lBotao:hover { border-color: var(--azul); color: #fff; }
+.lFogo { display: flex; flex-direction: column; align-items: center; min-width: 92px; padding: 10px; border-radius: 10px; background: rgba(255, 140, 50, 0.1); border: 1px solid rgba(255, 140, 50, 0.3); }
+.lFogo span { font-size: 22px; }
+.lFogo b { font-size: 30px; line-height: 1.1; }
+.lFogo small { font-size: 11.5px; color: var(--texto-2); }
+.lNivel { flex: 1; min-width: 150px; display: flex; align-items: center; gap: 10px; }
+.lNivel > div { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.lNivel b { font-size: 15px; }
+.lNivel > div > span:not(.lBarra) { font-size: 12.5px; color: var(--suave); }
+.lPe { margin: 0; font-size: 12.5px; color: var(--suave); }
+.lProva { background: radial-gradient(120% 140% at 0% 0%, #2a5bff 0%, #173a9c 55%, #0b1f5c 100%); border-color: #2a4785; }
+.lProva .rotulo, .lProva .lPe { color: #cfe0ff; }
+.lContagem { display: flex; align-items: baseline; gap: 10px; color: #fff; }
+.lContagem b { font-size: 52px; line-height: 1; }
+.lContagem span { font-size: 15px; color: #e3ecff; }
