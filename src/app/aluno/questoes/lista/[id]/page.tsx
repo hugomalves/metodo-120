@@ -54,14 +54,25 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
 
   return (
     <>
-      <Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Meus cadernos', href: '/aluno/questoes/cadernos' }, { rotulo: lista.titulo }]} />
-      <AbasBanco ativa="cadernos" />
-      <div className={s.cabeca}>
+      <div className="so-desk"><Caminho passos={[PAINEL_ALUNO, { rotulo: 'Banco de questões', href: '/aluno/questoes' }, { rotulo: 'Meus cadernos', href: '/aluno/questoes/cadernos' }, { rotulo: lista.titulo }]} /></div>
+      <div className="so-desk"><AbasBanco ativa="cadernos" /></div>
+
+      {/* celular: topo compacto, como num app */}
+      <header className="mq-topo so-mob">
+        <Link href="/aluno/questoes/cadernos" className="mq-voltar" aria-label="Voltar aos cadernos">‹</Link>
+        <div className="mq-topo-texto">
+          <span className="mq-rotulo">{questoes[0]?.disciplina ?? 'Caderno'}</span>
+          <h1>Foco: {lista.titulo}</h1>
+          <span className="mq-sub">{feitas} de {questoes.length} respondidas{feitas ? ` · ${acertos} ${acertos === 1 ? 'acerto' : 'acertos'}` : ''}</span>
+        </div>
+      </header>
+
+      <div className={`${s.cabeca} so-desk`}>
         <span className="rotulo">Caderno</span>
         <h1 className={`display ${s.titulo}`} style={{ fontSize: 'clamp(22px, 2.8vw, 30px)' }}>{lista.titulo}</h1>
       </div>
 
-      <section className="cartao-gradiente" style={{ padding: 22, display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center', borderRadius: 4 }}>
+      <section className="cartao-gradiente so-desk" style={{ padding: 22, display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center', borderRadius: 4 }}>
         <div><span className="rotulo">Feitas</span><b className="display" style={{ display: 'block', fontSize: 34 }}>{feitas}/{questoes.length}</b></div>
         <div><span className="rotulo">Acertos</span><b className="display" style={{ display: 'block', fontSize: 34 }}>{acertos}</b></div>
         {liquida !== null && (
@@ -81,31 +92,32 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
         </div>
       </section>
 
-      <section className="cartao" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }} aria-labelledby="q">
-        <h2 id="q" className="display" style={{ margin: 0, fontSize: 19 }}>Questões do caderno</h2>
-        <div className="linha-flex" style={{ gap: 8 }}>
+      <section className="mq-nums-caixa" aria-labelledby="q">
+        <h2 id="q" className="display so-desk" style={{ margin: 0, fontSize: 19 }}>Questões do caderno</h2>
+        <div className="mq-nums">
           {questoes.map((q, i) => {
             const r = respostas.get(q.id);
-            const cor = r === true ? { background: '#16a34a', color: '#fff' } : r === false ? { background: 'var(--erro)', color: '#fff' } : { background: 'var(--cartao-2)', color: 'var(--texto)' };
+            const atual = pp === 1 && i === pagina - 1;
             return (
-              <Link key={q.id} href={`/aluno/questoes/lista/${lista.id}?p=${Math.floor(i / pp) + 1}&pp=${pp}#caderno`} className="mono"
-                aria-label={`Questão ${i + 1}: ${r === true ? 'acertou' : r === false ? 'errou' : 'a fazer'}`}
-                style={{ ...cor, width: 44, height: 44, borderRadius: 4, display: 'grid', placeItems: 'center', textDecoration: 'none', fontWeight: 700, border: '1px solid var(--linha-forte)' }}>
+              <Link key={q.id} href={`/aluno/questoes/lista/${lista.id}?p=${Math.floor(i / pp) + 1}&pp=${pp}#caderno`} className="mq-num"
+                data-estado={r === true ? 'certa' : r === false ? 'errada' : 'pendente'} aria-current={atual ? 'step' : undefined}
+                aria-label={`Questão ${i + 1}: ${r === true ? 'acertou' : r === false ? 'errou' : 'a fazer'}`}>
                 {i + 1}
               </Link>
             );
           })}
         </div>
-        <span className="suave" style={{ fontSize: 13 }}>Verde: acertou · vermelho: errou · cinza: a fazer</span>
+        <span className="suave so-desk" style={{ fontSize: 13 }}>Verde: acertou · vermelho: errou · cinza: a fazer</span>
       </section>
 
-      <div id="caderno">
+      <div id="caderno" className="mq-caderno">
         <Caderno questoes={daPagina} total={questoes.length} pagina={pagina} porPagina={pp} base={`/aluno/questoes/lista/${lista.id}`} lista={lista.id} />
       </div>
 
-      {pronta && (
-        <section className="cartao" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }} aria-labelledby="res">
-          <h2 id="res" className="display" style={{ margin: 0, fontSize: 19 }}>Resultado por disciplina e assunto</h2>
+      {(pronta || sp.resultado === '1') && feitas > 0 && (
+        <section className="cartao" id="resultado" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, scrollMarginTop: 80 }} aria-labelledby="res">
+          <h2 id="res" className="display" style={{ margin: 0, fontSize: 19 }}>{pronta ? 'Resultado por disciplina e assunto' : `Resultado parcial · ${feitas} de ${questoes.length} feitas`}</h2>
+          <p style={{ margin: 0 }}><b>{acertos}</b> de <b>{feitas}</b> certas ({Math.round((100 * acertos) / Math.max(1, feitas))}%)</p>
           {Array.from(porAssunto.entries()).sort((a, b) => a[1].ok / a[1].n - b[1].ok / b[1].n).map(([k, v]) => {
             const pct = Math.round((100 * v.ok) / v.n);
             return (
@@ -126,6 +138,17 @@ export default async function ListaPagina({ params, searchParams }: { params: Pr
           <Link href="/aluno/questoes/filtrar" className="btn btn-linha" style={{ alignSelf: 'flex-start' }}>Criar outro caderno</Link>
         </section>
       )}
+
+      {/* celular: barra fixa embaixo */}
+      <nav className="mq-barra so-mob" aria-label="Navegar no caderno">
+        {pagina > 1
+          ? <Link href={`/aluno/questoes/lista/${lista.id}?p=${pagina - 1}&pp=${pp}#caderno`} className="mq-bt">Anterior</Link>
+          : <span className="mq-bt" data-off>Anterior</span>}
+        {pagina < paginas
+          ? <Link href={`/aluno/questoes/lista/${lista.id}?p=${pagina + 1}&pp=${pp}#caderno`} className="mq-bt">Próxima</Link>
+          : <span className="mq-bt" data-off>Próxima</span>}
+        <Link href={`/aluno/questoes/lista/${lista.id}?p=${pagina}&pp=${pp}&resultado=1#resultado`} className="mq-bt mq-bt-fim">{pronta ? 'Ver resultado' : 'Finalizar'}</Link>
+      </nav>
     </>
   );
 }

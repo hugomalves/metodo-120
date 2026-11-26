@@ -102,6 +102,7 @@
 .tema-app .q-alt[data-estado='certa'] .q-alt-botao, .tema-app .q-ce-botao[data-estado='certa'] { background: #12301f; }
 .tema-app .q-resultado[data-acertou='sim'] { background: #102a1b; border-color: #1f6b3d; }
 .tema-app .q-resultado[data-acertou='nao'] { background: #33201a; border-color: #7a3b22; }
+.tema-app .q-miniestat span { background: rgba(255, 255, 255, 0.06); border-color: var(--linha-forte); color: var(--texto-2); }
 .tema-app .pv-selo[data-ok='sim'] { background: #123021; color: #6ee7a0; }
 .tema-app .plano-metas li[data-ok] { background: #12261a; }
 .tema-app .cc-selo { background: rgba(17, 20, 24, 0.92); color: var(--texto); }
@@ -716,3 +717,71 @@ a:hover { color: var(--azul); }
 .tema-site .cab-drop-lista a:hover { background: #171a20; color: #fff; }
 .tema-site .cab-drop-todos { color: var(--vermelho-vivo) !important; }
 .tema-site .tema-escuro { background: #000; }
+
+/* ===== Caderno no celular (estilo app) ===== */
+.so-mob { display: none; }
+.mq-nums-caixa { display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 8px; }
+.mq-nums { display: flex; flex-wrap: wrap; gap: 8px; }
+.mq-num { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; text-decoration: none; font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums;
+  background: var(--faixa); color: var(--texto-2); border: 1px solid var(--linha-forte); transition: transform 0.1s; }
+.mq-num:hover { border-color: var(--azul); color: var(--texto); }
+.mq-num[data-estado='certa'] { background: rgba(34, 179, 90, 0.2); border-color: rgba(34, 179, 90, 0.55); color: #4ade80; }
+.mq-num[data-estado='errada'] { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.55); color: #ff8a8a; }
+.mq-num[aria-current='step'] { background: #fff; border-color: #fff; color: #0b1220; transform: scale(1.06); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+
+@media (max-width: 640px) {
+  .so-desk { display: none !important; }
+  .so-mob { display: block; }
+  .tema-app .painel-conteudo { padding: 12px 12px 96px; gap: 14px; }
+
+  .mq-topo { display: flex; align-items: flex-start; gap: 10px; padding: 4px 2px 2px; }
+  .mq-voltar { flex: none; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--cartao); border: 1px solid var(--linha); color: var(--texto); font-size: 24px; text-decoration: none; line-height: 1; }
+  .mq-topo-texto { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .mq-rotulo { font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7fa6ff; }
+  .mq-topo h1 { margin: 0; font-family: var(--font-titulo); font-size: 19px; line-height: 1.2; color: #fff; overflow-wrap: anywhere; }
+  .mq-sub { font-size: 13.5px; color: var(--texto-2); }
+
+  .mq-nums-caixa { padding: 0; background: none; border: 0; }
+  .mq-nums { gap: 7px; }
+  .mq-num { width: calc((100% - 6 * 7px) / 7); max-width: 46px; height: 40px; border-radius: 10px; font-size: 14.5px; }
+
+  .mq-caderno .q-barra, .mq-caderno .q-rodape-caderno { display: none; }
+  .mq-caderno .q-caderno { gap: 12px; }
+
+  /* questão em cartão de app */
+  .q-cartao { border-radius: 16px; }
+  .q-cabeca { padding: 12px 14px; gap: 8px; }
+  .q-num { display: none; }
+  .q-meta { order: -1; font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #7fa6ff; }
+  .q-cabeca > div:first-child { gap: 4px; }
+  .q-origem { font-size: 12.5px; font-weight: 600; color: var(--suave); }
+  .q-acoes { width: 100%; }
+  .q-acao { min-height: 32px; font-size: 12.5px; padding: 0 10px; border-radius: 8px; }
+  .q-acao-destaque { background: transparent; color: #9fbcff; border-color: rgba(47, 107, 255, 0.5); }
+  .q-corpo { padding: 14px; gap: 14px; font-size: 15.5px; line-height: 1.55; }
+
+  .q-alts { border: 0; gap: 10px; overflow: visible; }
+  .q-alts:not(.q-alts-letras) .q-alt + .q-alt { border-top: 0; }
+  .q-alt, .tema-app .q-alt:nth-child(even) { background: var(--faixa); border: 1.5px solid var(--linha-forte); border-radius: 12px; overflow: hidden; }
+  .q-alt-botao { padding: 12px; gap: 12px; align-items: center; }
+  .q-letra { width: 30px; height: 30px; font-size: 13.5px; }
+  .q-alt-texto { padding-top: 0; font-size: 15px; }
+  .q-riscar { opacity: 0.6; width: 38px; }
+  .q-alt[data-estado='marcada'] { border-color: var(--azul); }
+  .q-alt[data-estado='certa'] { border-color: #22b35a; }
+  .q-alt[data-estado='errada'] { border-color: #ef4444; }
+  .q-ce-botao { max-width: none; border-radius: 12px; }
+
+  .q-resposta > .linha-flex:has(.q-resolver) { flex-direction: column; align-items: stretch; }
+  .q-resolver { width: 100%; min-height: 50px; border-radius: 12px; font-size: 15px; }
+  .q-resultado { border-radius: 14px; padding: 14px; }
+  .q-resultado-topo strong { font-size: 16px; }
+  .q-texto-base { border-radius: 12px; }
+
+  /* barra fixa embaixo: Anterior · Próxima · Finalizar */
+  .mq-barra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: rgba(12, 14, 18, 0.94); backdrop-filter: blur(10px); border-top: 1px solid var(--linha); }
+  .mq-bt { min-height: 48px; display: grid; place-items: center; border-radius: 12px; border: 1.5px solid var(--linha-forte); background: var(--cartao); color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+  .mq-bt[data-off] { opacity: 0.4; }
+  .mq-bt-fim { background: #2F6BFF; border-color: #2F6BFF; }
+}
