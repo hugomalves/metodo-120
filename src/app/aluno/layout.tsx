@@ -17,7 +17,7 @@ const ITENS: ItemPainel[] = [
   { href: '/aluno/duvidas', rotulo: 'Minhas dúvidas', icone: 'duvidas' },
 ];
 
-const ITENS_BANCO: ItemPainel[] = ITENS.filter((i) => !['/aluno/estatisticas', '/aluno/duvidas', '/aluno/redacao'].includes(i.href));
+const ITENS_BANCO: ItemPainel[] = ITENS.filter((i) => !['/aluno/estatisticas', '/aluno/duvidas'].includes(i.href));
 
 const RODAPE: ItemPainel[] = [
   { href: '/planos', rotulo: 'Planos', icone: 'planos' },
