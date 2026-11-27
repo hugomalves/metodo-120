@@ -73,3 +73,21 @@ export async function enviarVideoCurso(arquivo: File): Promise<string> {
   if (error) throw new Error('Não foi possível enviar o vídeo: ' + error.message);
   return caminho;
 }
+
+// Redação em arquivo (PDF ou foto da folha), na pasta do próprio aluno no bucket privado 'redacoes'
+const TIPOS_REDACAO = ['application/pdf', 'image/jpeg', 'image/png'];
+export async function enviarArquivoRedacao(alunoId: string, arquivo: File): Promise<string> {
+  const tipo = arquivo.type || (/\.pdf$/i.test(arquivo.name) ? 'application/pdf' : '');
+  if (!TIPOS_REDACAO.includes(tipo)) throw new Error('Envie a redação em PDF ou numa foto JPG ou PNG.');
+  if (arquivo.size > 10 * 1024 * 1024) throw new Error('O arquivo pode ter até 10 MB.');
+  const ext = tipo === 'application/pdf' ? 'pdf' : tipo === 'image/png' ? 'png' : 'jpg';
+  const base = limparNome(arquivo.name.replace(/\.[^.]+$/, '')).replace(/[^a-z0-9._-]/g, '').slice(0, 60) || 'redacao';
+  const caminho = `${alunoId}/${Date.now()}-${base}.${ext}`;
+  const { error } = await createClient().storage.from('redacoes').upload(caminho, arquivo, { contentType: tipo, upsert: false });
+  if (error) throw new Error(/bucket/i.test(error.message) ? 'O envio em arquivo ainda não foi ativado (falta rodar o SQL da redação).' : 'Não foi possível enviar o arquivo: ' + error.message);
+  return caminho;
+}
+
+export async function apagarArquivoRedacao(caminho: string) {
+  await createClient().storage.from('redacoes').remove([caminho]);
+}

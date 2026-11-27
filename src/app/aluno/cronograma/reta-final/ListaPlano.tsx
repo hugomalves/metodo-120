@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ItemPlano } from '@/lib/planoCurso';
+import { propostaDoBloco } from '@/lib/redacao';
 import { alternarFeito } from './acoes';
 import s from './plano.module.css';
 
@@ -21,6 +22,7 @@ export function Lista({ itens, temPdf, podeMarcar }: { itens: (ItemPlano & { fei
               ? <a href={`/api/curso-pdf/${i.pdf}`} target="_blank" rel="noopener" className="btn btn-azul">Abrir PDF</a>
               : <span className={s.embreve}>PDF em breve</span>)}
             {i.caderno && <Link href={`/lista/${i.caderno}`} className="btn btn-linha">Questões</Link>}
+            {propostaDoBloco(i.codigo) && <Link href={`/aluno/redacao/nova?tema=${propostaDoBloco(i.codigo)!.slug}`} className="btn btn-linha">Enviar redação</Link>}
             {i.tipo === 'revisao' && <Link href="/aluno/questoes/erros" className="btn btn-linha">Meus erros</Link>}
             {i.tipo === 'simulado' && <Link href="/aluno/simulados" className="btn btn-linha">Ir aos simulados</Link>}
             {i.tipo === 'mini' && <Link href="/aluno/minissimulados" className="btn btn-linha">Ir aos minissimulados</Link>}

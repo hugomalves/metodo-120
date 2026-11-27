@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { dataCurta, dataLonga, diaDaSemana, inicioDaSemana, somarDias } from '@/lib/cronograma';
 import { DATA_PROVA, rotuloTempo, type DiaPlano, type ItemPlano } from '@/lib/planoCurso';
+import { propostaDoBloco } from '@/lib/redacao';
 import { alternarFeito } from './acoes';
 import s from '../cronograma.module.css';
 import p from './plano.module.css';
@@ -84,6 +85,7 @@ function Bloco({ it, n, temPdf }: { it: ItemDia; n: number; temPdf: Set<string> 
           ? <a href={`/api/curso-pdf/${it.pdf}`} target="_blank" rel="noopener" className={p.linkPdf}>Abrir PDF</a>
           : <span className={p.semPdf}>PDF em breve</span>)}
         {it.caderno && <Link href={`/lista/${it.caderno}`}>Questões do bloco</Link>}
+        {propostaDoBloco(it.codigo) && <Link href={`/aluno/redacao/nova?tema=${propostaDoBloco(it.codigo)!.slug}`}>Enviar redação para correção</Link>}
         {it.aula && it.tipo === 'aula' && temPdf.has(it.aula) && <a href={`/api/curso-pdf/${it.aula}`} target="_blank" rel="noopener">Aula completa</a>}
         {it.tipo === 'revisao' && <Link href="/aluno/questoes/erros">Refazer meus erros</Link>}
         {it.tipo === 'revisao' && (it.extra.aulas ?? []).map((a) => <Link key={a} href={`/lista/${a}`}>{a.replace('-AULA', ' · Aula ')}</Link>)}

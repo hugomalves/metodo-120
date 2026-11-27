@@ -11,12 +11,13 @@ const ITENS: ItemPainel[] = [
   { href: '/aluno/minissimulados', rotulo: 'Minissimulados', icone: 'mini', tambem: ['/aluno/simulado/'] },
   { href: '/aluno/questoes', rotulo: 'Questões', icone: 'questoes', exceto: ['/aluno/questoes/listas', '/aluno/questoes/lista'] },
   { href: '/aluno/questoes/listas', rotulo: 'Criar listas em PDF', icone: 'listas', tambem: ['/aluno/questoes/lista'] },
+  { href: '/aluno/redacao', rotulo: 'Redação', icone: 'redacao' },
   { href: '/aluno/mentoria', rotulo: 'Mentoria individual', icone: 'conta' },
   { href: '/aluno/estatisticas', rotulo: 'Estatísticas', icone: 'estatisticas' },
   { href: '/aluno/duvidas', rotulo: 'Minhas dúvidas', icone: 'duvidas' },
 ];
 
-const ITENS_BANCO: ItemPainel[] = ITENS.filter((i) => !['/aluno/estatisticas', '/aluno/duvidas'].includes(i.href));
+const ITENS_BANCO: ItemPainel[] = ITENS.filter((i) => !['/aluno/estatisticas', '/aluno/duvidas', '/aluno/redacao'].includes(i.href));
 
 const RODAPE: ItemPainel[] = [
   { href: '/planos', rotulo: 'Planos', icone: 'planos' },

@@ -25,6 +25,7 @@ const ICONES: Record<string, string> = {
   noticias: 'M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-4 0M7 9h7M7 13h7M7 16h4',
   cronograma: 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6',
   planos: 'M20 12l-8 8-8-8V4h8zM8 8h.01',
+  redacao: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4M14 20h6',
 };
 
 export type ItemPainel = {
