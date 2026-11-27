@@ -68,3 +68,6 @@
 /* tema escuro do site */
 :global(.tema-site) .compra { background: var(--cartao); border: 1px solid var(--linha-forte); }
 :global(.tema-site) .lista li, :global(.tema-site) .regra, :global(.tema-site) .aprovacoes li { background: var(--cartao); }
+:global(.tema-site) .preco { color: #fff; }
+:global(.tema-site) .compraRotulo { color: #9fbcff; }
+:global(.tema-site) .fixo b { color: #fff; }
