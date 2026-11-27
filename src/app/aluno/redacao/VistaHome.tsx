@@ -44,6 +44,11 @@ export function VistaHome({ nome, erro, lista, limite, usadas, plataforma: p }: 
         </div>
       </section>
 
+      <div className={s.chamadaAulas}>
+        <div><b>Redação é o seu ponto fraco? Comece pelas aulas.</b><span>8 semanas do zero à redação completa, com modelos prontos e uma redação por semana.</span></div>
+        <Link href="/aluno/redacao/aulas" className="btn btn-azul">Ver as aulas</Link>
+      </div>
+
       <section className={s.secao} aria-labelledby="des-t">
         <div className={s.secaoTopo}><h2 id="des-t">Seu desempenho</h2>{corrigidas.length > 0 && <Link href="/aluno/redacao/minhas">Ver todas as correções</Link>}</div>
         {corrigidas.length === 0 ? (

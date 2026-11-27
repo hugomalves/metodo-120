@@ -189,3 +189,98 @@
   .barra { grid-template-columns: 110px minmax(0, 1fr) 44px; gap: 8px; font-size: 13px; }
   .texto, .folha { padding: 18px 16px; }
 }
+
+/* ---------- Aulas (Redação do zero) ---------- */
+.aulasTopo { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr); gap: 24px; align-items: center; padding: 26px 28px; border-radius: 8px; color: #fff;
+  background: radial-gradient(120% 140% at 0% 0%, #3b7bff 0%, #1f4fd8 45%, #0b2a7a 100%); }
+.aulasTopo h1 { margin: 6px 0 8px; color: #fff; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.2; }
+.aulasTopo p { margin: 0; color: #e3ecff; line-height: 1.5; }
+.progressoAulas { background: rgba(4, 18, 56, 0.35); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.progressoAulas b { font-family: var(--font-display); font-size: 38px; line-height: 1; color: #fff; }
+.progressoAulas b small { font-size: 18px; color: #cfe0ff; }
+.progressoAulas > span { color: #dbe6ff; font-size: 14px; }
+.progressoAulas .trilho { background: rgba(255, 255, 255, 0.18); }
+.progressoAulas .enchido { background: #22b35a; }
+.progressoAulas .btVerde { justify-content: center; margin-top: 6px; }
+
+.trilha { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.etapa { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 16px 18px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 8px; }
+.etapa[data-atual='true'] { border-color: var(--azul); box-shadow: 0 0 0 1px var(--azul); }
+.etapaNum { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 19px; background: var(--cartao-2); border: 2px solid var(--linha-forte); }
+.etapa[data-atual='true'] .etapaNum { background: var(--azul); border-color: var(--azul); color: #fff; }
+.etapa[data-feita='true'] .etapaNum { background: #22b35a; border-color: #22b35a; color: #fff; }
+.etapaCorpo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.etapaCorpo small { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--suave); }
+.etapaCorpo a { color: var(--texto); text-decoration: none; }
+.etapaCorpo a:hover { color: var(--azul-claro, #8fb8ff); }
+.etapaCorpo b { font-family: var(--font-display); font-size: 17px; }
+.etapaCorpo span { color: var(--suave); font-size: 14.5px; }
+.etapaBotoes { display: flex; gap: 8px; }
+
+.aula { display: flex; flex-direction: column; gap: 22px; max-width: 980px; }
+.aulaCabeca { display: flex; flex-direction: column; gap: 12px; padding: 26px 28px; border-radius: 8px; color: #fff; background: radial-gradient(120% 140% at 0% 0%, #3b7bff 0%, #1f4fd8 45%, #0b2a7a 100%); }
+.aulaCabeca h1 { margin: 0; color: #fff; font-size: clamp(24px, 3vw, 36px); line-height: 1.15; }
+.aulaCabeca p { margin: 0; color: #e3ecff; line-height: 1.55; font-size: 16px; }
+.aulaCabeca .btClaro { align-self: flex-start; }
+.aulaCorpo { display: flex; flex-direction: column; gap: 14px; font-size: 16.5px; line-height: 1.65; }
+.aulaH { margin: 14px 0 0; font-family: var(--font-display); font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--azul); }
+.aulaP { margin: 0; }
+.aulaLista { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.aulaTabelaRolagem { overflow-x: auto; border: 1px solid var(--linha); border-radius: 6px; }
+.aulaTabela { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.5; }
+.aulaTabela th { text-align: left; padding: 10px 12px; background: rgba(47, 107, 255, 0.16); font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; }
+.aulaTabela td { padding: 10px 12px; border-top: 1px solid var(--linha); vertical-align: top; }
+.aulaModelo { border: 1.5px dashed #5ea0ff; background: rgba(47, 107, 255, 0.08); border-radius: 6px; padding: 16px 18px; }
+.aulaModelo b { display: block; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #8fb8ff; margin-bottom: 6px; }
+.aulaModelo p { margin: 0; font-size: 16px; line-height: 1.75; }
+.aulaCompara { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.aulaCompara > div { border-radius: 6px; padding: 14px 16px; }
+.aulaCompara > div small { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.aulaCompara > div p { margin: 6px 0 0; font-style: italic; }
+.aulaCompara > div[data-tipo='ruim'] { background: rgba(229, 72, 77, 0.12); border: 1px solid rgba(229, 72, 77, 0.35); }
+.aulaCompara > div[data-tipo='ruim'] small { color: #ff9a9a; }
+.aulaCompara > div[data-tipo='bom'] { background: rgba(34, 179, 90, 0.12); border: 1px solid rgba(34, 179, 90, 0.35); }
+.aulaCompara > div[data-tipo='bom'] small { color: #6be09a; }
+.aulaPorque { grid-column: 1 / -1; margin: 0; color: var(--texto-2); font-size: 15px; }
+.aulaDica, .aulaAlerta { border-radius: 6px; padding: 14px 16px; border-left: 4px solid; }
+.aulaDica { background: rgba(47, 107, 255, 0.1); border-color: #2F6BFF; }
+.aulaAlerta { background: rgba(245, 165, 36, 0.1); border-color: #f5a524; }
+.aulaDica b, .aulaAlerta b { font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; }
+.aulaDica b { color: #8fb8ff; }
+.aulaAlerta b { color: #ffc66b; }
+.aulaDica p, .aulaAlerta p { margin: 4px 0 0; }
+.aulaExercicio { background: var(--cartao); border: 1px solid var(--linha); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.aulaExercicio > b { font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6be09a; }
+.aulaExercicio p, .aulaExercicio ul, .aulaExercicio ol { margin: 0; }
+.aulaExercicio ol { padding-left: 24px; display: flex; flex-direction: column; gap: 4px; }
+.aulaExercicio ul { padding-left: 20px; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.aulaExercicio details { border-top: 1px solid var(--linha); padding-top: 8px; }
+.aulaExercicio summary { cursor: pointer; font-weight: 700; color: var(--azul-claro, #8fb8ff); }
+.aulaExercicio details p { margin-top: 8px; padding: 12px 14px; border-radius: 6px; background: rgba(34, 179, 90, 0.1); }
+.aulaLembrar { border-radius: 8px; padding: 20px 22px; background: var(--cartao-2); border: 1px solid var(--linha-forte); }
+.aulaLembrar h2 { margin: 0 0 8px; font-family: var(--font-display); font-size: 19px; }
+.aulaLembrar ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; line-height: 1.5; }
+.aulaTarefa { border-radius: 8px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, #14532d, #15803d); display: flex; flex-direction: column; gap: 8px; }
+.aulaTarefa h2 { margin: 0; color: #fff; font-family: var(--font-display); font-size: 21px; }
+.aulaTarefa p { margin: 0; color: #e7fbe9; line-height: 1.55; }
+.aulaTarefa .btVerde { background: #fff; color: #14532d; }
+.aulaTarefa .btVerde:hover { background: #e7fbe9; color: #14532d; }
+.navAulas { display: flex; justify-content: space-between; gap: 12px; max-width: 980px; padding-top: 6px; border-top: 1px solid var(--linha); font-weight: 700; }
+
+.chamadaAulas { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 22px; border-radius: 8px; background: var(--cartao); border: 1px solid var(--linha); border-left: 4px solid #22b35a; }
+.chamadaAulas div { display: flex; flex-direction: column; gap: 3px; }
+.chamadaAulas b { font-family: var(--font-display); font-size: 17px; }
+.chamadaAulas span { color: var(--suave); font-size: 14.5px; }
+
+@media (max-width: 900px) {
+  .aulasTopo { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
+  .aulaCompara { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .etapa { grid-template-columns: 40px minmax(0, 1fr); padding: 14px; gap: 12px; }
+  .etapaNum { width: 38px; height: 38px; font-size: 16px; }
+  .etapaBotoes { grid-column: 1 / -1; }
+  .etapaBotoes a { flex: 1; text-align: center; justify-content: center; }
+  .aulaCabeca, .aulaTarefa { padding: 20px 16px; }
+  .aulaCorpo { font-size: 16px; }
+}

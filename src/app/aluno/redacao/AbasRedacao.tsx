@@ -3,6 +3,7 @@ import s from './redacao.module.css';
 
 const ABAS = [
   { id: 'home', rotulo: 'Home', href: '/aluno/redacao' },
+  { id: 'aulas', rotulo: 'Aulas', href: '/aluno/redacao/aulas' },
   { id: 'nova', rotulo: 'Nova redação', href: '/aluno/redacao/nova' },
   { id: 'minhas', rotulo: 'Minhas correções', href: '/aluno/redacao/minhas' },
   { id: 'propostas', rotulo: 'Propostas', href: '/aluno/redacao/propostas' },
