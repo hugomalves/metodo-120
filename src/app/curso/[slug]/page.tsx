@@ -8,6 +8,7 @@ import { diasAte } from '@/lib/datas';
 import { carregarVideosCurso } from '@/lib/videos-curso';
 import type { Produto } from '@/lib/loja';
 import styles from './curso.module.css';
+import { OfertaRetaFinal } from './OfertaRetaFinal';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ const IMAGENS: Record<string, { hero?: string; faixa?: string; chamada?: string;
   'pmpe-2026-soldado': {
     hero: '/img/reta-final/formatura.webp', faixa: '/img/reta-final/tropa.webp',
     chamada: 'Gabarite a prova da PMPE aqui.',
-    texto: 'Estudo intenso até a prova, com foco no que a banca mais cobra, simulados no padrão AOCP e a regra de corte do edital.',
+    texto: '366 páginas em 30 dias, cerca de 12 por dia, e 500 questões no estilo da AOCP. Comece hoje e feche o edital antes da prova.',
   },
 };
 
@@ -90,7 +91,11 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
     { q: 'Como recebo o acesso depois de pagar?', a: 'Você paga no checkout da Kiwify e cria a sua conta aqui no site com o mesmo e-mail da compra. O acesso é liberado automaticamente, mesmo que você crie a conta depois de pagar.' },
     { q: 'Posso testar antes de comprar?', a: 'Pode. Crie a conta grátis e use o banco de questões, com limite diário, e um minissimulado por dia.' },
     { q: 'O curso garante a aprovação?', a: ed ? 'Não. O curso entrega o plano de estudo até a prova, organizado pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' : 'Não. O Método 120 entrega o plano: 2 horas por dia, organizadas pelo que o edital cobra e pelo estilo da banca. A aprovação depende da sua dedicação e da concorrência.' },
-    { q: 'Posso imprimir o material?', a: 'Sim. Você cria listas de questões em PDF quantas vezes quiser e pode imprimir.' },
+    ...(p.slug === 'reta-final-pmpe' ? [
+      { q: 'Dá tempo de estudar tudo em 30 dias?', a: 'Dá. A apostila tem 366 páginas divididas em 30 dias: cerca de 12 páginas e as questões do dia, uma rotina que cabe em pouco mais de 1 hora para a maioria das pessoas. Se você começar com mais de 30 dias até a prova, sobra tempo para revisar.' },
+      { q: 'O que é a apostila?', a: 'Um material único com todo o conteúdo do edital de Soldado da PM PE, organizado pelo que a AOCP mais cobra. Ela fica na sua área em PDF, com o seu nome, para estudar no celular ou imprimir.' },
+    ] : []),
+    { q: 'Posso imprimir o material?', a: p.slug === 'reta-final-pmpe' ? 'Sim. A apostila e as listas de questões vêm em PDF e podem ser impressas.' : 'Sim. Você cria listas de questões em PDF quantas vezes quiser e pode imprimir.' },
     ...(p.acesso_ate ? [{ q: 'Até quando vale o meu acesso?', a: `O acesso a este curso vale até ${dataBr(p.acesso_ate)}.` }] : []),
     { q: 'E se eu não gostar?', a: 'Os dias de garantia e como pedir o reembolso aparecem no checkout da Kiwify, antes de você pagar.' },
   ];
@@ -136,6 +141,8 @@ export default async function CursoPagina({ params }: { params: Promise<{ slug: 
             )}
           </div>
         </section>
+
+        {p.slug === 'reta-final-pmpe' && <OfertaRetaFinal preco={p.gratuito ? 'Grátis' : p.preco} cta={<Cta p={p} logado={logado} />} />}
 
         <ColunasCurso videos={videos} />
 

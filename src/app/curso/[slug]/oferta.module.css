@@ -1,0 +1,93 @@
+/* Oferta do Reta Final PM PE · identidade do escudo: azul, amarelo, vermelho e o arco de Pernambuco */
+.jogada, .recebe, .mes, .dia {
+  --pe-azul: #1f4ba0; --pe-marinho: #08173d; --pe-amarelo: #ffcc00; --pe-vermelho: #d7261e; --pe-verde: #1f9d4c;
+}
+
+/* ---------- 1. A jogada ---------- */
+.jogada { position: relative; overflow: hidden; margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr); gap: 32px; align-items: center;
+  padding: clamp(26px, 4vw, 48px) clamp(26px, 4vw, 48px) calc(clamp(26px, 4vw, 48px) + 18px); border-radius: 6px; color: #fff;
+  background: radial-gradient(90% 120% at 100% 0%, #2a5fc4 0%, var(--pe-azul) 30%, var(--pe-marinho) 75%); border: 2px solid var(--pe-amarelo); }
+.arcoFaixa { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: linear-gradient(180deg, var(--pe-vermelho) 0 33%, var(--pe-amarelo) 33% 66%, var(--pe-verde) 66% 100%); }
+.jogadaTexto { display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
+.selo { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 6px 14px 6px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 204, 0, 0.6); color: var(--pe-amarelo); font-family: var(--font-titulo, var(--font-display)); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.jogada h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); line-height: 1.02; color: #fff; text-transform: uppercase; }
+.jogada h2 em { font-style: normal; color: var(--pe-amarelo); }
+.jogadaTexto > p { margin: 0; font-size: 18px; line-height: 1.55; color: #dbe6ff; max-width: 58ch; }
+.jogadaTexto > p b { color: #fff; }
+.numeros { margin: 4px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 6px; overflow: hidden; background: rgba(4, 12, 34, 0.45); }
+.numeros li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 14px 8px; }
+.numeros li + li { border-left: 1px solid rgba(255, 255, 255, 0.14); }
+.numeros b { font-family: var(--font-titulo, var(--font-display)); font-size: clamp(30px, 3.4vw, 42px); line-height: 1; color: var(--pe-amarelo); }
+.numeros span { color: #cfdcf5; font-size: 13.5px; line-height: 1.3; }
+.compra { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 4px; }
+.pilula { display: inline-flex; flex-direction: column; line-height: 1; padding: 10px 22px 12px; border-radius: 14px; background: linear-gradient(180deg, #ffe066, var(--pe-amarelo));
+  color: #8a0f0a; font-family: var(--font-titulo, var(--font-display)); font-weight: 800; font-size: clamp(26px, 3vw, 34px); box-shadow: 0 6px 0 #c79a00, 0 10px 24px rgba(0, 0, 0, 0.35); transform: rotate(-2deg); }
+.pilula small { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #3a2a00; margin-bottom: 4px; }
+
+/* capa da apostila */
+.capaImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 3px 8px 8px 3px; border-left: 8px solid #04091a; }
+.livroCena { perspective: 1400px; display: flex; justify-content: center; position: relative; z-index: 1; }
+.livro { position: relative; width: min(360px, 100%); aspect-ratio: 1199 / 1312; transform: rotateY(-16deg) rotateX(4deg); transform-style: preserve-3d;
+  box-shadow: 18px 24px 40px rgba(0, 0, 0, 0.55); border-radius: 3px 8px 8px 3px; }
+.livro::after { content: ''; position: absolute; top: 4px; bottom: 4px; right: -12px; width: 12px; transform: rotateY(60deg); transform-origin: left;
+  background: repeating-linear-gradient(90deg, #f4f4f4 0 1px, #d9d9d9 1px 2px); border-radius: 0 3px 3px 0; }
+
+/* ---------- 2. O que você recebe ---------- */
+.recebe { margin-top: 40px; display: flex; flex-direction: column; gap: 14px; }
+.recebe h2 { margin: 0; font-size: clamp(24px, 2.8vw, 32px); color: var(--navy); }
+.recebe ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 10px; }
+.recebe li { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 14px 16px 14px 54px; border-radius: 6px; background: var(--cartao); border: 1px solid var(--linha); border-left: 4px solid var(--pe-amarelo); }
+.recebe li::before { content: '✓'; position: absolute; left: 16px; top: 15px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--pe-verde); color: #fff; font-weight: 800; font-size: 13px; }
+.recebe b { color: var(--pe-amarelo); font-size: 16px; }
+.recebe span { color: var(--texto-2); line-height: 1.45; }
+
+/* ---------- 3. O mês ---------- */
+.mes { margin-top: 40px; display: flex; flex-direction: column; gap: 18px; padding: clamp(22px, 3.5vw, 40px); border-radius: 6px; background: var(--pe-marinho); border-top: 6px solid var(--pe-vermelho); color: #fff; }
+.mesTopo { display: flex; gap: 16px; align-items: center; }
+.mesTopo img { flex: none; width: 54px; height: auto; }
+.mesTopo h2 { margin: 0; font-size: clamp(24px, 3vw, 36px); line-height: 1.1; color: #fff; text-transform: uppercase; }
+.mesTopo p { margin: 6px 0 0; color: #cfdcf5; max-width: 70ch; line-height: 1.55; }
+.fases { display: flex; flex-direction: column; gap: 10px; }
+.fase { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; align-items: center; }
+.fase > b { font-family: var(--font-titulo, var(--font-display)); font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pe-amarelo); }
+.fase ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.fase li { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 2px; padding: 10px 10px 14px; border-radius: 4px; background: rgba(31, 75, 160, 0.35); border: 1px solid rgba(255, 255, 255, 0.12); }
+.fase li span { font-family: var(--font-titulo, var(--font-display)); font-weight: 700; color: #fff; font-size: 15px; text-transform: uppercase; }
+.fase li em { font-style: normal; color: #9fb6e6; font-size: 12.5px; }
+.fase li i { position: absolute; left: 0; bottom: 0; height: 5px; background: var(--pe-amarelo); }
+.fase li[data-fim='true'] { background: var(--pe-verde); border-color: var(--pe-verde); }
+.fase li[data-fim='true'] em { color: #fff; font-weight: 700; }
+.fase li[data-fim='true'] i { background: #fff; }
+
+/* ---------- 4. O dia ---------- */
+.dia { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); border-radius: 6px; overflow: hidden; background: var(--cartao); border: 1px solid var(--linha); }
+.diaFoto { min-height: 320px; background: linear-gradient(0deg, rgba(8, 23, 61, 0.55), rgba(8, 23, 61, 0.05)), url(/img/reta-final/formatura.webp) center / cover; }
+.diaTexto { display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 3.5vw, 38px); }
+.diaTexto h2 { margin: 0; font-size: clamp(24px, 2.8vw, 32px); color: var(--navy); }
+.passos { margin: 0; padding: 0; list-style: none; counter-reset: passo; display: flex; flex-direction: column; gap: 12px; }
+.passos li { counter-increment: passo; position: relative; display: flex; flex-direction: column; gap: 4px; padding: 4px 0 4px 60px; min-height: 48px; }
+.passos li::before { content: counter(passo); position: absolute; left: 0; top: 0; width: 42px; height: 48px; display: grid; place-items: center; background: var(--pe-amarelo); color: #08173d;
+  font-family: var(--font-titulo, var(--font-display)); font-weight: 800; font-size: 20px; clip-path: polygon(50% 0, 100% 12%, 100% 62%, 50% 100%, 0 62%, 0 12%); }
+.passos b { color: var(--navy); font-family: var(--font-titulo, var(--font-display)); font-size: 18px; }
+.passos span { color: var(--texto-2); line-height: 1.5; }
+
+@media (max-width: 960px) {
+  .jogada { grid-template-columns: minmax(0, 1fr); }
+  .livroCena { order: -1; }
+  .livro { width: min(300px, 86%); }
+  .dia { grid-template-columns: minmax(0, 1fr); }
+  .diaFoto { min-height: 200px; }
+  .fase { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
+@media (max-width: 560px) {
+  .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .numeros li:nth-child(3) { border-left: 0; }
+  .numeros li:nth-child(n + 3) { border-top: 1px solid rgba(255, 255, 255, 0.14); }
+  .jogadaTexto > p { font-size: 16.5px; }
+  .mesTopo img { width: 40px; }
+  .fase ol { gap: 4px; }
+  .fase li { padding: 8px 2px 10px; align-items: center; }
+  .fase li span { font-size: 12.5px; }
+  .fase li em { display: none; }
+}
