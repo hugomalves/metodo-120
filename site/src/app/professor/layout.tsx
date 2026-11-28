@@ -1,0 +1,39 @@
+import { redirect } from 'next/navigation';
+import { exigirLogin, areaDe } from '@/lib/sessao';
+import { Painel, type ItemPainel } from '@/components/Painel';
+
+export default async function LayoutProfessor({ children }: { children: React.ReactNode }) {
+  const { supabase, perfil } = await exigirLogin();
+  if (perfil.papel !== 'professor') redirect(areaDe(perfil));
+  const [{ count }, { count: redacoes }] = await Promise.all([
+    supabase.from('duvidas').select('id', { count: 'exact', head: true }).in('status', ['pendente', 'nao_compreendida']),
+    supabase.from('redacoes').select('id', { count: 'exact', head: true }).eq('status', 'enviada'),
+  ]);
+
+  const itens: ItemPainel[] = [
+    { href: '/professor', rotulo: 'Visão geral', icone: 'inicio', exato: true },
+    { href: '/professor/duvidas', rotulo: 'Plantão de dúvidas', icone: 'duvidas', contador: count ?? 0 },
+    { href: '/professor/redacoes', rotulo: 'Redações', icone: 'redacao', contador: redacoes ?? 0 },
+    { href: '/professor/editais', rotulo: 'Editais', icone: 'habilidades' },
+    { href: '/professor/noticias', rotulo: 'Notícias da vitrine', icone: 'noticias' },
+    { href: '/professor/materiais-gratuitos', rotulo: 'Materiais grátis e leads', icone: 'banco' },
+    { href: '/professor/noticias-concurso', rotulo: 'Notícias de concurso', icone: 'noticias' },
+    { href: '/professor/aulas', rotulo: 'Aulas', icone: 'aulas' },
+    { href: '/professor/simulados', rotulo: 'Simulados e gabaritos', icone: 'simulados' },
+    { href: '/professor/banco', rotulo: 'Banco de questões', icone: 'banco' },
+    { href: '/professor/avisos', rotulo: 'Avisos do banco', icone: 'noticias' },
+    { href: '/professor/pdfs-curso', rotulo: 'PDFs do curso', icone: 'banco' },
+    { href: '/professor/questoes-criticas', rotulo: 'Questões que mais derrubam', icone: 'alerta' },
+    { href: '/professor/engajamento', rotulo: 'Engajamento', icone: 'estatisticas' },
+    { href: '/professor/alunos', rotulo: 'Alunos', icone: 'conta' },
+    { href: '/professor/produtos', rotulo: 'Produtos e loja', icone: 'banco' },
+    { href: '/professor/videos-curso', rotulo: 'Vídeos da página do curso', icone: 'aulas' },
+    { href: '/professor/turmas', rotulo: 'Turmas e vendas', icone: 'turmas' },
+  ];
+
+  return (
+    <Painel itens={itens} inicio="/professor" nome={perfil.nome || 'Professor'} selo="Painel do professor">
+      {children}
+    </Painel>
+  );
+}

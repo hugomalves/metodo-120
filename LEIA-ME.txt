@@ -1,0 +1,37 @@
+TUDO PARA COLOCAR NO SITE · Método 120
+(Redação com correção + aulas Redação do Zero + nova página de venda do Reta Final)
+
+FAÇA NESTA ORDEM
+
+1) SUPABASE (SQL Editor) · rode um arquivo de cada vez
+   sql/1-redacao-aocp.sql ............. cria a aba de Redação. No fim deve aparecer tabelas_criadas = 4
+   sql/2-venda-reta-final-30-dias.sql .. atualiza a descrição e o "O que está incluído" do Reta Final
+   (Se você já rodou algum antes, pode rodar de novo: não estraga nada.)
+
+2) GITHUB (repositório metodo-120)
+   Abra a pasta "site". Dentro dela há 3 pastas: src, supabase e public.
+   Add file > Upload files > arraste AS 3 PASTAS JUNTAS > Commit changes.
+   São 47 arquivos pequenos. Se der "Commit failed", suba uma pasta de cada vez.
+
+3) VERCEL
+   Aba Deployments: espere o deploy mais recente ficar "Ready" (uns 2 minutos).
+   Para a IA pré-corrigir as redações (opcional):
+   Settings > Environment Variables > GROQ_API_KEY = sua chave do console.groq.com
+   (confira se SUPABASE_SERVICE_ROLE_KEY já existe) > Redeploy.
+   Nunca mande essas chaves pelo chat.
+
+4) PDFs DAS AULAS (Painel do professor > PDFs do curso)
+   Arraste os 8 arquivos da pasta "pdfs" (RZ-Aula01 ... RZ-Aula08).
+   Os nomes já estão certos: não renomeie.
+
+5) TESTE
+   - Abra a página do curso: /curso/reta-final-pmpe  (capa, escudo, 30 dias)
+   - Entre como aluno COM o Reta Final: menu > Redação (Home, Aulas, Nova redação...)
+     Se sua conta de aluno é "Plano grátis", libere o curso para ela em
+     Painel do professor > Alunos > Liberar acesso manualmente.
+   - Entre como professor: menu > Redações (fila de correção)
+
+AINDA FALTA (me mande quando tiver)
+   - O PDF da apostila de 366 páginas e o arquivo das 500 questões:
+     com eles eu monto o cronograma de 30 dias (o aluno escolhe 30 dias ou 8 semanas).
+   - A página de venda já fala da apostila. Divulgue depois que ela estiver no site.
